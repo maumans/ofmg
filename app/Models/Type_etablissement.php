@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Mode_paiement extends Model
+class Type_etablissement extends Model
 {
     use HasFactory;
     protected $guarded=[];
 
-    public function paiements()
+    public function etablissements()
     {
-        return $this->hasMany(Paiement::class);
+        return $this->hasMany(Etablissement::class);
     }
 }

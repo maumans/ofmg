@@ -15,6 +15,11 @@ class CreateEtablissementsTable extends Migration
     {
         Schema::create('etablissements', function (Blueprint $table) {
             $table->id();
+            $table->string("code")->nullable();
+            $table->string("nom")->nullable();
+            $table->foreignId("type_etablissement_id")->constrained("type_etablissements")->cascadeOnDelete();
+            $table->foreignId("commune_id")->nullable()->constrained("communes")->cascadeOnDelete();
+            $table->foreignId("ville_id")->nullable()->constrained("villes")->cascadeOnDelete();
             $table->timestamps();
         });
     }

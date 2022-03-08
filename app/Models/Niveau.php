@@ -5,23 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Apprenant extends Model
+class Niveau extends Model
 {
     use HasFactory;
     protected $guarded=[];
-
     public function inscriptions()
     {
         return $this->hasMany(Inscription::class);
     }
 
-    public function paiements()
+    public function tarifs()
     {
-        return $this->hasMany(Paiement::class);
-    }
-
-    public function commune()
-    {
-        return $this->belongsTo(Ville::class);
+        return $this->hasMany(Tarif::class);
     }
 }

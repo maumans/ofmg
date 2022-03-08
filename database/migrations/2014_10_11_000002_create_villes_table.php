@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateApprenantsTable extends Migration
+class CreateVillesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class CreateApprenantsTable extends Migration
      */
     public function up()
     {
-        Schema::create('apprenants', function (Blueprint $table) {
+        Schema::create('villes', function (Blueprint $table) {
             $table->id();
+            $table->string('libelle')->nullable();
+            $table->foreignId("region_id")->constrained("regions")->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ class CreateApprenantsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('apprenants');
+        Schema::dropIfExists('villes');
     }
 }

@@ -5,23 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Apprenant extends Model
+class Type_paiement extends Model
 {
     use HasFactory;
     protected $guarded=[];
-
-    public function inscriptions()
-    {
-        return $this->hasMany(Inscription::class);
-    }
 
     public function paiements()
     {
         return $this->hasMany(Paiement::class);
     }
 
-    public function commune()
+    public function tarifs()
     {
-        return $this->belongsTo(Ville::class);
+        return $this->hasMany(Tarif::class);
     }
 }

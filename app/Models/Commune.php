@@ -5,13 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Mode_paiement extends Model
+class Commune extends Model
 {
     use HasFactory;
     protected $guarded=[];
 
-    public function paiements()
+    public function commune()
     {
-        return $this->hasMany(Paiement::class);
+        return $this->belongsTo(Ville::class);
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
     }
 }

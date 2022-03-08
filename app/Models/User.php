@@ -41,4 +41,50 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function paiementsTuteur()
+    {
+        return $this->hasMany(Paiement::class,"tuteur_id");
+    }
+
+    public function paiementsPersonnel()
+    {
+        return $this->hasMany(Paiement::class,"personnel_id");
+    }
+
+    public function paiementsEtablissement()
+    {
+        return $this->hasMany(Paiement::class,"etablissement_id");
+    }
+
+    public function commune()
+    {
+        return $this->belongsTo(Commune::class);
+    }
+
+    public function commune()
+    {
+        return $this->belongsTo(Ville::class);
+    }
+
+    public function tuteurEtablissement()
+    {
+        return $this->belongsTo(Etablissement::class);
+    }
+
+    public function adminEtablissementUsers()
+    {
+        return $this->hasMany(User::class,"admin_id");
+    }
+
+    public function etablissementAdmin()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOperationsTable extends Migration
+class CreateMoisAnneeTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class CreateOperationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('operations', function (Blueprint $table) {
+        Schema::create('mois_annee', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('mois_id')->constrained("mois")->cascadeOnDelete();
+            $table->foreignId('annee_id')->constrained("annees")->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ class CreateOperationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('operations');
+        Schema::dropIfExists('mois_annee');
     }
 }
