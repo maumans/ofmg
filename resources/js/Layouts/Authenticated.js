@@ -9,20 +9,25 @@ export default function Authenticated({ auth, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <nav className="bg-white border-b border-gray-100">
+        <div className="min-h-screen bg-gray-100 z-40">
+            <nav className="bg-white border-b border-gray-100 fixed w-full z-40">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex">
                             <div className="shrink-0 flex items-center">
                                 <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto text-gray-500" />
+                                    <div className={"text-2xl font-bold text-orange-400"}>
+                                        OFMG
+                                    </div>
                                 </Link>
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <NavLink href={route('dashboard')} active={route().current('dashboard')}>
-                                    Dashboard
+                                   Accueil
+                                </NavLink>
+                                <NavLink href={route('admin.etablissement.index',auth.user?.id)} active={route().current('admin.etablissement.index')}>
+                                    Administration
                                 </NavLink>
                             </div>
                         </div>
@@ -117,7 +122,9 @@ export default function Authenticated({ auth, header, children }) {
                 </header>
             )}
 
-            <main>{children}</main>
+            <main  style={{paddingTop:64}}>
+                {children}
+            </main>
         </div>
     );
 }
