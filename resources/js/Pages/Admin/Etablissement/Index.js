@@ -58,8 +58,8 @@ function Index(props) {
             <div className={"p-5"}>
                 <div>
 
-                    <div>
-
+                    <div className={"my-5 text-2xl"}>
+                        Gestions des etablissements
                     </div>
 
                     <div style={{height:450, width: '100%' }} className={"flex justify-center"}>

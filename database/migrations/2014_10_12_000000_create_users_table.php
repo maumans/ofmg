@@ -22,10 +22,9 @@ class CreateUsersTable extends Migration
             $table->string('password');
 
             $table->enum('titre',["Celibataire", "Mme","Mlle","M"])->nullable();
-            $table->enum('situationMatrimoniale',["Celibataire", "Marié","Divorcé","veuf","Concubin"])->nullable();
+            $table->enum('situation_matrimoniale',["Celibataire", "Marié","Divorcé","veuf","Concubin"])->nullable();
             $table->date("date_naissance")->nullable();
-            $table->string("telephone_personnel")->nullable();
-            $table->string("telephone_domicile")->nullable();
+            $table->string("telephone")->nullable();
 
             $table->foreignId("commune_id")->nullable()->constrained("communes")->cascadeOnDelete();
             $table->foreignId("ville_id")->nullable()->constrained("villes")->cascadeOnDelete();

@@ -29,6 +29,10 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
-Route::resource('admin.etablissement',\App\Http\Controllers\Admin\EtablissementController::class);
+Route::middleware(['auth', 'verified',"userIsAdmin"])->group(function (){
+    Route::resource('admin.user',\App\Http\Controllers\Admin\UserController::class);
+    Route::resource('admin.role',\App\Http\Controllers\Admin\RoleController::class);
+    Route::resource('admin.etablissement',\App\Http\Controllers\Admin\EtablissementController::class);
+});
 
 require __DIR__.'/auth.php';

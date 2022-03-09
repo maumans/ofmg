@@ -13,6 +13,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import {Collapse, ListItemButton} from "@mui/material";
 import {ExpandLess, ExpandMore} from "@mui/icons-material";
+import {Link} from "@inertiajs/inertia-react";
+
 
 const drawerWidth = 240;
 
@@ -34,18 +36,26 @@ function ResponsiveDrawer(props) {
     const drawer = (
             <List
                 className={"bg-orange-500"}
-                sx={{marginTop:"64px", width: '100%',height:"100%",color:"white",bgColor:"#ff7900" }}
+                sx={{width: '100%',height:"100%",color:"white",bgColor:"#ff7900" }}
                 component="nav"
             >
-                <ListItemButton>
-                    <ListItemText primary="Utilisateurs" />
-                </ListItemButton>
-                <ListItemButton>
-                    <ListItemText primary="Roles" />
-                </ListItemButton>
-                <ListItemButton>
-                    <ListItemText primary="Etablissements" />
-                </ListItemButton>
+                <Link href={route("admin.user.index",props.auth.user.id)}>
+                    <ListItemButton>
+                        <ListItemText primary="Utilisateurs" />
+                    </ListItemButton>
+                </Link>
+                <Divider  component="li" />
+                <Link href={route("admin.role.index",props.auth.user.id)}>
+                    <ListItemButton>
+                        <ListItemText primary="Roles" />
+                    </ListItemButton>
+                </Link>
+                <Divider  component="li" />
+                <Link href={route("admin.etablissement.index",props.auth.user.id)}>
+                    <ListItemButton>
+                        <ListItemText primary="Etablissements" />
+                    </ListItemButton>
+                </Link>
                 <Divider  component="li" />
                 <ListItemButton>
                     <ListItemText primary="Apprenants" />
@@ -154,7 +164,10 @@ function AdminPanel(props) {
            auth={props.auth}
            errors={props.errors}
        >
-           <ResponsiveDrawer props={props}>
+           <ResponsiveDrawer
+               auth={props.auth}
+               errors={props.errors}
+           >
                {props.children}
            </ResponsiveDrawer>
 

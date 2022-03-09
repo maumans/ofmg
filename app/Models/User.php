@@ -18,9 +18,16 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'nom',
+        'prenom',
         'email',
         'password',
+        'titre',
+        'situationMatrimoniale',
+        "date_naissance",
+        "telephone_personnel",
+        "telephone_domicile",
+        "commentaire"
     ];
 
     /**
@@ -41,6 +48,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
 
     public function roles()
     {
@@ -67,7 +75,7 @@ class User extends Authenticatable
         return $this->belongsTo(Commune::class);
     }
 
-    public function commune()
+    public function ville()
     {
         return $this->belongsTo(Ville::class);
     }
@@ -85,6 +93,14 @@ class User extends Authenticatable
     public function etablissementAdmin()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function isAdmin()
+    {
+        if($this->roles()->where("libelle","admin")->first())
+            return true;
+        else return false;
+
     }
 
 }
