@@ -5,5 +5,9 @@ module.exports = {
         alias: {
             '@': path.resolve('resources/js'),
         },
+        fallback: {
+            "stream": require.resolve("stream-browserify"),
+            "zlib": require.resolve("browserify-zlib")
+        }
     },
 };

@@ -10,6 +10,17 @@ class Tarif extends Model
     use HasFactory;
     protected $guarded=[];
 
+    protected $appends= ["resteApayer"];
+
+    protected $resteApayer;
+
+    public function getResteApayerAttribute(){
+        return $this->resteApayer;
+    }
+    public function setResteApayerAttribute($resteApayer){
+        $this->resteApayer = $resteApayer;
+    }
+
     public function niveau()
     {
         return $this->belongsTo(Niveau::class);
@@ -25,8 +36,18 @@ class Tarif extends Model
         return $this->belongsTo(Type_paiement::class);
     }
 
-    public function annee()
+    public function anneeScolaire()
     {
-        return $this->belongsTo(Annee::class);
+        return $this->belongsTo(Annee_scolaire::class);
+    }
+
+    public function paiement()
+    {
+        return $this->hasMany(Paiement::class);
+    }
+
+    public function apprenants()
+    {
+        return $this->belongsToMany(Apprenant::class);
     }
 }

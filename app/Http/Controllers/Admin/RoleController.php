@@ -29,7 +29,7 @@ class RoleController extends Controller
      */
     public function create()
     {
-        //
+       //
     }
 
     /**
@@ -40,7 +40,14 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            "libelle"=>"required|unique:role"
+        ]);
+        Role::create($request->validate([
+            "libelle"=>"required"
+        ]));
+
+        return redirect()->back();
     }
 
     /**
@@ -83,8 +90,10 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id,Role $role)
     {
-        //
+        $role->delete();
+
+        return redirect()->back();
     }
 }

@@ -15,8 +15,8 @@ class CreateCommunesTable extends Migration
     {
         Schema::create('communes', function (Blueprint $table) {
             $table->id();
-            $table->string('libelle')->nullable();
-            $table->foreignId("ville_id")->constrained("communes")->cascadeOnDelete();
+            $table->string('libelle')->unique()->nullable();
+            $table->foreignId("ville_id")->nullable()->constrained("communes")->cascadeOnDelete();
             $table->timestamps();
         });
     }

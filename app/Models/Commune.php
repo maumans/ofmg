@@ -10,7 +10,7 @@ class Commune extends Model
     use HasFactory;
     protected $guarded=[];
 
-    public function commune()
+    public function ville()
     {
         return $this->belongsTo(Ville::class);
     }

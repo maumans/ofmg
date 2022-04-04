@@ -29,9 +29,4 @@ class Ville extends Model
     {
         return $this->hasMany(User::class);
     }
-
-    public function apprenants()
-    {
-        return $this->hasMany(Apprenant::class);
-    }
 }

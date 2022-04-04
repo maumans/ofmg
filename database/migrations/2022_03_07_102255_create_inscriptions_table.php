@@ -15,9 +15,10 @@ class CreateInscriptionsTable extends Migration
     {
         Schema::create('inscriptions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("annee_id")->constrained("annees")->cascadeOnDelete();
-            $table->foreignId("apprenant_id")->constrained("apprenants")->cascadeOnDelete();
-            $table->foreignId("niveau_id")->constrained("niveaux")->cascadeOnDelete();
+            $table->string("montant")->nullable();
+            $table->foreignId("annee_scolaire_id")->nullable()->constrained("annee_scolaires")->cascadeOnDelete();
+            $table->foreignId("apprenant_id")->nullable()->constrained("apprenants")->cascadeOnDelete();
+            $table->foreignId("niveau_id")->nullable()->constrained("niveaux")->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -16,12 +16,13 @@ class CreateTarifsTable extends Migration
         Schema::create('tarifs', function (Blueprint $table) {
             $table->id();
             $table->integer('montant')->nullable();
-            $table->enum('frequence',['MOIS',"SEMESTRE","AN"])->default("MOIS");
+            $table->enum('frequence',['MENSUELLE',"TRIMESTRIELLE","SEMESTRIELLE","ANNUELLE"])->nullable();
             $table->integer('echeance')->nullable();
             $table->foreignId("niveau_id")->nullable()->constrained("niveaux")->cascadeOnDelete();
             $table->foreignId("etablissement_id")->nullable()->constrained("etablissements")->cascadeOnDelete();
             $table->foreignId("type_paiement_id")->nullable()->constrained("type_paiements")->cascadeOnDelete();
-            $table->foreignId("annee_id")->nullable()->constrained("annees")->cascadeOnDelete();
+            $table->foreignId("annee_scolaire_id")->nullable()->constrained("annee_scolaires")->cascadeOnDelete();
+            $table->unique(array("etablissement_id",'niveau_id',"type_paiement_id"));
             $table->timestamps();
         });
     }

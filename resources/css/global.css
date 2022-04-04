@@ -1,9 +1,7 @@
-MuiInputBase-input:focus
+.MuiInputBase-input:focus
 {
     --tw-ring-color: transparent;
 }
 
-.MuiDrawer-paper
-{
-    margin-top: 64px;
-}
+
+

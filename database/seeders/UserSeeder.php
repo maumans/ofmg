@@ -59,6 +59,8 @@ class UserSeeder extends Seeder
         ]);
 
         $user->roles()->syncWithoutDetaching(Role::where("libelle", "etablissement")->first());
+
+
         $user=User::create([
             "prenom"=>"gando",
             "nom"=>"diallo",

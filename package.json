@@ -15,6 +15,7 @@
         "@inertiajs/inertia": "^0.11.0",
         "@inertiajs/inertia-react": "^0.8.0",
         "@inertiajs/progress": "^0.2.6",
+        "@react-pdf/renderer": "^2.1.1",
         "@tailwindcss/forms": "^0.4.0",
         "autoprefixer": "^10.4.2",
         "axios": "^0.21",
@@ -22,15 +23,19 @@
         "lodash": "^4.17.19",
         "postcss": "^8.4.6",
         "postcss-import": "^14.0.2",
+        "prop-types": "^15.8.1",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
         "tailwindcss": "^3.0.18"
     },
     "dependencies": {
+        "@devexpress/dx-react-chart-material-ui": "^3.0.2",
         "@emotion/react": "^11.8.1",
         "@emotion/styled": "^11.8.1",
         "@mui/icons-material": "^5.4.4",
         "@mui/material": "^5.4.4",
-        "@mui/x-data-grid": "^5.6.0"
+        "@mui/x-data-grid": "^5.6.0",
+        "react-number-format": "^4.9.1",
+        "swiper": "^8.0.7"
     }
 }

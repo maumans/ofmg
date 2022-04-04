@@ -19,7 +19,7 @@ class UserIsAdmin
     {
         if($request->user() && !$request->user()->isAdmin())
         {
-            return Redirect::route("dashboard");
+            return Redirect::route("welcome");
         }
         return $next($request);
     }

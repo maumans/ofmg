@@ -10,6 +10,17 @@ class Paiement extends Model
     use HasFactory;
     protected $guarded=[];
 
+    protected $appends= ["resteApayer"];
+
+    protected $resteApayer;
+
+    public function getResteApayerAttribute(){
+        return $this->resteApayer;
+    }
+    public function setResteApayerAttribute($resteApayer){
+        $this->resteApayer = $resteApayer;
+    }
+
     public function typePaiement()
     {
         return $this->belongsTo(Type_paiement::class);
@@ -35,8 +46,13 @@ class Paiement extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function etablissement()
+    public function etablissementUser()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,"etablissementUser_id");
+    }
+
+    public function tarif()
+    {
+        return $this->belongsTo(Tarif::class);
     }
 }

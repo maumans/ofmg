@@ -16,6 +16,9 @@ class CreateNiveauxTable extends Migration
         Schema::create('niveaux', function (Blueprint $table) {
             $table->id();
             $table->string('libelle')->nullable();
+            $table->string('description')->nullable();
+            $table->foreignId('etablissement_id')->nullable()->constrained("etablissements");
+            $table->unique(array('etablissement_id',"libelle"));
             $table->timestamps();
         });
     }

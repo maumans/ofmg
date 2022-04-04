@@ -16,6 +16,7 @@ class CreateTypePaiementsTable extends Migration
         Schema::create('type_paiements', function (Blueprint $table) {
             $table->id();
             $table->string("libelle")->nullable();
+
             $table->timestamps();
         });
     }

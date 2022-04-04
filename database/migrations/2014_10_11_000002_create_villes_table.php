@@ -15,8 +15,8 @@ class CreateVillesTable extends Migration
     {
         Schema::create('villes', function (Blueprint $table) {
             $table->id();
-            $table->string('libelle')->nullable();
-            $table->foreignId("region_id")->constrained("regions")->cascadeOnDelete();
+            $table->string('libelle')->unique()->nullable();
+            $table->foreignId("region_id")->nullable()->constrained("regions")->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
@@ -39,6 +40,9 @@ class RegisteredUserController extends Controller
             'prenom' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            "telephone" =>"required",
+            "situation_matrimoniale" =>"required",
+            "titre" =>"required",
         ]);
 
         $user = User::create([
@@ -46,7 +50,13 @@ class RegisteredUserController extends Controller
             'prenom' => $request->prenom,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            "telephone" =>$request->telephone,
+            "situation_matrimoniale" =>$request->situation_matrimoniale,
+            "titre" =>$request->titre,
         ]);
+
+
+        $user->roles()->syncWithoutDetaching(Role::where("libelle","tuteur")->first());
 
         event(new Registered($user));
 

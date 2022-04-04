@@ -18,4 +18,14 @@ class Niveau extends Model
     {
         return $this->hasMany(Tarif::class);
     }
+
+    public function etablissement()
+    {
+        return $this->belongsTo(Etablissement::class);
+    }
+
+    public function apprenants()
+    {
+        return $this->hasMany(Apprenant::class);
+    }
 }

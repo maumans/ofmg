@@ -10,7 +10,7 @@ class Region extends Model
     use HasFactory;
     protected $guarded=[];
 
-    public function communes()
+    public function villes()
     {
         return $this->hasMany(Ville::class);
     }

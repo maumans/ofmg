@@ -11,9 +11,9 @@ class Inscription extends Model
 
     protected $guarded=[];
 
-    public function annee()
+    public function anneeScolaire()
     {
-        return $this->belongsTo(Annee::class);
+        return $this->belongsTo(Annee_scolaire::class);
     }
 
     public function apprenant()

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Authenticated from "@/Layouts/Authenticated";
 import List from "@mui/material/List";
 import ListItemText from "@mui/material/ListItemText";
@@ -32,11 +32,57 @@ function ResponsiveDrawer(props) {
         setOpen(!open);
     };
 
+    const drawerEtablissementUser = (
+        <List
+            className={"bg-orange-500"}
+            sx={{width: '100%',height:"100%",color:"white",bgColor:"#ff7900",paddingTop:8 }}
+            component="nav"
+        >
+            <Link href={route("etablissement.index",props.auth.user.id)}>
+                <ListItemButton sx={props.active==="vue"?{backgroundColor:"#dd5800",color:"white"}:null}>
+                    <ListItemText primary="Vue d'ensemble" />
+                </ListItemButton>
+            </Link>
+            <Divider component="li" />
+
+            <Link href={route("etablissement.niveau.index",props.auth.user.id)}>
+                <ListItemButton sx={props.active==="niveau"?{backgroundColor:"#dd5800",color:"white"}:null}>
+                    <ListItemText primary="Niveau" />
+                </ListItemButton>
+            </Link>
+            <Divider component="li" />
+
+            <Link href={route("etablissement.inscription.index",props.auth.user.id)}>
+                <ListItemButton sx={props.active==="inscription"?{backgroundColor:"#dd5800",color:"white"}:null}>
+                    <ListItemText primary="Inscription" />
+                </ListItemButton>
+            </Link>
+            <Divider component="li" />
+            <Link href={route("etablissement.anneeScolaire.index",props.auth.user.id)}>
+                <ListItemButton sx={props.active==="anneeScolaire"?{backgroundColor:"#dd5800",color:"white"}:null}>
+                    <ListItemText primary="Annees Scolaires" />
+                </ListItemButton>
+            </Link>
+            <Divider component="li" />
+            <Link href={route("etablissement.tarif.index",props.auth.user.id)}>
+                <ListItemButton sx={props.active==="tarif" ?{backgroundColor:"#dd5800",color:"white"}:null}>
+                    <ListItemText primary="Tarifs" />
+                </ListItemButton>
+            </Link>
+            <Divider component="li" />
+            <Link href={route("etablissement.tarif.index",props.auth.user.id)}>
+                <ListItemButton>
+                    <ListItemText primary="Paiement" />
+                </ListItemButton>
+            </Link>
+        </List>
+            )
+
 
     const drawer = (
             <List
                 className={"bg-orange-500"}
-                sx={{width: '100%',height:"100%",color:"white",bgColor:"#ff7900" }}
+                sx={{width: '100%',height:"100%",color:"white",bgColor:"#ff7900",paddingTop:8 }}
                 component="nav"
             >
                 <Link href={route("admin.user.index",props.auth.user.id)}>
@@ -57,21 +103,11 @@ function ResponsiveDrawer(props) {
                     </ListItemButton>
                 </Link>
                 <Divider  component="li" />
-                <ListItemButton>
-                    <ListItemText primary="Apprenants" />
-                </ListItemButton>
-                <Divider component="li" />
-                <ListItemButton>
-                    <ListItemText primary="Personnels" />
-                </ListItemButton>
-                <Divider component="li" />
-                <ListItemButton>
-                    <ListItemText primary="type d'operations" />
-                </ListItemButton>
-                <Divider component="li" />
-                <ListItemButton>
-                    <ListItemText primary="Tuteurs" />
-                </ListItemButton>
+                <Link href={route("admin.typePaiement.index",props.auth.user.id)}>
+                    <ListItemButton>
+                        <ListItemText primary="Type de paiement" />
+                    </ListItemButton>
+                </Link>
                 <Divider component="li" />
                 <ListItemButton onClick={handleClick}>
                     <ListItemText primary="Adresse" />
@@ -79,13 +115,40 @@ function ResponsiveDrawer(props) {
                 </ListItemButton>
                 <Collapse in={open} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
-                        <ListItemButton sx={{ pl: 4 }}>
-                            <ListItemText primary="Regions" />
-                        </ListItemButton>
+                        <Link href={route("admin.region.index",props.auth.user.id)}>
+                            <ListItemButton sx={{ pl: 4 }}>
+                                <ListItemText primary="Regions" />
+                            </ListItemButton>
+                        </Link>
+                        <Divider component="li" />
+                        <Link href={route("admin.ville.index",props.auth.user.id)}>
+                            <ListItemButton sx={{ pl: 4 }}>
+                                <ListItemText primary="Villes" />
+                            </ListItemButton>
+                        </Link>
+                        <Divider component="li" />
+                        <Link href={route("admin.commune.index",props.auth.user.id)}>
+                            <ListItemButton sx={{ pl: 4 }}>
+                                <ListItemText primary="Communes" />
+                            </ListItemButton>
+                        </Link>
                     </List>
                 </Collapse>
             </List>
     );
+
+    function currentDrawer()
+    {
+        if(props.auth.admin)
+        {
+            return drawer
+        }
+        else if(props.auth.etablissement)
+        {
+            return drawerEtablissementUser
+        }
+
+    }
 
     const container = window !== undefined ? () => window().document.body : undefined;
 
@@ -99,7 +162,7 @@ function ResponsiveDrawer(props) {
                     ml: { md: `${drawerWidth}px` },
                     marginTop:"64px",
                     backgroundColor:"#ff7900",
-                    zIndex:1
+                    zIndex:20
                 }}
             >
                 <Toolbar>
@@ -136,7 +199,7 @@ function ResponsiveDrawer(props) {
                         '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth},
                     }}
                 >
-                    {drawer}
+                    {currentDrawer()}
                 </Drawer>
                 <Drawer
                     variant="permanent"
@@ -146,7 +209,7 @@ function ResponsiveDrawer(props) {
                     }}
                     open
                 >
-                    {drawer}
+                    {currentDrawer()}
                 </Drawer>
             </Box>
             <Box component="main" sx={{ flexGrow: 1}}>
@@ -167,6 +230,8 @@ function AdminPanel(props) {
            <ResponsiveDrawer
                auth={props.auth}
                errors={props.errors}
+               active={props.active}
+               sousActive={props.sousActive}
            >
                {props.children}
            </ResponsiveDrawer>

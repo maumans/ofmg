@@ -20,8 +20,13 @@ class Apprenant extends Model
         return $this->hasMany(Paiement::class);
     }
 
-    public function commune()
+    public function niveau()
     {
-        return $this->belongsTo(Ville::class);
+        return $this->belongsTo(Niveau::class);
+    }
+
+    public function tarifs()
+    {
+        return $this->belongsToMany(Tarif::class);
     }
 }

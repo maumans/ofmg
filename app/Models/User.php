@@ -23,10 +23,9 @@ class User extends Authenticatable
         'email',
         'password',
         'titre',
-        'situationMatrimoniale',
+        'situation_matrimoniale',
         "date_naissance",
-        "telephone_personnel",
-        "telephone_domicile",
+        "telephone",
         "commentaire"
     ];
 
@@ -82,7 +81,7 @@ class User extends Authenticatable
 
     public function tuteurEtablissement()
     {
-        return $this->belongsTo(Etablissement::class);
+        return $this->belongsTo(Etablissement::class,"tuteur_id");
     }
 
     public function adminEtablissementUsers()
@@ -92,7 +91,7 @@ class User extends Authenticatable
 
     public function etablissementAdmin()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Etablissement::class,"etablissement_id");
     }
 
     public function isAdmin()
@@ -101,6 +100,20 @@ class User extends Authenticatable
             return true;
         else return false;
 
+    }
+
+    public function isEtablissement()
+    {
+        if($this->roles()->where("libelle","etablissement")->first())
+            return true;
+        else return false;
+    }
+
+    public function isTuteur()
+    {
+        if($this->roles()->where("libelle","tuteur")->first())
+            return true;
+        else return false;
     }
 
 }

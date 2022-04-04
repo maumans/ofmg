@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -17,8 +18,9 @@ class UserController extends Controller
     public function index()
     {
         $users=User::where('id',"!=",null)->with("roles")->get();
+        $roles=Role::all();
 
-        return Inertia::render('Admin/User/Index',["users"=>$users]);
+        return Inertia::render('Admin/User/Index',["users"=>$users,"roles"=>$roles]);
 
     }
 
@@ -36,11 +38,26 @@ class UserController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
-        //
+
+        $user=User::create($request->validate([
+            "nom" =>"required|min:1",
+            "prenom" =>"required|min:1",
+            "email" =>"required|min:1|email|unique:users",
+            "telephone" =>"required",
+            "situation_matrimoniale" =>"required",
+            "password" =>"required",
+        ]));
+
+        foreach ($request->roles as $role)
+        {
+            $user->roles()->syncWithoutDetaching(Role::find($role["id"]));
+        }
+
+        return redirect()->back();
     }
 
     /**
@@ -81,10 +98,13 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy($id)
+    public function destroy($adminId,User $user)
     {
-        //
+        $user->status=$user->status==="Actif"?"Inactif":"Actif";
+        $user->save();
+
+        return redirect()->back();
     }
 }
