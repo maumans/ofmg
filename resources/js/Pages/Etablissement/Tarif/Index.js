@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {
     DataGrid,
     gridPageCountSelector,
@@ -9,13 +9,12 @@ import {
 } from '@mui/x-data-grid';
 import {
     Alert,
-    Autocomplete,
-    FormControl,
+    Autocomplete, Checkbox,
+    FormControl, FormControlLabel,
     InputLabel,
     MenuItem,
     Pagination,
     Select,
-    Snackbar,
     TextField
 } from "@mui/material";
 import AdminPanel from "@/Layouts/AdminPanel";
@@ -24,12 +23,65 @@ import {useForm} from "@inertiajs/inertia-react";
 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import NumberFormat from "react-number-format";
+import SnackBar from "@/Components/SnackBar";
+
+const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, ref) {
+    const { onChange, ...other } = props;
+
+    return (
+        <NumberFormat
+            {...other}
+            getInputRef={ref}
+            onValueChange={(values) => {
+                onChange({
+                    target: {
+                        name: props.name,
+                        value: values.value,
+                    },
+                });
+            }}
+            thousandSeparator={true}
+
+            isNumericString
+            prefix={"Le "}
+            suffix={" de chaque mois"}
+        />
+    );
+});
 
 function Index(props) {
 
     const [tarifs,setTarifs] = useState();
 
     const [open, setOpen] = React.useState(false);
+
+
+    ////// SnackBar
+
+    const [error, setError] = useState(null)
+    const [success, setSuccess] = useState(null)
+
+
+
+    useEffect(() => {
+        setError(props.error)
+    },[props])
+
+    useEffect(() => {
+        setSuccess(props.success)
+    },[props])
+
+    function update()
+    {
+        error && setError(null)
+        success && setSuccess(null)
+    }
+
+    useEffect(() => {
+        console.log(error)
+        console.log(success)
+    })
 
    function handleClose()
    {
@@ -50,7 +102,8 @@ function Index(props) {
         "niveau":"",
         "typePaiement":"",
         "AnneeScolaire":"",
-        "etablissement_id":""
+        "etablissement_id":"",
+        "obligatoire":false
 
     });
 
@@ -61,6 +114,7 @@ function Index(props) {
         { field: 'montant', headerName: 'MONTANT', width:130 },
         { field: 'frequence', headerName: 'FREQUENCE', width:130 },
         { field: 'echeance', headerName: 'ECHEANCE', width:130 },
+        { field: 'obligatoire', headerName: 'OBLIGATOIRE', width:130, renderCell:(cellValues)=>cellValues.row.obligatoire?"oui":"non" },
         { field: 'action', headerName: 'ACTION',width:200,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
@@ -77,7 +131,7 @@ function Index(props) {
     ];
 
     function handleDelete(id){
-        confirm("Voulez-vous supprimer role") && Inertia.delete(route("etablissement.tarif.destroy",[props.auth.user.id,id]),{preserveScroll:true})
+        confirm("Voulez-vous supprimer ce tarif") && Inertia.delete(route("etablissement.tarif.destroy",[props.auth.user.id,id]),{preserveScroll:true})
     }
 
     function handleEdit(id){
@@ -91,7 +145,7 @@ function Index(props) {
     function handleSubmit(e)
     {
         e.preventDefault();
-        post(route("etablissement.tarif.store",props.auth.user.id),data,{preserveState:false})
+        Inertia.post(route("etablissement.tarif.store",props.auth.user.id),data,{preserveState:false})
 
     }
 
@@ -102,6 +156,17 @@ function Index(props) {
     useEffect(() => {
         setTarifs(props.tarifs);
     },[props.tarifs]);
+
+    useEffect(() => {
+        if(data.typePaiement?.concerne!=="APPRENANT")
+        {
+            setData("obligatoire",true)
+        }
+    },[data.typePaiement])
+
+    useEffect(() => {
+        console.log(data.obligatoire)
+    },[data.obligatoire])
 
 
     return (
@@ -133,6 +198,7 @@ function Index(props) {
                            </div>
                            <div>
                                <Autocomplete
+                                   disabled={data.typePaiement?.concerne!=="APPRENANT"}
                                    id="tags-standard"
                                    onChange={(e,val)=>setData("niveau",val)}
                                    disablePortal={true}
@@ -146,7 +212,7 @@ function Index(props) {
                            </div>
                             <div>
                                 <FormControl className={"w-full"}>
-                                    <InputLabel id="demo-simple-select-standard-label">Frequence</InputLabel>
+                                    <InputLabel id="demo-simple-select-standard-label">Fréquence</InputLabel>
                                     <Select
                                         disabled={data.typePaiement?.libelle==="INSCRIPTION"}
                                         labelId="demo-simple-select-label"
@@ -171,15 +237,24 @@ function Index(props) {
 
                             <div>
                                 <TextField
-                                    disabled={data.typePaiement?.libelle==="INSCRIPTION"}disabled={data.typePaiement?.libelle==="INSCRIPTION"}
-                                    className={"w-full"}  name={"echeance"} label={"Echeance"} value={data.echeance} onChange={(e)=>setData("echeance",e.target.value)}/>
+                                    InputProps={{
+                                        inputComponent: NumberFormatCustom,
+                                        inputProps:{
+                                            min:1,
+                                            max:31
+                                        }
+                                    }}
+                                    disabled={data.typePaiement?.libelle==="INSCRIPTION"}
+                                    className={"w-full"}  name={"echeance"} label={"Jour limite de paiement"} value={data.echeance} onChange={(e)=>setData("echeance",e.target.value)}/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.libelle}</div>
                             </div>
-                            <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
-                                <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-                                    {props.success}
-                                </Alert>
-                            </Snackbar>
+                            {
+                                <div className={"col-span-3"} >
+                                    <FormControlLabel disabled={data.typePaiement?.concerne!=="APPRENANT"} control={<Checkbox name={"obligatoire"} onChange={(e)=>setData("obligatoire",e.target.checked)} />} label={"Obligatoire"} />
+                                </div>
+                            }
+
+                            <SnackBar error={error} update={update} success={success}/>
 
                             <div className={"flex md:col-span-3 justify-end"}>
                                 <button className={"p-3 text-white bg-green-600 rounded"}  type={"submit"}>

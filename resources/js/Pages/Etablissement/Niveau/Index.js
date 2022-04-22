@@ -74,7 +74,7 @@ function Index(props) {
     ];
 
     function handleDelete(id){
-        confirm("Voulez-vous supprimer role") && Inertia.delete(route("etablissement.niveau.destroy",[props.auth.user.id,id]),{preserveScroll:true})
+        confirm("Voulez-vous supprimer ce niveau") && Inertia.delete(route("etablissement.niveau.destroy",[props.auth.user.id,id]),{preserveScroll:true})
     }
 
     function handleEdit(e){

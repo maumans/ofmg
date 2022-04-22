@@ -99,21 +99,20 @@ class PaiementController extends Controller
     public function store(Request $request)
     {
 
-        dd($request->all());
         $request->validate([
             "montants.*" =>"required",
-            "modes.*" =>"required"
         ],
         [
             "montants.*.required"=>"Le champs montant est obligatoire",
-            "modes.*.required"=>"Le champs mode de paiement est obligatoire",
         ]
         );
 
-        foreach($request->tarifs as $tarif)
-        {
 
-            $resteApayer=$tarif["montant"]-Apprenant::find($request->apprenant["id"])->paiements->where("type_paiement_id",$tarif["type_paiement_id"])->sum("montant");
+        foreach($request->tarifs as $key =>$value)
+        {
+            $tarif=Tarif::find($key);
+
+            $resteApayer=$tarif["montant"]-Apprenant::find($request->apprenant["id"])->tarifs->where("type_paiement_id",$tarif["type_paiement_id"])->sum("montant");
 
             $request->validate([
                 "montants.".$tarif["type_paiement_id"] =>"lte:".$resteApayer
@@ -129,7 +128,7 @@ class PaiementController extends Controller
             $paiement=Paiement::create([
                 "montant"=>$request->montants[$tarif["type_paiement"]["id"]],
                 "type_paiement_id"=>$tarif["type_paiement"]["id"],
-                "mode_paiement_id"=>$request->modes[$tarif["type_paiement"]["id"]]["id"],
+                "mode_paiement_id"=>Mode_paiement::where("libelle","OM"),
                 "tuteur_id"=>Auth::user()->id
             ]);
 

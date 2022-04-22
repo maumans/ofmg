@@ -64,8 +64,8 @@ class EtablissementController extends Controller
         ]);
 
         $user=User::create([
-            "nom"=>"sainte",
-            "prenom"=>"marie",
+            "nom"=>$request->nom,
+            "prenom"=>$request->prenom,
             "email"=>$request->email,
             'password' => Hash::make($request->password),
 

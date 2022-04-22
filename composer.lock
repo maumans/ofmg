@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3da949317bc116dfd58435e982043d82",
+    "content-hash": "2c1148a7f8dcb52bfa949f0a059803e5",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -121,6 +121,71 @@
                 }
             ],
             "time": "2021-08-15T20:50:18+00:00"
+        },
+        {
+            "name": "crudfy/om-b2b",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/crudfy/om-b2b.git",
+                "reference": "1b45f17eed27676515068de8497be6ccca62e41a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/crudfy/om-b2b/zipball/1b45f17eed27676515068de8497be6ccca62e41a",
+                "reference": "1b45f17eed27676515068de8497be6ccca62e41a",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "~7|~8"
+            },
+            "require-dev": {
+                "orchestra/testbench": "~7|~8",
+                "phpunit/phpunit": "~7|~8"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Crudfy\\OmB2b\\OmB2bServiceProvider"
+                    ],
+                    "aliases": {
+                        "OmB2b": "Crudfy\\OmB2b\\Facades\\OmB2b"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Crudfy\\OmB2b\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Crudfy\\OmB2b\\Tests\\": "tests"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Author Name",
+                    "email": "author@email.com",
+                    "homepage": "http://author.com"
+                }
+            ],
+            "description": ":package_description",
+            "homepage": "https://github.com/crudfy/om-b2b",
+            "keywords": [
+                "Laravel",
+                "OmB2b"
+            ],
+            "support": {
+                "source": "https://github.com/crudfy/om-b2b/tree/master",
+                "issues": "https://github.com/crudfy/om-b2b/issues"
+            },
+            "time": "2022-04-04T10:32:57+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -8093,7 +8158,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "crudfy/om-b2b": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

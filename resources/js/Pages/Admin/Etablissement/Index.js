@@ -15,6 +15,8 @@ function Index(props) {
         "typeEtablissement":"",
         "ville":"",
         "commune":"",
+        "nom":"",
+        "prenom":"",
         "email":"",
         "password":"",
         "confirmPassword":"",
@@ -138,6 +140,15 @@ function Index(props) {
 
                             <div className={"md:col-span-3"}>
                                 Compte de l'administrateur de l'etablissement
+                            </div>
+                            <div>
+                                <TextField className={"w-full"}  name={"nom"} label={"Nom"} value={data.nom} onChange={(e)=>setData("nom",e.target.value)}/>
+                                <div className={"flex my-2 text-red-600"}>{props.errors?.nom}</div>
+                            </div>
+
+                            <div>
+                                <TextField className={"w-full"}  name={"prenom"} label={"Prenom"} value={data.prenom} onChange={(e)=>setData("prenom",e.target.value)}/>
+                                <div className={"flex my-2 text-red-600"}>{props.errors?.prenom}</div>
                             </div>
 
                             <div>

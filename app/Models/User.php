@@ -116,4 +116,9 @@ class User extends Authenticatable
         else return false;
     }
 
+    public function tuteurApprenants()
+    {
+        return $this->belongsToMany(Apprenant::class,"apprenant_tuteur","tuteur_id","apprenant_id");
+    }
+
 }

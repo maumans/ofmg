@@ -74,8 +74,6 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
     const [montants,setMontants]=useState({})
 
-    const [modes,setModes]=useState({})
-
     const [open, setOpen] = useState(false);
     const [openModal, setOpenModal] = useState(false);
 
@@ -93,7 +91,6 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         "apprenant":apprenant,
         "tarifs":"",
         "montants":[],
-        "modes":[],
         "total":montantTotal?montantTotal:0
     });
 
@@ -120,13 +117,13 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
     function handleSubmit(e)
     {
         e.preventDefault();
-        Inertia.post(route("paiement.store",auth?.user?.id),data,{preserveScroll:true,preserveState:false})
+        Inertia.post(route("paiement.store",auth?.user?.id),data,{preserveScroll:true})
 
     }
 
     function handleSearchMat()
     {
-        data.matricule && Inertia.get(route("paiement.search",[data.matricule]),{preserveScroll:true,})
+        data.matricule && Inertia.get(route("paiement.search",[data.matricule]),{preserveScroll:true})
     }
 
     useEffect(() => {
@@ -154,8 +151,6 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
             for (const [key,value] of Object.entries(tab)) {
                 list={...list,[value]:""}
             }
-
-            setModes(list)
             setMontants(list)
         }
 
@@ -170,12 +165,6 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         }
     },[data.typePaiements])
 
-    useEffect(() => {
-        setData(data=>({
-            ...data,
-            "modes":modes
-        }))
-    },[modes])
 
     function sum( obj ) {
         var sum = 0;
@@ -207,6 +196,10 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
     const [tarifs,setTarifs]=useState()
 
+    useEffect(() => {
+        setData("tarifs",tarifs)
+    },[tarifs])
+
 
     function handleChangeCheckbox (event){
         setTarifs(tarifs=>({
@@ -225,13 +218,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
             setTarifs(list)
         }
 
-    },[apprenant?.tarifs])
-
-
-    useEffect(() => {
-        setData("tarifs",tarifs)
-        console.log(tarifs)
-    },[tarifs])
+    },[])
 
 
     //////TAB 2 CODES
@@ -320,137 +307,96 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                         </div>
                                                     </div>
                                                 }
-
-                                                {
-                                                    etablissement
-                                                    &&
-                                                    <div className={"col-span-3"}>
-                                                        <FormControl  className={"w-full"}>
-                                                            <Autocomplete
-                                                                multiple
-                                                                onChange={(e,val)=>{
-                                                                    setData("typePaiements",val)
-                                                                }}
-                                                                disablePortal={true}
-                                                                options={typePaiements}
-                                                                getOptionLabel={(option)=>option.libelle}
-                                                                isOptionEqualToValue={(option, value) => option.id === value.id}
-                                                                renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Type de paiement"} label={params.libelle}/>}
-                                                            />
-                                                        </FormControl>
-                                                        <div className={"flex my-2 text-red-600"}>{errors?.typePaiements}</div>
-                                                    </div>
-
-                                                }
-
-                                                {
-                                                    apprenant?.tarifs.length > 0&&
-                                                    <div className={"border p-5 space-y-5 col-span-3"}>
-                                                        <div className={"text-lg font-bold"}>
-                                                            Les type de frais
+                                                <div className={"grid md:grid-cols-2 sm:grid-cols-2 grid-cols-1 col-span-3 gap-4"}>
+                                                        <div hidden={!apprenant?.tarifs} className={"md:col-span-2 sm:col-span-2 text-lg"}>
+                                                            Veuillez cocher les frais à regler
                                                         </div>
-                                                        <div className={"flex flex-wrap"}>
-                                                            {
-                                                                apprenant.tarifs.map((tarif)=>(
-                                                                    <div key={tarif.id} className={"mx-5"}>
-                                                                        <FormControlLabel control={<Checkbox name={tarif.id+""} onChange={handleChangeCheckbox} />} label={tarif.type_paiement.libelle} />
-                                                                    </div>
-                                                                ))
-                                                            }
-                                                        </div>
-                                                    </div>
-                                                }
+                                                        {
+                                                        (apprenant?.tarifs) && apprenant?.tarifs.map((t) =>(
 
-                                                {
-                                                    (apprenant?.tarifs && tarifs) && apprenant?.tarifs.map((t) =>(
-                                                        tarifs[t.id] &&
-                                                        <div key={t.id} className={"col-span-3 grid md:grid-cols-3 grid-cols-1 gap-5 p-5 border-green-600 rounded"} style={{backgroundColor:"#f8f1eb"}}>
-                                                            {
-                                                                <div className={"md:col-span-3 text-xl p-2 rounded text-orange-400 bg-white"}>
-                                                                    {t.type_paiement.libelle}
-                                                                </div>
-                                                            }
-                                                            {
-                                                                t?.montant &&
-                                                                <div>
-                                                                    <span className={"font-bold text-lg"}>Total à payer: </span> <span>{formatNumber(t.montant)} FG</span>
-                                                                </div>
-                                                            }
-                                                            {
-                                                                t?.montant &&
-                                                                <div>
-                                                                    <span className={"font-bold text-lg"}>Somme <span className="lowercase">{t.frequence} à payer: </span> </span> <span> {formatNumber(t.montant/(t.frequence==="MENSUELLE"?nbrMois:t.frequence==="SEMESTRIELLE"?nbrMois/2:t.frequence==="TRIMESTRIELLE"?nbrMois/3:t.frequence==="ANNUELLE"? 1:1))} FG</span>
-                                                                </div>
-                                                            }
-                                                            {
-                                                                t?.montant &&
-                                                                <div>
-                                                                    <span className={"font-bold text-lg"}>Reste à payer: </span> <span>{formatNumber(t.resteApayer)} FG</span>
-                                                                </div>
-                                                            }
+                                                                <div key={t.id} className={"grid grid-cols-1 gap-5 p-5 border-green-600 rounded"} style={{backgroundColor:"#f8f1eb"}}>
+                                                                    {
+                                                                        <div className={"text-xl p-2 rounded text-orange-400 bg-white"}>
+                                                                            <div key={t.id} className={"text-xl"}>
+                                                                                <FormControlLabel control={<Checkbox name={t.id+""} onChange={handleChangeCheckbox} />} label={t.type_paiement.libelle} />
+                                                                            </div>
+                                                                        </div>
+                                                                    }
+                                                                    {
+                                                                        t?.montant &&
+                                                                        <div>
+                                                                            <span className={"font-bold text-lg"}>Total à payer: </span> <span>{formatNumber(t.montant)} FG</span>
+                                                                        </div>
+                                                                    }
+                                                                    {
+                                                                        t?.montant &&
+                                                                        <div>
+                                                                            <span className={"font-bold text-lg"}>Somme <span className="lowercase">{t.frequence} à payer: </span> </span> <span> {formatNumber(t.montant/(t.frequence==="MENSUELLE"?nbrMois:t.frequence==="SEMESTRIELLE"?nbrMois/2:t.frequence==="TRIMESTRIELLE"?nbrMois/3:t.frequence==="ANNUELLE"? 1:1))} FG</span>
+                                                                        </div>
+                                                                    }
+                                                                    {
+                                                                        t?.montant &&
+                                                                        <div>
+                                                                            <span className={"font-bold text-lg"}>Reste à payer: </span> <span>{formatNumber(t.resteApayer)} FG</span>
+                                                                        </div>
+                                                                    }
 
-                                                            {
-                                                                t?.montant &&
-                                                                <div>
-                                                                    <span className={"font-bold text-lg"}>Payé: </span> <span>{formatNumber(t.montant-t.resteApayer)} FG</span>
-                                                                </div>
-                                                            }
-                                                            {
-                                                                t?.frequence &&
-                                                                <div>
-                                                                    <span className={"font-bold text-lg"}>Frequence de paiement: </span> <span> {t.frequence} </span>
-                                                                </div>
-                                                            }
-                                                            {
-                                                                t?.echeance &&
-                                                                <div>
-                                                                    <span className={"font-bold text-lg"}>Echeance: </span> <span>Le {t.echeance} de chaque mois</span>
-                                                                </div>
-                                                            }
+                                                                    {
+                                                                        t?.montant &&
+                                                                        <div>
+                                                                            <span className={"font-bold text-lg"}>Payé: </span> <span>{formatNumber(t.montant-t.resteApayer)} FG</span>
+                                                                        </div>
+                                                                    }
+                                                                    {
+                                                                        t?.frequence &&
+                                                                        <div>
+                                                                            <span className={"font-bold text-lg"}>Frequence de paiement: </span> <span> {t.frequence} </span>
+                                                                        </div>
+                                                                    }
+                                                                    {
+                                                                        t?.echeance &&
+                                                                        <div>
+                                                                            <span className={"font-bold text-lg"}>Echeance: </span> <span>Le {t.echeance} de chaque mois</span>
+                                                                        </div>
+                                                                    }
 
-                                                            {
-                                                                tarifs &&
-                                                                <div  className={"md:col-span-3 grid md:grid-cols-2 gap-3 grid-cols-1"}>
-                                                                    <div>
-                                                                        <TextField
-                                                                            className={"w-full"}  name={montants[t.type_paiement.id]} label={"Montant"} value={montants[t.type_paiement.id]} onChange={(e)=>setMontants(montants=>({
-                                                                            ...montants,
-                                                                            [t.type_paiement.id]:e.target.value
-                                                                        }))}
-                                                                            InputProps={{
-                                                                                inputComponent: NumberFormatCustom,
-                                                                                inputProps:{
-                                                                                    max:t.resteApayer
-                                                                                },
-                                                                            }}
-                                                                            required
-                                                                        />
-                                                                        <div className={"flex my-2 text-red-600"}>{errors["montants."+t.type_paiement.id] && errors["montants."+t.type_paiement.id]}</div>
-                                                                    </div>
+                                                                    {
+                                                                        console.log(data?.tarifs)
+                                                                    }
 
-                                                                    <div>
-                                                                        <FormControl  className={"w-full"}>
-                                                                            <Autocomplete
-                                                                                onChange={(e,val)=>setModes(modes=>({
-                                                                                    ...modes,
-                                                                                    [t.type_paiement.id]:val
+                                                                    {
+                                                                        tarifs &&
+                                                                        <div  className={"grid gap-3 grid-cols-1"}>
+                                                                            <div>
+                                                                                <TextField
+                                                                                    disabled={!tarifs[t.id]}
+                                                                                    alt="Veillez cocher le champs"
+                                                                                    className={"w-full"}  name={montants[t.type_paiement.id]} label={"Montant"} value={montants[t.type_paiement.id]} onChange={(e)=>setMontants(montants=>({
+                                                                                    ...montants,
+                                                                                    [t.type_paiement.id]:e.target.value
                                                                                 }))}
+                                                                                    InputProps={{
+                                                                                        inputComponent: NumberFormatCustom,
+                                                                                        inputProps:{
+                                                                                            max:t.resteApayer,
+                                                                                        },
+                                                                                    }}
+                                                                                    required
+                                                                                />
+                                                                                <div className={"flex my-2 text-red-600"}>{errors["montants."+t.type_paiement.id] && errors["montants."+t.type_paiement.id]}</div>
+                                                                            </div>
 
-                                                                                options={modePaiements}
-                                                                                getOptionLabel={(option)=>option.libelle}
-                                                                                isOptionEqualToValue={(option, value) => option.libelle === value.libelle}
-                                                                                renderInput={(params)=><TextField  fullWidth {...params} placeholder={"mode de paiement"} label={params.libelle} required/>}
-                                                                            />
-                                                                        </FormControl>
-                                                                        <div className={"flex my-2 text-red-600"}>{errors["modes."+t.type_paiement.id] && errors["modes."+t.type_paiement.id]}</div>
-                                                                    </div>
+                                                                        </div>
+                                                                    }
+
+
                                                                 </div>
-                                                            }
 
 
-                                                        </div>
-                                                    ))
-                                                }
+                                                        ))
+                                                        }
+                                                    </div>
+
                                             </div>
 
 
@@ -461,7 +407,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                 </div>
                                             }
                                             {
-                                                tarifs &&
+                                                tarifs && Object.values(tarifs).find(value=>value===true) &&
                                                 <div hidden={data.typePaiements} className={"flex col-span-3"}>
                                                     <button className={"p-2 text-white bg-green-600 font-bold"}  type={"submit"}>
                                                         Valider

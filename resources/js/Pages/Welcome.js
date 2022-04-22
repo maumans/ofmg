@@ -2,16 +2,13 @@ import React from 'react';
 import { Link, Head } from '@inertiajs/inertia-react';
 import Authenticated from "@/Layouts/Authenticated";
 
+import img1 from "../img/img1.jpg"
+import img2 from "../img/img2.jpg"
+import img3 from "../img/img3.jpg"
+import img4 from "../img/img4.jpg"
+
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Scrollbar,Autoplay, EffectFade } from 'swiper';
-
-// Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import 'swiper/css/scrollbar';
-import 'swiper/css/effect-fade';
-
 
 export default function Welcome(props) {
     return (
@@ -33,10 +30,10 @@ export default function Welcome(props) {
                         onSwiper={(swiper) => console.log(swiper)}
                         onSlideChange={() => console.log('slide change')}
                     >
-                        <SwiperSlide><img className={"w-full"} style={{maxHeight:"80vh",objectFit:"cover"}} src={"/img/img1.jpg"} alt=""/></SwiperSlide>
-                        <SwiperSlide><img className={"w-full"} style={{maxHeight:"80vh",objectFit:"cover"}} src={"/img/img2.jpg"} alt=""/></SwiperSlide>
-                        <SwiperSlide><img className={"w-full"} style={{maxHeight:"80vh",objectFit:"cover"}} src={"/img/img3.jpg"} alt=""/></SwiperSlide>
-                        <SwiperSlide><img className={"w-full"} style={{maxHeight:"80vh",objectFit:"cover"}} src={"/img/img4.jpg"} alt=""/></SwiperSlide>
+                        <SwiperSlide><img className={"w-full"} style={{maxHeight:"80vh",objectFit:"cover"}} src={img1} alt=""/></SwiperSlide>
+                        <SwiperSlide><img className={"w-full"} style={{maxHeight:"80vh",objectFit:"cover"}} src={img2} alt=""/></SwiperSlide>
+                        <SwiperSlide><img className={"w-full"} style={{maxHeight:"80vh",objectFit:"cover"}} src={img3} alt=""/></SwiperSlide>
+                        <SwiperSlide><img className={"w-full"} style={{maxHeight:"80vh",objectFit:"cover"}} src={img4} alt=""/></SwiperSlide>
                     </Swiper>
                 </div>
             </div>

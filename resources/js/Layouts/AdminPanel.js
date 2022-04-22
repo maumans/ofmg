@@ -52,11 +52,27 @@ function ResponsiveDrawer(props) {
             </Link>
             <Divider component="li" />
 
-            <Link href={route("etablissement.inscription.index",props.auth.user.id)}>
-                <ListItemButton sx={props.active==="inscription"?{backgroundColor:"#dd5800",color:"white"}:null}>
-                    <ListItemText primary="Inscription" />
-                </ListItemButton>
-            </Link>
+            <ListItemButton sx={props.active==="inscription" ?{backgroundColor:"#dd5800",color:"white"}:null} onClick={handleClick}>
+                <ListItemText primary="inscription" />
+                {open ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+
+            <Collapse in={open} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                    <Link href={route("etablissement.inscription.index",props.auth.user.id)}>
+                        <ListItemButton sx={{ pl: 4 }}>
+                            <ListItemText primary="Liste" />
+                        </ListItemButton>
+                    </Link>
+                    <Divider component="li" />
+                    <Link href={route("etablissement.inscription.create",props.auth.user.id)}>
+                        <ListItemButton sx={{ pl: 4 }}>
+                            <ListItemText primary="Inscrire" />
+                        </ListItemButton>
+                    </Link>
+                </List>
+            </Collapse>
+
             <Divider component="li" />
             <Link href={route("etablissement.anneeScolaire.index",props.auth.user.id)}>
                 <ListItemButton sx={props.active==="anneeScolaire"?{backgroundColor:"#dd5800",color:"white"}:null}>
@@ -70,8 +86,8 @@ function ResponsiveDrawer(props) {
                 </ListItemButton>
             </Link>
             <Divider component="li" />
-            <Link href={route("etablissement.tarif.index",props.auth.user.id)}>
-                <ListItemButton>
+            <Link href={route("etablissement.paiement.create",props.auth.user.id)}>
+                <ListItemButton sx={props.active==="paiement" ?{backgroundColor:"#dd5800",color:"white"}:null}>
                     <ListItemText primary="Paiement" />
                 </ListItemButton>
             </Link>

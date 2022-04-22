@@ -44,6 +44,7 @@ class HandleInertiaRequests extends Middleware
                 'tuteur'=>$request->user() && $request->user()->isTuteur(),
             ],
             "success"=>session("success"),
+            "error"=>session("error"),
             "montantTotal"=>session("montantTotal"),
         ]);
     }

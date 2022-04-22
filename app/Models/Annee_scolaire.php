@@ -25,4 +25,16 @@ class Annee_scolaire extends Model
     {
         return $this->belongsTo(Etablissement::class);
     }
+
+    public function etablissementEncours()
+    {
+        return $this->hasOne(Etablissement::class,"annee_scolaire_id");
+    }
+
+    public function tarifApprenantAnnee()
+    {
+        return $this->hasOne(Apprenant_tarif::class,"annee_scolaire_id");
+    }
+
+
 }

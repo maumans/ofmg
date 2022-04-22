@@ -48,6 +48,8 @@ class AnneeScolaireController extends Controller
         ]));
         $anneeScolaire->etablissement()->associate(Auth::user()->etablissementAdmin)->save();
 
+        $anneeScolaire->etablissement->anneeEnCours()->associate($anneeScolaire)->save();
+
         return redirect()->back();
     }
 

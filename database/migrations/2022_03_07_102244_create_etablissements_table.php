@@ -22,6 +22,8 @@ class CreateEtablissementsTable extends Migration
             $table->foreignId("type_etablissement_id")->nullable()->constrained("type_etablissements")->cascadeOnDelete();
             $table->foreignId("commune_id")->nullable()->constrained("communes")->cascadeOnDelete();
             $table->foreignId("ville_id")->nullable()->constrained("villes")->cascadeOnDelete();
+            $table->foreignId("annee_encours_id")->nullable()->constrained("annee_scolaires")->cascadeOnDelete();
+
             $table->timestamps();
         });
 

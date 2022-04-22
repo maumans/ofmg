@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
+        "crudfy/om-b2b": "dev-master",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "inertiajs/inertia-laravel": "^0.5.4",
@@ -60,6 +61,14 @@
         "preferred-install": "dist",
         "sort-packages": true
     },
+
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "git@github.com:crudfy/om-b2b.git"
+        }
+    ],
+
     "minimum-stability": "dev",
     "prefer-stable": true
 }

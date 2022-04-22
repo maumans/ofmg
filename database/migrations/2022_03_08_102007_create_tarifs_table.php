@@ -18,6 +18,7 @@ class CreateTarifsTable extends Migration
             $table->integer('montant')->nullable();
             $table->enum('frequence',['MENSUELLE',"TRIMESTRIELLE","SEMESTRIELLE","ANNUELLE"])->nullable();
             $table->integer('echeance')->nullable();
+            $table->boolean('obligatoire')->default(false);
             $table->foreignId("niveau_id")->nullable()->constrained("niveaux")->cascadeOnDelete();
             $table->foreignId("etablissement_id")->nullable()->constrained("etablissements")->cascadeOnDelete();
             $table->foreignId("type_paiement_id")->nullable()->constrained("type_paiements")->cascadeOnDelete();

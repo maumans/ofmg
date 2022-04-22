@@ -53,7 +53,7 @@ export default function Authenticated({auth, header, children}) {
                                     {
 
                                         auth?.tuteur &&
-                                        <NavLink href={route('paiement.create')} active={route().current('paiement.create')}>
+                                        <NavLink href={route('tuteur.paiement.index',[auth?.user.id])} active={route().current('tuteur.paiement.index') || route().current('tuteur.paiement.search')}>
                                             Paiement
                                         </NavLink>
                                     }
@@ -129,7 +129,7 @@ export default function Authenticated({auth, header, children}) {
                                             <>
                                                 {
                                                     auth?.tuteur &&
-                                                    <Link href={route('paiement.create')} className="text-sm text-white">
+                                                    <Link href={route('paiement.index')} className="text-sm text-white">
                                                         paiement
                                                     </Link>
                                                 }
@@ -201,7 +201,7 @@ export default function Authenticated({auth, header, children}) {
                                 <div className={"z-20"}>
                                     {
                                         auth?.tuteur &&
-                                        <ResponsiveNavLink href={route('paiement.create')} as="button">
+                                        <ResponsiveNavLink href={route('paiement.index')} as="button">
                                             Paiement
                                         </ResponsiveNavLink>
                                     }

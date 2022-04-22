@@ -63,4 +63,9 @@ class Etablissement extends Model
     {
         return $this->hasMany(Annee_scolaire::class);
     }
+
+    public function anneeEncours()
+    {
+        return $this->belongsTo(Annee_scolaire::class);
+    }
 }

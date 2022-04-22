@@ -53,24 +53,27 @@ class TarifController extends Controller
     public function store(Request $request)
     {
 
-
         $request->validate([
             "montant" =>"required",
-            "etablissement_id"=>["required",Rule::unique("tarifs","")->where(function($query) use ($request) {
+        ]);
+
+        /*
+         *"etablissement_id"=>["required",Rule::unique("tarifs","id")->where(function($query) use ($request) {
                 return $query->where("niveau_id",$request->niveau && $request->niveau["id"])->where("type_paiement_id",$request->typePaiement["id"]);
             })],
             [
                 "etablissement_id.unique"=>"mau"
             ]
-        ]);
+         */
+
+
 
         $tarif=Tarif::create([
             "montant"=>$request->montant,
+            "obligatoire"=>$request->obligatoire,
             "frequence"=>$request->typePaiement["libelle"]=="INSCRIPTION"?"ANNUELLE":$request->frequence,
             "echeance"=>$request->typePaiement["libelle"]=="INSCRIPTION"?null:$request->echeance,
         ]);
-
-
 
         $tarif->etablissement()->associate(Auth::user()->etablissementAdmin)->save();
         $tarif->anneeScolaire()->associate(Auth::user()->etablissementAdmin->anneeScolaires->last())->save();
@@ -122,8 +125,13 @@ class TarifController extends Controller
      */
     public function destroy($id, Tarif $tarif)
     {
-        $tarif->delete();
+        try {
+            $tarif->delete();
 
-        return redirect()->back();
+            return redirect()->back();
+        }
+        catch (\Exception $e) {
+            return redirect()->back()->with("error","Ce tarif est déja liéé a un referentiel");
+        }
     }
 }

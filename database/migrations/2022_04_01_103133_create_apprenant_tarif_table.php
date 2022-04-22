@@ -17,6 +17,11 @@ class CreateApprenantTarifTable extends Migration
             $table->id();
             $table->foreignId('apprenant_id')->constrained("apprenants")->cascadeOnDelete();
             $table->foreignId('tarif_id')->constrained("tarifs")->cascadeOnDelete();
+            $table->integer("resteApayer")->nullable();
+            $table->integer("nombreMois")->nullable();
+
+            $table->foreignId('annee_scolaire_id')->nullable()->constrained("annee_scolaires");
+
             $table->timestamps();
         });
     }

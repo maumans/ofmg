@@ -1,42 +1,64 @@
-import React, {useEffect, useState} from 'react';
-import {Snackbar} from "@mui/material";
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
+import {Alert, AlertTitle, Snackbar} from "@mui/material";
 
 function SnackBar(props) {
+
     const [open, setOpen] = useState(false);
+    /*
+        const [error, setError] = useState(null)
+        const [success, setSuccess] = useState(null)
+
+
+
+        useEffect(() => {
+            setError(props.error)
+        },[props.error])
+
+        useEffect(() => {
+            setSuccess(props.success)
+        },[props.success])
+
+        useEffect(() => {
+            success ? setOpen(true) : setOpen(false);
+        },[success])
+
+        useEffect(() => {
+            error ? setOpen(true) : setOpen(false);
+        },[error])
+
+         */
 
     useEffect(() => {
         props.success ? setOpen(true) : setOpen(false);
     },[props.success])
 
-    const action = (
-        <React.Fragment>
-            <Button color="secondary" size="small" onClick={()=>setOpen(false)}>
-                UNDO
-            </Button>
-            <IconButton
-                size="small"
-                aria-label="close"
-                color="inherit"
-                onClick={()=>setOpen(false)}
-            >
-                <CloseIcon fontSize="small" />
-            </IconButton>
-        </React.Fragment>
-    );
+    useEffect(() => {
+        props.error ? setOpen(true) : setOpen(false);
+    },[props.error])
 
     return (
         <div>
-
             <Snackbar
+                anchorOrigin={{ vertical:"top", horizontal:"right" }}
+                color={"success"}
                 open={open}
-                autoHideDuration={6000}
-                onClose={()=>setOpen(false)}
-                message="Note archived"
-                action={action}
-            />
+                autoHideDuration={4000}
+                onClose={()=>{
+                    props.update && props.update()
+                    setOpen(false);
+                }}
+            >
+                <Alert className={"text-2xl"} variant="filled" onClose={()=>{
+                    props.update && props.update()
+                    setOpen(false)
+                }} severity={props.success?"success":"error"} sx={{ width: '100%' }}>
+                    <AlertTitle>{props.success?"Succès":"Erreur"}</AlertTitle>
+                    <strong className="text-3xl p-5">
+                        {props.success && props.success}
+                        {props.error && props.error}
+                    </strong>
+                </Alert>
+            </Snackbar>
         </div>
     );
 }
