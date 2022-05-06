@@ -29,7 +29,7 @@ class TarifController extends Controller
 
         $niveaux=$etablissement->niveaux;
 
-        $anneeScolaire=$etablissement->anneeScolaires->last();
+        $anneeScolaire=$etablissement->anneeEnCours;
 
         return Inertia::render("Etablissement/Tarif/Index",["tarifs"=>$tarifs,"typePaiements"=>$typePaiements,"niveaux"=>$niveaux,"anneeScolaire"=>$anneeScolaire,"etablissementId"=>$etablissement->id]);
     }
@@ -57,17 +57,6 @@ class TarifController extends Controller
             "montant" =>"required",
         ]);
 
-        /*
-         *"etablissement_id"=>["required",Rule::unique("tarifs","id")->where(function($query) use ($request) {
-                return $query->where("niveau_id",$request->niveau && $request->niveau["id"])->where("type_paiement_id",$request->typePaiement["id"]);
-            })],
-            [
-                "etablissement_id.unique"=>"mau"
-            ]
-         */
-
-
-
         $tarif=Tarif::create([
             "montant"=>$request->montant,
             "obligatoire"=>$request->obligatoire,
@@ -76,7 +65,7 @@ class TarifController extends Controller
         ]);
 
         $tarif->etablissement()->associate(Auth::user()->etablissementAdmin)->save();
-        $tarif->anneeScolaire()->associate(Auth::user()->etablissementAdmin->anneeScolaires->last())->save();
+        $tarif->anneeScolaire()->associate(Auth::user()->etablissementAdmin->anneeEnCours)->save();
         $tarif->typePaiement()->associate(Type_paiement::find($request->typePaiement["id"]))->save();
         $request->niveau && $tarif->niveau()->associate(Niveau::find($request->niveau["id"]))->save();
 

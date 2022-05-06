@@ -59,7 +59,7 @@ export default function Login({ status, canResetPassword,auth }) {
                     </div>
 
                     <div className="mt-4">
-                        <Label forInput="password" value="Password" />
+                        <Label forInput="password" value="Mot de passe" />
 
                         <Input
                             type="password"

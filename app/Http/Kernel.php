@@ -2,6 +2,9 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\AnneeScolaireIsDefined;
+use App\Http\Middleware\FirstConnexion;
+use App\Http\Middleware\PasswordChangeDate;
 use App\Http\Middleware\UserIsAdmin;
 use App\Http\Middleware\UserIsEtablissement;
 use App\Http\Middleware\UserIsTuteur;
@@ -69,6 +72,9 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         "userIsAdmin" => UserIsAdmin::class,
         "userIsTuteur"=> UserIsTuteur::class,
-        "userIsEtablissement"=>UserIsEtablissement::class
+        "userIsEtablissement"=>UserIsEtablissement::class,
+        "anneeScolaireIsDefined"=>AnneeScolaireIsDefined::class,
+        "firstConnexion"=>FirstConnexion::class,
+        "passwordChangeDate"=>PasswordChangeDate::class,
     ];
 }

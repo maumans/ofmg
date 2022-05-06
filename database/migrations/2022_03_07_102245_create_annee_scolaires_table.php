@@ -20,7 +20,10 @@ class  CreateAnneeScolairesTable extends Migration
             $table->foreignId('etablissement_id')->nullable()->constrained("etablissements");
             $table->timestamps();
 
+        });
 
+        Schema::table('etablissements',function(Blueprint $table){
+            $table->foreignId("annee_encours_id")->nullable()->constrained("annee_scolaires")->cascadeOnDelete();
         });
     }
 

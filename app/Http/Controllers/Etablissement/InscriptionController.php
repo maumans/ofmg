@@ -4,13 +4,17 @@ namespace App\Http\Controllers\Etablissement;
 
 use App\Http\Controllers\Controller;
 use App\Models\Apprenant;
+use App\Models\Apprenant_tarif;
 use App\Models\Inscription;
+use App\Models\Mois;
+use App\Models\Mois_Paye;
 use App\Models\Niveau;
 use App\Models\Role;
 use App\Models\Tarif;
 use App\Models\User;
 use App\Models\Ville;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -86,34 +90,24 @@ class InscriptionController extends Controller
     {
         $niveauId=$request->niveauId;
         $anneeScolaireId=$request->anneeScolaireId;
+        $matricule=$request->matricule;
 
-        if($niveauId && $anneeScolaireId)
-
+        if($matricule)
         {
-            $inscriptions =Inscription::whereRelation("niveau",'id',$niveauId)->whereRelation("anneeScolaire",'id',$anneeScolaireId)->with(["apprenant"=>function($query){
-                return $query->with("tarifs")->get();
+            $inscriptions =Inscription::whereRelation("etablissement",'id',Auth::user()->etablissementAdmin->id)->whereRelation("apprenant",'matricule',$matricule)->with(["apprenant"=>function($query){
+                return $query->with("tarifs","tuteurs")->get();
             },"niveau"=>function($query){
                 return $query->with(["tarifs"=>function($query){
                     return $query->with("typePaiement")->get();
                 }])->get();
             },"anneeScolaire"])->get();
-
         }
-        else{
-            if($niveauId)
+        else
+        {
+            if($niveauId && $anneeScolaireId)
             {
-                $inscriptions =Inscription::whereRelation("niveau",'id',$niveauId)->with(["apprenant"=>function($query){
-                    return $query->with("tarifs")->get();
-                },"niveau"=>function($query){
-                    return $query->with(["tarifs"=>function($query){
-                        return $query->with("typePaiement")->get();
-                    }])->get();
-                },"anneeScolaire"])->get();
-            }
-            else if($anneeScolaireId)
-            {
-                $inscriptions =Inscription::whereRelation("anneeScolaire",'id',$anneeScolaireId)->with(["apprenant"=>function($query){
-                    return $query->with("tarifs")->get();
+                $inscriptions =Inscription::whereRelation("niveau",'id',$niveauId)->whereRelation("anneeScolaire",'id',$anneeScolaireId)->with(["apprenant"=>function($query){
+                    return $query->with("tarifs","tuteurs")->get();
                 },"niveau"=>function($query){
                     return $query->with(["tarifs"=>function($query){
                         return $query->with("typePaiement")->get();
@@ -121,11 +115,37 @@ class InscriptionController extends Controller
                 },"anneeScolaire"])->get();
 
             }
-            else
-            {
-                $inscriptions=null;
+            else{
+                if($niveauId)
+                {
+                    $inscriptions =Inscription::whereRelation("niveau",'id',$niveauId)->with(["apprenant"=>function($query){
+                        return $query->with("tarifs","tuteurs")->get();
+                    },"niveau"=>function($query){
+                        return $query->with(["tarifs"=>function($query){
+                            return $query->with("typePaiement")->get();
+                        }])->get();
+                    },"anneeScolaire"])->get();
+                }
+                else if($anneeScolaireId)
+                {
+                    $inscriptions =Inscription::whereRelation("anneeScolaire",'id',$anneeScolaireId)->with(["apprenant"=>function($query){
+                        return $query->with("tarifs","tuteurs")->get();
+                    },"niveau"=>function($query){
+                        return $query->with(["tarifs"=>function($query){
+                            return $query->with("typePaiement")->get();
+                        }])->get();
+                    },"anneeScolaire"])->get();
+
+                }
+                else
+                {
+                    $inscriptions=null;
+                }
             }
         }
+
+
+
 
 
 
@@ -148,6 +168,10 @@ class InscriptionController extends Controller
             "lieuNaissance" =>"required",
             "dateNaissance" =>"required",
             "niveau" =>"required",
+            "tuteursAdd" =>"required"
+        ],
+        [
+            "tuteursAdd.required"=>"L'apprenant doit avoir au moins un tuteur"
         ]);
 
 
@@ -182,9 +206,6 @@ class InscriptionController extends Controller
                $apprenant->tuteurs()->syncWithoutDetaching(User::find($tuteur["id"]));
            }
 
-           //$anneeEnCours=Auth::user()->etablissementAdmin->anneeScolaires->last();
-
-
            $inscription->niveau()->associate(Niveau::find($request->niveau["id"]))->save();
            $inscription->apprenant()->associate($apprenant)->save();
            $inscription->anneeScolaire()->associate(Auth::user()->etablissementAdmin->anneeEnCours)->save();
@@ -193,13 +214,29 @@ class InscriptionController extends Controller
            foreach($request->tarifs as $key=>$value){
                if($value)
                {
-                   $anneeScolaire=Tarif::find($key)->anneeScolaire;
+                   $tarif=Tarif::find($key);
 
-                   $nombreMois= Carbon::parse($anneeScolaire->dateFin)->diffInMonths(Carbon::parse($anneeScolaire->dateDebut));
+                   $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin);
 
-                   $apprenant->tarifs()->syncWithoutDetaching([$key=>["resteApayer"=>Tarif::find($key)->montant,"nombreMois"=>$nombreMois,"annee_scolaire_id"=>$anneeScolaire->id]]);
 
+                   $anneeScolaire=$tarif->anneeScolaire;
+
+                   $apprenant->tarifs()->syncWithoutDetaching([$key=>["resteApayer"=>$tarif->montant,"nombreMois"=>$intervalle->count(),"annee_scolaire_id"=>$anneeScolaire->id]]);
+
+
+                   foreach($intervalle as $date)
+                   {
+                       $moisPaye=Mois_Paye::create([
+                           "montant"=>0
+                       ]);
+
+                       $moisPaye->mois()->associate(Mois::where("position",$date->month)->first())->save();
+                       $moisPaye->apprenantTarif()->associate(Apprenant_tarif::where("tarif_id",$tarif->id)->where("apprenant_id",$apprenant->id)->first())->save();
+
+                   }
                }
+
+
            }
 
 

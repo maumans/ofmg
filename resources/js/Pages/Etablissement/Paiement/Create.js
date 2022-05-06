@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {Head, useForm, useRemember} from "@inertiajs/inertia-react";
 import Authenticated from "@/Layouts/Authenticated";
 import {
@@ -10,7 +10,6 @@ import {
     FormControl,
     FormControlLabel, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemText,
     Modal,
-    Snackbar,
     TextField,
     Radio
 } from "@mui/material";
@@ -26,6 +25,7 @@ import AdminPanel from "@/Layouts/AdminPanel";
 import {CheckBox} from "@mui/icons-material";
 import List from "@mui/material/List";
 import capitalize from "@/Utils/Capitalize";
+import SnackBar from "@/Components/SnackBar";
 
 const style = {
     position: 'absolute',
@@ -100,7 +100,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
     const handleOpenModal = () => {
 
-        setOpenModal(true);
+        //setOpenModal(true);
     }
 
     function formatNumber(inputNumber) {
@@ -117,7 +117,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
     function handleSubmit(e)
     {
         e.preventDefault();
-        Inertia.post(route("tuteur.paiement.store",[auth?.user?.id]),data,{preserveScroll:true})
+        Inertia.post(route("etablissement.paiement.store",[auth?.user?.id]),data,{preserveScroll:true})
     }
 
     function handleSearchMat(matricule)
@@ -129,14 +129,18 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         })
     }
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         setSuccessSt(success)
     },[success])
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if(successSt)
             setOpen(true);
     },[successSt])
+
+    useEffect(() => {
+        searchResult?.tuteur && !searchResult?.apprenant && setData("tuteurSelectedId",searchResult.tuteur.id)
+    },[searchResult?.tuteur])
 
     function sum( obj ) {
         var sum = 0;
@@ -326,7 +330,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                                 {console.log(searchResult)}
 
                                                                 <Accordion
-                                                                    expanded={searchResult?.apprenant!==null}
+                                                                    defaultExpanded={searchResult?.apprenant!==null}
                                                                 >
                                                                     <AccordionSummary
                                                                         expandIcon={<ExpandMoreIcon />}
@@ -359,9 +363,13 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                                             {
                                                                                 searchResult?.apprenant &&
                                                                                 <div className={"w-full md:col-span-2 sm:col-span-2  my-5"}>
-                                                                                    <div>
-                                                                                        <span className={"font-bold text-lg"}>Selectionnez l'auteur du paiement *</span>
-                                                                                    </div>
+
+                                                                                    {
+                                                                                        searchResult?.apprenant?.tuteurs?.length >0 &&
+                                                                                        <div>
+                                                                                            <span className={"font-bold text-lg"}>Selectionnez l'auteur du paiement *</span>
+                                                                                        </div>
+                                                                                    }
 
                                                                                     <List className="grid md:grid-cols-2 sm:grid-cols-2 grid-cols-1 divide-x" dense >
                                                                                         { searchResult?.apprenant?.tuteurs.map((t) => {
@@ -509,11 +517,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                         </div>
                                                     }
 
-                                                    <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
-                                                        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-                                                            {success}
-                                                        </Alert>
-                                                    </Snackbar>
+                                                   <SnackBar success={success}/>
                                                 </form>
 
                                             </div>

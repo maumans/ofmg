@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Etablissement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -15,9 +16,15 @@ class EtablissementController extends Controller
      */
     public function index()
     {
-        $etablissement=Auth::user()->etablissementAdmin->withCount('niveaux')->first();
+        $etablissement=Etablissement::where("id",Auth::user()->etablissementAdmin->id)->withCount('niveaux')->with("anneeEnCours")->first();
 
-        return Inertia::render("Etablissement/Index",["etablissement"=>$etablissement]);
+        $nombreInscrit=0;
+        foreach ($etablissement->niveaux as $niveau)
+        {
+            $nombreInscrit=$nombreInscrit+$niveau->apprenants->count();
+        }
+
+        return Inertia::render("Etablissement/Index",["etablissement"=>$etablissement,"nombreInscrit"=>$nombreInscrit]);
     }
 
     /**

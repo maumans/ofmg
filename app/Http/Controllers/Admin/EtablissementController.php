@@ -54,12 +54,10 @@ class EtablissementController extends Controller
             "nomEtablissement"=>"required",
             'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', Rules\Password::defaults()],
-
         ]);
 
-
-
         $etablissement=Etablissement::create([
+            "code"=>Date::now()->format('YmdHis'),
             "nom"=>$request->nomEtablissement
         ]);
 
@@ -76,9 +74,6 @@ class EtablissementController extends Controller
         $request->commune!=null && $etablissement->commune()->associate(Commune::find($request->commune["id"]))->save();
         $etablissement->typeEtablissement()->associate(Type_etablissement::find($request->typeEtablissement["id"]))->save();
         $request->ville!=null && $etablissement->ville()->associate(Ville::find($request->ville["id"]))->save();
-
-
-
 
         return redirect()->back();
 

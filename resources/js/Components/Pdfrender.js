@@ -57,7 +57,7 @@ function MyDocument(props){
 
                        <View style={{flex:1,flexDirection:"row",justifyContent:"end"}}>
                            <View style={{left:20}}>
-                               <Text style={{padding:"5px",backgroundColor:"#ff7900",color:"white"}}>Total payé: {props.total}</Text>
+                               <Text style={{padding:"5px",backgroundColor:"#ff7900",color:"white"}}>Total payé: {props.total} FG</Text>
                            </View>
                        </View>
                    </Page>

@@ -186,8 +186,34 @@ export default function Authenticated({auth, header, children}) {
                             auth.user
                                 ?
                                 <div className="pt-4 pb-1 border-t border-gray-200">
+                                    <div className="mt-3 space-y-1">
+                                        {
+                                            auth?.tuteur &&
+                                            <ResponsiveNavLink href={route('tuteur.paiement.index',[auth.user])} as="button">
+                                                Paiement
+                                            </ResponsiveNavLink>
+                                        }
+
+                                        {
+
+                                            auth?.admin &&
+                                            <ResponsiveNavLink href={route('admin.user.index', auth.user?.id)}
+                                                               active={route().current().split('.')[0] === "admin"} as="button">
+                                                Administration
+                                            </ResponsiveNavLink>
+                                        }
+                                        {
+
+                                            auth?.etablissement &&
+                                            <ResponsiveNavLink href={route('etablissement.index', auth.user?.id)}
+                                                               active={route().current().split('.')[0] === "etablissement"} as="button">
+                                                Gestion de l'etablissement
+                                            </ResponsiveNavLink>
+                                        }
+                                    </div>
+
                                     <div className="px-4">
-                                        <div className="font-medium text-base text-gray-800">{auth?.user?.prenom+" ".auth?.user?.nom}</div>
+                                        <div className="font-medium text-base text-gray-800">{auth?.user?.prenom+" "+auth?.user?.nom}</div>
                                         <div className="font-medium text-sm text-gray-500">{auth?.user?.email}</div>
                                     </div>
 
@@ -199,29 +225,6 @@ export default function Authenticated({auth, header, children}) {
                                 </div>
                                 :
                                 <div className={"z-20"}>
-                                    {
-                                        auth?.tuteur &&
-                                        <ResponsiveNavLink href={route('paiement.index')} as="button">
-                                            Paiement
-                                        </ResponsiveNavLink>
-                                    }
-
-                                    {
-
-                                        auth?.admin &&
-                                        <ResponsiveNavLink href={route('admin.user.index', auth.user?.id)}
-                                                 active={route().current().split('.')[0] === "admin"} as="button">
-                                            Administration
-                                        </ResponsiveNavLink>
-                                    }
-                                    {
-
-                                        auth?.etablissement &&
-                                        <ResponsiveNavLink href={route('etablissement.index', auth.user?.id)}
-                                                 active={route().current().split('.')[0] === "etablissement"} as="button">
-                                            Gestion de l'etablissement
-                                        </ResponsiveNavLink>
-                                    }
                                     <ResponsiveNavLink href={route('login')} as="button">
                                         Connexion
                                     </ResponsiveNavLink>

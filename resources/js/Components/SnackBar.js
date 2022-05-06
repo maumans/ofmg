@@ -4,29 +4,6 @@ import {Alert, AlertTitle, Snackbar} from "@mui/material";
 function SnackBar(props) {
 
     const [open, setOpen] = useState(false);
-    /*
-        const [error, setError] = useState(null)
-        const [success, setSuccess] = useState(null)
-
-
-
-        useEffect(() => {
-            setError(props.error)
-        },[props.error])
-
-        useEffect(() => {
-            setSuccess(props.success)
-        },[props.success])
-
-        useEffect(() => {
-            success ? setOpen(true) : setOpen(false);
-        },[success])
-
-        useEffect(() => {
-            error ? setOpen(true) : setOpen(false);
-        },[error])
-
-         */
 
     useEffect(() => {
         props.success ? setOpen(true) : setOpen(false);
@@ -52,7 +29,10 @@ function SnackBar(props) {
                     props.update && props.update()
                     setOpen(false)
                 }} severity={props.success?"success":"error"} sx={{ width: '100%' }}>
-                    <AlertTitle>{props.success?"Succès":"Erreur"}</AlertTitle>
+                    <AlertTitle>
+                        {props.success && "Succès"}
+                        {props.error && "Erreur"}
+                    </AlertTitle>
                     <strong className="text-3xl p-5">
                         {props.success && props.success}
                         {props.error && props.error}

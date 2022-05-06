@@ -37,14 +37,14 @@ export default function ConfirmPassword(auth) {
             <Head title="Confirm Password" />
 
             <div className="mb-4 text-sm text-gray-600">
-                This is a secure area of the application. Please confirm your password before continuing.
+                C'est une zone sécurisée de l'application. Veuillez confirmer votre mot de passe avant de continuer.
             </div>
 
             <ValidationErrors errors={errors} />
 
             <form onSubmit={submit}>
                 <div className="mt-4">
-                    <Label forInput="password" value="Password" />
+                    <Label forInput="password" value="Mot de passe" />
 
                     <Input
                         type="password"
@@ -58,7 +58,7 @@ export default function ConfirmPassword(auth) {
 
                 <div className="flex items-center justify-end mt-4">
                     <Button className="ml-4" processing={processing}>
-                        Confirm
+                        Confirmer
                     </Button>
                 </div>
             </form>

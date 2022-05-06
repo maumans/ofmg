@@ -32,21 +32,22 @@ Route::middleware(['auth', 'verified',"userIsAdmin"])->group(function (){
 
 Route::middleware(['auth', 'verified',"userIsEtablissement"])->group(function (){
     Route::resource('etablissement',\App\Http\Controllers\EtablissementController::class);
-    Route::resource('etablissement.niveau',\App\Http\Controllers\Etablissement\NiveauController::class);
-    Route::resource('etablissement.tarif',\App\Http\Controllers\Etablissement\TarifController::class);
-    Route::resource('etablissement.paiement',\App\Http\Controllers\Etablissement\PaiementController::class);
-    Route::post("etablissement/{userId}/paiement/search/{matricule?}",[\App\Http\Controllers\Etablissement\PaiementController::class,"search"])->name("etablissement.paiement.search");
+    Route::resource('etablissement.niveau',\App\Http\Controllers\Etablissement\NiveauController::class)->middleware("anneeScolaireIsDefined");
+    Route::resource('etablissement.tarif',\App\Http\Controllers\Etablissement\TarifController::class)->middleware("anneeScolaireIsDefined");
+    Route::resource('etablissement.paiement',\App\Http\Controllers\Etablissement\PaiementController::class)->middleware("anneeScolaireIsDefined");
+    Route::post("etablissement/{userId}/paiement/search/{matricule?}",[\App\Http\Controllers\Etablissement\PaiementController::class,"search"])->middleware("anneeScolaireIsDefined")->name("etablissement.paiement.search");
 
     Route::resource('etablissement.anneeScolaire',\App\Http\Controllers\Etablissement\AnneeScolaireController::class);
-    Route::resource('etablissement.inscription',\App\Http\Controllers\Etablissement\InscriptionController::class);
-    Route::get("etablissement/{userId}/inscription/search",[\App\Http\Controllers\Etablissement\InscriptionController::class,"search"])->name("etablissement.inscription.search");
+    Route::resource('etablissement.inscription',\App\Http\Controllers\Etablissement\InscriptionController::class)->middleware("anneeScolaireIsDefined");
+    Route::get("etablissement/{userId}/inscription/search/tuteur/{matricule?}/{search}",[\App\Http\Controllers\Etablissement\InscriptionController::class,"search"])->name("etablissement.inscription.search")->middleware("anneeScolaireIsDefined");
     Route::resource('etablissement.apprenant',\App\Http\Controllers\Etablissement\ApprenantController::class);
 
     Route::post("etablissement/{userId}/inscription/searchInscription",[\App\Http\Controllers\Etablissement\InscriptionController::class,"searchInscription"])->name("etablissement.inscription.searchInscription");
 });
 
-Route::middleware(['auth', 'verified',"userIsTuteur"])->group(function (){
+Route::middleware(['auth', 'verified',"userIsTuteur",])->group(function (){
     Route::resource('tuteur.paiement',\App\Http\Controllers\Tuteur\PaiementController::class);
+    Route::get("tuteur/paiement/ok/{total}",[\App\Http\Controllers\Tuteur\PaiementController::class,"ok"])->name("tuteur.paiement.ok");
     Route::get("tuteur/{userId}/paiement/search/{matricule?}",[\App\Http\Controllers\Tuteur\PaiementController::class,"search"])->name("tuteur.paiement.search");
 });
 

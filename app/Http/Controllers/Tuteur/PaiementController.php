@@ -9,6 +9,7 @@ use App\Models\Paiement;
 use App\Models\Tarif;
 use App\Models\User;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -22,6 +23,10 @@ class PaiementController extends Controller
      */
     public function index()
     {
+        $totalAll=0;
+        $resteApayerAll=0;
+        $payerAll=0;
+
         $tuteur=User::where('id',Auth::user()->id)->with(["paiementsTuteur"=>function($query){
             $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif")->get();
         },"tuteurApprenants"=>function($query){
@@ -30,7 +35,18 @@ class PaiementController extends Controller
             }])->get();
         }])->first();
 
-        return Inertia::render("Tuteur/Paiement/Index",["tuteur"=>$tuteur]);
+        foreach($tuteur->tuteurApprenants as $apprenant)
+        {
+            foreach($apprenant->tarifs as $tarif)
+            {
+                $totalAll=$totalAll+$tarif->montant;
+                $resteApayerAll=$resteApayerAll+$tarif->pivot->resteApayer;
+            }
+        }
+
+        $payerAll=$totalAll-$resteApayerAll;
+
+        return Inertia::render("Tuteur/Paiement/Index",["tuteur"=>$tuteur,"resteApayerAll"=>$resteApayerAll,"totalAll"=>$totalAll,"payerAll"=>$payerAll]);
     }
 
     public function search($userId,$matricule)
@@ -106,17 +122,6 @@ class PaiementController extends Controller
     public function store(Request $request)
     {
 
-        /*
-        $request->validate([
-            "montants.*" =>"required",
-        ],
-            [
-                "montants.*.required"=>"Le champs montant est obligatoire",
-            ]
-        );
-        */
-
-
         foreach ($request->tarifs as $key =>$value)
         {
             $info=explode("_",$key);
@@ -134,10 +139,7 @@ class PaiementController extends Controller
                     "tuteur_id"=>Auth::user()->id,
                 ]);
 
-
                 //Paiement::where("id",$paiement->id)->first()->cashin();
-
-
 
                 $paiement->tarif()->associate(Tarif::find($tarif["id"]))->save();
                 $paiement->apprenant()->associate(Apprenant::find($apprenant["id"]))->save();
@@ -148,7 +150,7 @@ class PaiementController extends Controller
             }
         }
 
-        return redirect()->back()->with(["success"=>"Paiements effectués","montantTotal"=>$request->total]);
+        return redirect()->route('tuteur.paiement.ok',['total'=>$request->total]);
 
 
     }
@@ -197,5 +199,19 @@ class PaiementController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function ok($total)
+    {
+
+        $tuteur=User::where('id',Auth::user()->id)->with(["paiementsTuteur"=>function($query){
+            $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif")->get();
+        },"tuteurApprenants"=>function($query){
+            $query->with(["niveau.etablissement.anneeEnCours","tarifs.typePaiement","tarifs"=>function($query){
+                $query->get();
+            }])->get();
+        }])->first();
+
+        return Inertia::render("Tuteur/Paiement/Ok",["tuteur"=>$tuteur,"total"=>$total])->with("success","Paiement effectué avec succès");
     }
 }

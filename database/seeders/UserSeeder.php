@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
             "situation_matrimoniale"=>"Celibataire",
             'password' => Hash::make("29101997"),
             "date_naissance"=>Date::create(1997,5,9),
-            "telephone"=>"621993862",
+            "telephone"=>"621993863",
 
         ]);
 
@@ -41,7 +41,7 @@ class UserSeeder extends Seeder
             "situation_matrimoniale"=>"Marié",
             "date_naissance"=>Date::create(1980,2,7),
             'password' => Hash::make("29101997"),
-            "telephone"=>"621993862",
+            "telephone"=>"622457854",
 
         ]);
 
@@ -54,7 +54,7 @@ class UserSeeder extends Seeder
             "situation_matrimoniale"=>"Marié",
             "date_naissance"=>Date::create(1993,9,2),
             'password' => Hash::make("29101997"),
-            "telephone"=>"621993862",
+            "telephone"=>"621993800",
 
         ]);
 
@@ -67,7 +67,7 @@ class UserSeeder extends Seeder
             "email"=>"gd@gmail.com",
             "situation_matrimoniale"=>"Concubin",
             'password' => Hash::make("29101997"),
-            "telephone"=>"621993862",
+            "telephone"=>"621213862",
 
         ]);
 
@@ -80,7 +80,7 @@ class UserSeeder extends Seeder
             'password' => Hash::make("29101997"),
             "date_naissance"=>Date::create(1993,9,2),
             "situation_matrimoniale"=>"Divorcé",
-            "telephone"=>"621993862",
+            "telephone"=>"621230960",
 
         ]);
 

@@ -51,13 +51,12 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
 
     return (
         <NumberFormat
-            /*
             isAllowed={(values) => {
                 const {floatValue} = values;
-                return floatValue >= 0 &&  floatValue <= props.max;
+                console.log(floatValue,values,((floatValue >= 0 || floatValue === undefined) &&  floatValue <= props.max))
+                return ((floatValue >= 0 &&  floatValue <= props.max) || floatValue === undefined);
             }}
 
-             */
             {...other}
             getInputRef={ref}
             onValueChange={(values) => {
@@ -78,7 +77,7 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
     );
 });
 
-function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur}) {
+function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalAll,payerAll,resteApayerAll}) {
 
     const [successSt, setSuccessSt]=useState();
 
@@ -180,7 +179,6 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur}) {
         var sum = 0;
         for( var el in obj ) {
             if( obj.hasOwnProperty( el ) ) {
-                console.log(obj[el]+"el")
                 sum += obj[el]!=="" && parseFloat( obj[el] );
             }
         }
@@ -269,6 +267,35 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur}) {
                             <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                                 <h1 className="p-6 bg-white border-b border-gray-200 text-xl p-2 text-white bg-orange-400">PAIEMENT</h1>
 
+                                {
+                                    tuteur?.tuteur_apprenants?.length > 0&&
+                                    <div className="p-6">
+                                        <div className={"space-y-5 border p-2 rounded"}>
+                                            <div className="text-xl font-bold p-2 rounded" style={{backgroundColor:"#f8f1eb"}}>
+                                                Bilan des paiements
+                                            </div>
+
+                                            <div className="space-y-3 p-2">
+                                                {
+                                                    <div>
+                                                        <span className={"font-bold"}>Total à payer: </span> <span>{formatNumber(totalAll)} FG</span>
+                                                    </div>
+                                                }
+                                                {
+                                                    <div>
+                                                        <span className={"font-bold"}>Reste à payer: </span> <span>{formatNumber(resteApayerAll)} FG</span>
+                                                    </div>
+                                                }
+
+                                                {
+                                                    <div>
+                                                        <span className={"font-bold"}>Payé: </span> <span>{formatNumber(payerAll)} FG</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
                                 <div>
                                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 "}>
 
@@ -600,7 +627,6 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur}) {
                 <TabPanel value={value} index={2}>
 
                     <div className={"flex justify-center"}>
-                        {console.log(tuteur)}
                         {
                             tuteur &&
                             <div style={{width:1200,minWidth:400}}>

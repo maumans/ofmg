@@ -30,11 +30,14 @@ class CreateUsersTable extends Migration
             $table->string("telephone3")->nullable();
             $table->enum("status",["Actif",["Inactif"]])->default("Actif");
 
+            $table->boolean("first_connexion")->default(true);
+            $table->date("password_change_date")->nullable();
+
+
             $table->foreignId("commune_id")->nullable()->constrained("communes")->cascadeOnDelete();
             $table->foreignId("ville_id")->nullable()->constrained("villes")->cascadeOnDelete();
             $table->foreignId("tuteur_id")->nullable()->constrained("users")->cascadeOnDelete();
             $table->foreignId("admin_id")->nullable()->constrained("users")->cascadeOnDelete();
-
 
             ///ID du User Admin de l'etablissement
 

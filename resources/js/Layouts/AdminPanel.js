@@ -26,10 +26,10 @@ function ResponsiveDrawer(props) {
         setMobileOpen(!mobileOpen);
     };
 
-    const [open, setOpen] = React.useState(true);
+    const [open, setOpen] = React.useState("");
 
-    const handleClick = () => {
-        setOpen(!open);
+    const handleClick = (id) => {
+        open===id?setOpen(""):setOpen(id)
     };
 
     const drawerEtablissementUser = (
@@ -54,10 +54,10 @@ function ResponsiveDrawer(props) {
 
             <ListItemButton sx={props.active==="inscription" ?{backgroundColor:"#dd5800",color:"white"}:null} onClick={handleClick}>
                 <ListItemText primary="inscription" />
-                {open ? <ExpandLess /> : <ExpandMore />}
+                {open==="inscription" ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
 
-            <Collapse in={open} timeout="auto" unmountOnExit>
+            <Collapse in={open==="inscription"} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
                     <Link href={route("etablissement.inscription.index",props.auth.user.id)}>
                         <ListItemButton sx={{ pl: 4 }}>
@@ -121,15 +121,15 @@ function ResponsiveDrawer(props) {
                 <Divider  component="li" />
                 <Link href={route("admin.typePaiement.index",props.auth.user.id)}>
                     <ListItemButton>
-                        <ListItemText primary="Type de paiement" />
+                        <ListItemText primary="Type de frais" />
                     </ListItemButton>
                 </Link>
                 <Divider component="li" />
-                <ListItemButton onClick={handleClick}>
+                <ListItemButton onClick={()=>handleClick("adresse")}>
                     <ListItemText primary="Adresse" />
-                    {open ? <ExpandLess /> : <ExpandMore />}
+                    {open=== "adresse" ? <ExpandLess /> : <ExpandMore />}
                 </ListItemButton>
-                <Collapse in={open} timeout="auto" unmountOnExit>
+                <Collapse in={open=== "adresse"} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         <Link href={route("admin.region.index",props.auth.user.id)}>
                             <ListItemButton sx={{ pl: 4 }}>
@@ -150,6 +150,27 @@ function ResponsiveDrawer(props) {
                         </Link>
                     </List>
                 </Collapse>
+                <Divider component="li" />
+                <ListItemButton onClick={()=>handleClick("classe")}>
+                    <ListItemText primary="Classe" />
+                    {open==="classe" ? <ExpandLess /> : <ExpandMore />}
+                </ListItemButton>
+                <Collapse in={open==="classe"} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                        <Link href={route("admin.region.index",props.auth.user.id)}>
+                            <ListItemButton sx={{ pl: 4 }}>
+                                <ListItemText primary="Niveaux" />
+                            </ListItemButton>
+                        </Link>
+                        <Divider component="li" />
+                        <Link href={route("admin.ville.index",props.auth.user.id)}>
+                            <ListItemButton sx={{ pl: 4 }}>
+                                <ListItemText primary="Cycles" />
+                            </ListItemButton>
+                        </Link>
+                    </List>
+                </Collapse>
+                <Divider component="li" />
             </List>
     );
 

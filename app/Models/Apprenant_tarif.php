@@ -18,4 +18,9 @@ class Apprenant_tarif extends Model
     {
         return $this->belongsTo(Annee_scolaire::class);
     }
+
+    public function MoisPaye()
+    {
+        return $this->hasMany(Mois_Paye::class);
+    }
 }

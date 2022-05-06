@@ -19,7 +19,16 @@ export default function Welcome(props) {
             <Head title="Accueil" />
 
             <div>
-                <div>
+                <div className={"relative"}>
+                    {
+                        props.auth.etablissement &&
+                        <div className={"absolute text-4xl z-20 w-full h-full flex justify-center items-center text-center p-20"}>
+                            <div className={"bg-white rounded bg-transparent"}>
+                                Bienvenue à {props.auth?.user?.etablissement_admin?.nom}
+                            </div>
+                        </div>
+                    }
+
                     <Swiper
                         modules={[Navigation, Pagination,Autoplay,EffectFade]}
                         slidesPerView={1}

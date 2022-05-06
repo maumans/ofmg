@@ -37,8 +37,6 @@ class Etablissement extends Model
         return $this->belongsTo(Type_etablissement::class);
     }
 
-
-
     public function tarifs()
     {
         return $this->hasMany(Tarif::class);
@@ -68,4 +66,13 @@ class Etablissement extends Model
     {
         return $this->belongsTo(Annee_scolaire::class);
     }
+
+    public function anneeScolaireIsDefined()
+    {
+        if($this->anneeEncours)
+            return true;
+        else return false;
+    }
+
+
 }

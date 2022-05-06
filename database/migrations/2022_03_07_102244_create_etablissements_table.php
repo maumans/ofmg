@@ -16,14 +16,12 @@ class CreateEtablissementsTable extends Migration
     {
         Schema::create('etablissements', function (Blueprint $table) {
             $table->id();
-            $table->string("code")->default(Date::now()->format('YmdHis'))->nullable();
+            $table->string("code")->unique()->nullable();
             $table->string("nom")->nullable();
 
             $table->foreignId("type_etablissement_id")->nullable()->constrained("type_etablissements")->cascadeOnDelete();
             $table->foreignId("commune_id")->nullable()->constrained("communes")->cascadeOnDelete();
             $table->foreignId("ville_id")->nullable()->constrained("villes")->cascadeOnDelete();
-            $table->foreignId("annee_encours_id")->nullable()->constrained("annee_scolaires")->cascadeOnDelete();
-
             $table->timestamps();
         });
 

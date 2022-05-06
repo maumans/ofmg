@@ -164,6 +164,14 @@ function Create(props) {
                     situation_matrimoniale:"",
                     titre:"",
                 })
+
+                setData((data)=>({
+                   ...data,
+                    tuteursAdd:tab,
+                    tuteurs:null,
+                    search:null
+
+                }))
                 setData("tuteursAdd",tab)
                 setTuteurAddSuccess("Tuteur ajouté avec succès")
             }
@@ -194,7 +202,14 @@ function Create(props) {
                             })
                             setChecked([])
                             setTuteurAddSuccess("Tuteur ajouté avec succès")
-                            setData("tuteursAdd",tab)
+
+                            setData((data)=>({
+                                ...data,
+                                tuteursAdd:tab,
+                                tuteurs:null,
+                                search:null
+
+                            }))
                         }
                     }
                 })
@@ -209,8 +224,6 @@ function Create(props) {
             }
         }
     }
-
-
 
     function updateSnackBar()
     {
@@ -242,7 +255,7 @@ function Create(props) {
     {
         e.preventDefault();
 
-        post(route("etablissement.inscription.store",props.auth.user.id),data, {preserveState: false})
+        post(route("etablissement.inscription.store",props.auth.user.id), {data:data})
 
     }
 
@@ -276,7 +289,8 @@ function Create(props) {
 
     function handleSearchButton()
     {
-        axios.get(route("etablissement.inscription.search",[props.auth.user.id,data.search]),[],{preserveState:true,preserveScroll:true}).then((response)=>{
+        data.search &&
+        axios.get(route("etablissement.inscription.search",[props.auth.user.id,data.search]),{preserveState:true,preserveScroll:true}).then((response)=>{
             console.log(response.data)
             setData("tuteurs",response.data)
         }).catch(error=>{
@@ -327,27 +341,30 @@ function Create(props) {
                                 <div className={"text-lg font-bold"}>
                                     Infos de l'apprenant
                                 </div>
-                                <div className={"gap-5 grid md:grid-cols-3 grid-cols-1 items-end mb-5"}>
+                                <div className={"grid md:grid-cols-3 grid-cols-1 items-end mb-5 gap-5"}>
                                     <div>
                                         <TextField required className={"w-full"}  name={"prenom"} label={"Prenom"} value={data.prenom} onChange={(e)=>setData("prenom",e.target.value)}/>
-                                        <div className={"flex text-red-600"}>{props.errors?.prenom}</div>
                                     </div>
                                     <div>
                                         <TextField required className={"w-full"}  name={"nom"} label={"Nom"} value={data.nom} onChange={(e)=>setData("nom",e.target.value)}/>
-                                        <div className={"flex text-red-600"}>{props.errors?.nom}</div>
                                     </div>
                                     <div>
                                         <TextField required className={"w-full"}  name={"matricule"} label={"Matricule"} value={data.matricule} onChange={(e)=>setData("matricule",e.target.value)}/>
+                                    </div>
+
+                                    <div className={"md:col-span-3 grid md:grid-cols-3 gap-5"}>
+                                        <div className={"flex text-red-600"}>{props.errors?.prenom}</div>
+
+                                        <div className={"flex text-red-600"}>{props.errors?.nom}</div>
+
                                         <div className={"flex text-red-600"}>{props.errors?.matricule}</div>
                                     </div>
                                     <div>
                                         <div className={"font-bold"}>Date de naissance</div>
                                         <TextField required className={"w-full"}  name={"dateNaissance"} type={"date"} value={data.dateNaissance} onChange={(e)=>setData("dateNaissance",e.target.value)}/>
-                                        <div className={"flex text-red-600"}>{props.errors?.dateNaissance}</div>
                                     </div>
                                     <div>
                                         <TextField className={"w-full"}  name={"lieuNaissance"} label={"Lieu de naissance"} value={data.lieuNaissance} onChange={(e)=>setData("lieuNaissance",e.target.value)}/>
-                                        <div className={"flex text-red-600"}>{props.errors?.lieuNaissance}</div>
                                     </div>
 
                                     <div>
@@ -362,8 +379,14 @@ function Create(props) {
                                                 isOptionEqualToValue={(option, value) => option.id === value.id}
                                                 renderInput={(params)=><TextField  fullWidth {...params} placeholder={"niveau"} label={params.libelle}/>}
                                             />
-                                            <div className={"flex text-red-600"}>{props.errors?.niveau}</div>
                                         </FormControl>
+                                    </div>
+                                    <div className={"md:col-span-3 grid md:grid-cols-3 gap-5"}>
+                                        <div className={"flex text-red-600"}>{props.errors?.dateNaissance}</div>
+
+                                        <div className={"flex text-red-600"}>{props.errors?.lieuNaissance}</div>
+
+                                        <div className={"flex text-red-600"}>{props.errors?.niveau}</div>
                                     </div>
                                 </div>
                             </div>
@@ -378,7 +401,8 @@ function Create(props) {
                                         <List
                                             className={"divide-y grid md:grid-cols-2 grid-cols-1"}
                                             dense sx={{ width: '100%', maxWidth: 600, bgcolor: 'background.paper' }}>
-                                            { data.tuteursAdd.map((t) => {
+                                            {
+                                                data.tuteursAdd.map((t) => {
                                                 const labelId = `checkbox-list-secondary-label-${t.id}`;
                                                 return (
                                                     <ListItem
@@ -400,6 +424,9 @@ function Create(props) {
                                         :
                                         <div>
                                             Aucun tuteur
+                                            <div className="text-red-600">
+                                                {props.errors?.tuteursAdd}
+                                            </div>
                                         </div>
                                 }
                                 <div >

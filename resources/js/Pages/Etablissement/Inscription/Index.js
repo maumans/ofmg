@@ -28,6 +28,8 @@ import Box from "@mui/material/Box";
 import SnackBar from "@/Components/SnackBar";
 import SearchIcon from "@mui/icons-material/Search";
 import formatNumber from "@/Utils/formatNumber";
+import List from "@mui/material/List";
+import capitalize from "@/Utils/Capitalize";
 
 
 const style = {
@@ -61,6 +63,7 @@ function Index(props) {
         "montant":"",
         "tarifs":{},
         anneeScolaireSearch:null,
+        matriculeSearch:"",
         niveauSearch:null,
         tuteurs:"",
         tuteursSearch:[],
@@ -121,11 +124,14 @@ function Index(props) {
         "lieuNaissance":"",
         "montant":"",
         "inscription":"",
-        "tarifs":{}
+        "tarifs":{},
+        "tuteurs":null,
     });
 
     const [open, setOpen] = React.useState(false);
     const handleOpen = (inscription) => {
+
+        console.log(inscription)
         setDataEdit((dataEdit) => ({
             "id":inscription.id,
             "prenom":inscription.apprenant.prenom,
@@ -140,7 +146,7 @@ function Index(props) {
             "lieuNaissance":inscription.apprenant.lieu_naissance,
             "montant":inscription.montant,
             "inscription":inscription,
-            "tarifs":{}
+            "tarifs":{},
         }))
 
         setOpen(true);
@@ -277,24 +283,9 @@ function Index(props) {
 
     ];
 
-    const tuteursAddColumn = [
-
-        { field: 'prenomTuteur', headerName: 'PRENOM', width:150},
-        { field: 'nomTuteur', headerName: 'NOM', width:150},
-        { field: 'telephone', headerName: 'Tel', width:150},
-        { field: 'telephone2', headerName: 'Tel 2', width:150},
-        { field: 'telephone3', headerName: 'Tel 3', width:150},
-        { field: 'email', headerName: 'EMAIL', width:150},
-        { field: 'telephone', headerName: 'TELEPHONE', width:150},
-        { field: 'password', headerName: 'MOT DE PASSE', width:150},
-        { field: 'titre', headerName: 'TITRE', width:150},
-        { field: 'situation_matrimoniale', headerName: 'SITUATION MATRIMONIALE', width:250},
-
-
-    ];
 
     function handleDelete(id){
-        confirm("Voulez-vous supprimer role") && Inertia.delete(route("etablissement.inscription.destroy",[props.auth.user.id,id]),{preserveScroll:true})
+        confirm("Voulez-vous supprimer cette inscription") && Inertia.delete(route("etablissement.inscription.destroy",[props.auth.user.id,id]),{preserveScroll:true})
     }
 
     function handleEdit(e){
@@ -341,10 +332,9 @@ function Index(props) {
 
     function handleSearchButton()
     {
-
         //Inertia.post(route("etablissement.inscription.searchInscription",props.auth.user.id),{anneeScolaireId:data.anneeScolaireSearch?.id || null,niveauId:data.niveauSearch?.id || null},{preserveState:true,preserveScroll:true})
 
-        axios.post(route("etablissement.inscription.searchInscription",props.auth.user.id),{anneeScolaireId:data.anneeScolaireSearch?.id || null,niveauId:data.niveauSearch?.id || null},{preserveState:true,preserveScroll:true}).then((response)=>{
+        axios.post(route("etablissement.inscription.searchInscription",props.auth.user.id),{matricule:data.matriculeSearch || null ,anneeScolaireId:data.anneeScolaireSearch?.id || null,niveauId:data.niveauSearch?.id || null},{preserveState:true,preserveScroll:true}).then((response)=>{
             setInscriptions(response.data)
         }).catch(error=>{
             console.log(error)
@@ -401,10 +391,14 @@ function Index(props) {
 
 
                     {
-                        ///////////FIltre
+                        ///////////Filtre
                     }
 
                     <div className={"gap-5 grid md:grid-cols-3 grid-cols-1 items-end mb-5"}>
+                        <div>
+                            <TextField className={"w-full"}  name={"matriculeSearch"} label={"Entrez le matricule de l'apprenant"} value={data.matriculeSearch} onChange={(e)=>setData("matriculeSearch",e.target.value)}/>
+                            <div className={"flex text-red-600"}>{props.errors?.matricule}</div>
+                        </div>
                         <div className={"flex space-x-5"}>
                             <FormControl  className={"w-full"}>
                                 <Autocomplete
@@ -420,6 +414,7 @@ function Index(props) {
                                 <div className={"flex text-red-600"}>{props.errors?.anneeScolaire}</div>
                             </FormControl>
                         </div>
+
 
                         <div className={"flex space-x-5"}>
                             <FormControl  className={"w-full"}>
@@ -440,7 +435,6 @@ function Index(props) {
                             </button>
                         </div>
                     </div>
-
 
                     {
                         ////////// ADD EDIT INSCRIPTION MODAL
@@ -485,45 +479,23 @@ function Index(props) {
                                                 <div className={"flex my-2 text-red-600"}>{props.errors?.lieuNaissance}</div>
                                             </div>
 
-                                            <div>
-                                                <FormControl  className={"w-full"}>
-                                                    <Autocomplete
-                                                        onChange={(e,val)=>{
-                                                            setDataEdit("niveau",val)
-                                                        }}
-                                                        disablePortal={true}
-                                                        options={props.niveaux}
-                                                        getOptionLabel={(option)=>option.libelle}
-                                                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                                                        renderInput={(params)=><TextField  fullWidth {...params} placeholder={"niveau"} label={params.libelle}/>}
-                                                    />
-                                                </FormControl>
-                                                <div className={"flex my-2 text-red-600"}>{props.errors?.niveau}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className={"space-y-5 p-2 border"}>
-                                        <div className={"text-lg font-bold"}>
-                                            Infos du tuteur
-                                        </div>
-                                        <div className={"grid md:grid-cols-3 grid-cols-1 gap-4"}>
-                                            <div>
-                                                <TextField className={"w-full"}  name={"prenomTuteur"} label={"Prenom du tuteur"} value={dataEdit.prenomTuteur} onChange={(e)=>setDataEdit("prenomTuteur",e.target.value)}/>
-                                                <div className={"flex my-2 text-red-600"}>{props.errors?.prenomTuteur}</div>
-                                            </div>
-                                            <div>
-                                                <TextField className={"w-full"}  name={"nomTuteur"} label={"Nom du tuteur"} value={dataEdit.nomTuteur} onChange={(e)=>setDataEdit("nomTuteur",e.target.value)}/>
-                                                <div className={"flex my-2 text-red-600"}>{props.errors?.nomTuteur}</div>
-                                            </div>
-                                            <div>
-                                                <TextField className={"w-full"}  name={"telephone"} label={"telephone"} value={dataEdit.telephoneTuteur} onChange={(e)=>setDataEdit("telephoneTuteur",e.target.value)}/>
-                                                <div className={"flex my-2 text-red-600"}>{props.errors?.telephoneTuteur}</div>
-                                            </div>
-                                            <div>
-                                                <TextField className={"w-full"}  name={"emailTuteur"} label={"Email du tuteur"} value={dataEdit.emailTuteur} onChange={(e)=>setDataEdit("emailTuteur",e.target.value)}/>
-                                                <div className={"flex my-2 text-red-600"}>{props.errors?.emailTuteur}</div>
-                                            </div>
+                                            {
+                                                dataEdit.niveau &&
+                                                <div>
+                                                    <FormControl  className={"w-full"}>
+                                                        <Autocomplete
+                                                            onChange={(e,val)=>{
+                                                                setDataEdit("niveau",val)
+                                                            }}
+                                                            disablePortal={true}
+                                                            options={props.niveaux}
+                                                            getOptionLabel={(option)=>option.libelle}
+                                                            renderInput={(params)=><TextField  fullWidth {...params} placeholder={"niveau"} label={params.libelle}/>}
+                                                        />
+                                                    </FormControl>
+                                                    <div className={"flex my-2 text-red-600"}>{props.errors?.niveau}</div>
+                                                </div>
+                                            }
                                         </div>
                                     </div>
 
