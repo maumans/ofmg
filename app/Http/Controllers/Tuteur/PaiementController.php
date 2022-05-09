@@ -7,12 +7,16 @@ use App\Models\Apprenant;
 use App\Models\Mode_paiement;
 use App\Models\Paiement;
 use App\Models\Tarif;
+use App\Models\Type_paiement;
 use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use function Sodium\add;
 
 class PaiementController extends Controller
 {
@@ -46,7 +50,25 @@ class PaiementController extends Controller
 
         $payerAll=$totalAll-$resteApayerAll;
 
-        return Inertia::render("Tuteur/Paiement/Index",["tuteur"=>$tuteur,"resteApayerAll"=>$resteApayerAll,"totalAll"=>$totalAll,"payerAll"=>$payerAll]);
+        $donneesParFrais= new Collection();
+
+        foreach(Type_paiement::all() as $typePaiement)
+        {
+            $montant=$tuteur->tuteurApprenants->sum(function($apprenant) use ($typePaiement){
+                return $apprenant->tarifs()->where("type_paiement_id",$typePaiement->id)->first()?$apprenant->tarifs()->where("type_paiement_id",$typePaiement->id)->first()->montant:0;
+            });
+
+            $resteApayer=$tuteur->tuteurApprenants->sum(function($apprenant) use ($typePaiement){
+                return $apprenant->tarifs()->where("type_paiement_id",$typePaiement->id)->first()?$apprenant->tarifs()->where("type_paiement_id",$typePaiement->id)->first()->pivot->resteApayer:0;
+            });
+
+
+            if($montant)
+            {
+                $donneesParFrais->push(["libelle"=>$typePaiement->libelle,"montant"=>$montant,"resteApayer"=>$resteApayer,"payer"=>$montant-$resteApayer]);
+            }
+        }
+        return Inertia::render("Tuteur/Paiement/Index",["tuteur"=>$tuteur,"resteApayerAll"=>$resteApayerAll,"totalAll"=>$totalAll,"payerAll"=>$payerAll,"donneesParFrais"=>$donneesParFrais]);
     }
 
     public function search($userId,$matricule)

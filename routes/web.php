@@ -20,7 +20,7 @@ Route::get('/', function () {
 })->name("welcome");
 
 
-Route::middleware(['auth', 'verified',"userIsAdmin"])->group(function (){
+Route::middleware(['auth', 'verified',"userIsAdmin","firstConnexion","passwordChangeDate"])->group(function (){
     Route::resource('admin.user',\App\Http\Controllers\Admin\UserController::class);
     Route::resource('admin.role',\App\Http\Controllers\Admin\RoleController::class);
     Route::resource('admin.etablissement',\App\Http\Controllers\Admin\EtablissementController::class);
@@ -30,7 +30,7 @@ Route::middleware(['auth', 'verified',"userIsAdmin"])->group(function (){
     Route::resource('admin.commune',\App\Http\Controllers\Admin\CommuneController::class);
 });
 
-Route::middleware(['auth', 'verified',"userIsEtablissement"])->group(function (){
+Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","passwordChangeDate"])->group(function (){
     Route::resource('etablissement',\App\Http\Controllers\EtablissementController::class);
     Route::resource('etablissement.niveau',\App\Http\Controllers\Etablissement\NiveauController::class)->middleware("anneeScolaireIsDefined");
     Route::resource('etablissement.tarif',\App\Http\Controllers\Etablissement\TarifController::class)->middleware("anneeScolaireIsDefined");
@@ -45,7 +45,7 @@ Route::middleware(['auth', 'verified',"userIsEtablissement"])->group(function ()
     Route::post("etablissement/{userId}/inscription/searchInscription",[\App\Http\Controllers\Etablissement\InscriptionController::class,"searchInscription"])->name("etablissement.inscription.searchInscription");
 });
 
-Route::middleware(['auth', 'verified',"userIsTuteur",])->group(function (){
+Route::middleware(['auth', 'verified',"userIsTuteur","firstConnexion"])->group(function (){
     Route::resource('tuteur.paiement',\App\Http\Controllers\Tuteur\PaiementController::class);
     Route::get("tuteur/paiement/ok/{total}",[\App\Http\Controllers\Tuteur\PaiementController::class,"ok"])->name("tuteur.paiement.ok");
     Route::get("tuteur/{userId}/paiement/search/{matricule?}",[\App\Http\Controllers\Tuteur\PaiementController::class,"search"])->name("tuteur.paiement.search");

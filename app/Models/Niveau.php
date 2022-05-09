@@ -9,6 +9,10 @@ class Niveau extends Model
 {
     use HasFactory;
     protected $guarded=[];
+
+
+    //// A retirer
+
     public function inscriptions()
     {
         return $this->hasMany(Inscription::class);
@@ -27,5 +31,16 @@ class Niveau extends Model
     public function apprenants()
     {
         return $this->hasMany(Apprenant::class);
+    }
+
+
+    public function classes()
+    {
+        return $this->hasMany(Classe::class);
+    }
+
+    public function cycle()
+    {
+        return $this->belongsTo(Cycle::class);
     }
 }

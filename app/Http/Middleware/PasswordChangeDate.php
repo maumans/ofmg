@@ -7,6 +7,7 @@ use Carbon\CarbonPeriod;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class PasswordChangeDate
 {
@@ -19,7 +20,7 @@ class PasswordChangeDate
      */
     public function handle(Request $request, Closure $next)
     {
-        $date=CarbonPeriod::create(User::where("email",$request->email)->first()->password_change_date,"1 month",Carbon::now());
+        $date=CarbonPeriod::create(Auth::user()->password_change_date,"1 month",Carbon::now());
 
         if($date->count()>=3)
         {

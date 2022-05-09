@@ -20,7 +20,7 @@ Route::middleware('guest')->group(function () {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
                 ->name('login');
 
-    Route::post('login', [AuthenticatedSessionController::class, 'store'])->middleware("firstConnexion","passwordChangeDate");
+    Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
                 ->name('password.request');
@@ -33,10 +33,6 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
                 ->name('password.update');
-
-    Route::get('firstConnexion/reset-password/{email}/{mois?}', [FirstConnexionController::class,"resetPassword"])->name("firstConnexion.reset-password");
-
-    Route::post('firstConnexion/reset', [FirstConnexionController::class,"reset"])->name("firstConnexion.reset");
 
 });
 
@@ -59,4 +55,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');
+
+    Route::get('firstConnexion/reset-password/{email}/{mois?}', [FirstConnexionController::class,"resetPassword"])->name("firstConnexion.reset-password");
+
+    Route::post('firstConnexion/reset', [FirstConnexionController::class,"reset"])->name("firstConnexion.reset");
 });

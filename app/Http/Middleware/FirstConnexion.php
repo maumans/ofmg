@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Http\Middleware;
-
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class FirstConnexion
 {
@@ -17,9 +17,9 @@ class FirstConnexion
      */
     public function handle(Request $request, Closure $next)
     {
-        if(User::where("email", $request->email)->first()->first_connexion)
+        if(Auth::user()->first_connexion)
         {
-            return redirect()->route("firstConnexion.reset-password",["email" => $request->email]);
+            return redirect()->route("firstConnexion.reset-password",["email" => Auth::user()->email,"mois"=>false]);
         }
         else
         {

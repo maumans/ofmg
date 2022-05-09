@@ -77,7 +77,7 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
     );
 });
 
-function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalAll,payerAll,resteApayerAll}) {
+function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalAll,payerAll,resteApayerAll,donneesParFrais}) {
 
     const [successSt, setSuccessSt]=useState();
 
@@ -268,31 +268,79 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                 <h1 className="p-6 bg-white border-b border-gray-200 text-xl p-2 text-white bg-orange-400">PAIEMENT</h1>
 
                                 {
-                                    tuteur?.tuteur_apprenants?.length > 0&&
+                                    tuteur?.tuteur_apprenants?.length > 0 &&
                                     <div className="p-6">
                                         <div className={"space-y-5 border p-2 rounded"}>
-                                            <div className="text-xl font-bold p-2 rounded" style={{backgroundColor:"#f8f1eb"}}>
-                                                Bilan des paiements
-                                            </div>
+                                            <Accordion>
+                                                <AccordionSummary
+                                                    expandIcon={<ExpandMoreIcon />}
+                                                    aria-controls="panel1a-content"
+                                                    id="panel1a-header"
+                                                    sx={{backgroundColor:"#f8f1eb"}}
+                                                >
+                                                    <div className={"grid gap-3 w-full"}>
+                                                        <div className="text-xl font-bold rounded" style={{backgroundColor:"#f8f1eb"}}>
+                                                            Synthèse des paiements
+                                                        </div>
+                                                        <div className="grid md:grid-cols-3 grid-cols-1 gap-3 w-full">
+                                                            {
+                                                                <div>
+                                                                    <span className={"font-bold"}>Total à payer: </span> <span>{formatNumber(totalAll)} FG</span>
+                                                                </div>
+                                                            }
+                                                            {
+                                                                <div>
+                                                                    <span className={"font-bold"}>Reste à payer: </span> <span>{formatNumber(resteApayerAll)} FG</span>
+                                                                </div>
+                                                            }
 
-                                            <div className="space-y-3 p-2">
-                                                {
-                                                    <div>
-                                                        <span className={"font-bold"}>Total à payer: </span> <span>{formatNumber(totalAll)} FG</span>
+                                                            {
+                                                                <div>
+                                                                    <span className={"font-bold"}>Payé: </span> <span>{formatNumber(payerAll)} FG</span>
+                                                                </div>
+                                                            }
+                                                        </div>
                                                     </div>
-                                                }
-                                                {
-                                                    <div>
-                                                        <span className={"font-bold"}>Reste à payer: </span> <span>{formatNumber(resteApayerAll)} FG</span>
-                                                    </div>
-                                                }
 
-                                                {
-                                                    <div>
-                                                        <span className={"font-bold"}>Payé: </span> <span>{formatNumber(payerAll)} FG</span>
+                                                </AccordionSummary>
+
+                                                <AccordionDetails
+                                                    aria-expanded={true}
+                                                >
+                                                    <div className="text-xl font-bold p-2 rounded" >
+                                                        Donneés par frais
                                                     </div>
-                                                }
-                                            </div>
+                                                    <div className={"grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1  gap-3"}>
+                                                            {
+                                                                donneesParFrais.map((frais)=>(
+                                                                    <div key={frais.libelle} className="space-y-3 p-2 shadow-lg">
+                                                                        <div className={"font-bold p-2 bg-orange-400 text-white rounded"}>
+                                                                            {
+                                                                                frais.libelle
+                                                                            }
+                                                                        </div>
+                                                                        <div>
+                                                                            <span className={"font-bold"}>Total à payer: </span> <span>{formatNumber(frais.montant)} FG</span>
+                                                                        </div>
+
+                                                                        <div>
+                                                                            <span className={"font-bold"}>Reste à payer: </span> <span>{formatNumber(frais.resteApayer)} FG</span>
+                                                                        </div>
+
+                                                                        <div>
+                                                                            <span className={"font-bold"}>Payé: </span> <span>{formatNumber(frais.payer)} FG</span>
+                                                                        </div>
+
+                                                                    </div>
+                                                                ))
+                                                            }
+                                                        </div>
+
+                                                </AccordionDetails>
+
+                                            </Accordion>
+
+
                                         </div>
                                     </div>
                                 }

@@ -30,8 +30,6 @@ function Index(props) {
         { field: 'ville', headerName: 'VILLE', width: 130,renderCell:(r)=>r.row.ville?.libelle },
         { field: 'commune', headerName: 'COMMUNE', width: 130,renderCell:(r)=>r.row.commune?.libelle },
         { field: 'email', headerName: 'EMAIL ADMIN', width: 130,renderCell:(r)=>r.row.admins[0]?.email },
-        { field: 'passsword', headerName: 'MOT DE PASSE ADMIN', width: 130,renderCell:(r)=>r.row.admins[0]?.email },
-
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
