@@ -8,7 +8,7 @@ use App\Models\Apprenant_tarif;
 use App\Models\Inscription;
 use App\Models\Mois;
 use App\Models\Mois_Paye;
-use App\Models\Niveau;
+use App\Models\Classe;
 use App\Models\Role;
 use App\Models\Tarif;
 use App\Models\User;
@@ -32,9 +32,20 @@ class InscriptionController extends Controller
      */
     public function index()
     {
-        $niveaux=Auth::user()->etablissementAdmin->niveaux()->with("tarifs",function ($query){
+
+        /*
+
+        $classes=Auth::user()->etablissementAdmin->classes()->with("tarifs",function ($query){
             $query->whereRelation("typePaiement","concerne","APPRENANT")->with("typePaiement",)->get();
         })->get();
+
+        */
+
+
+        $classes=Auth::user()->etablissementAdmin->classes()->with("tarifs",function ($query){
+            $query->whereRelation("typePaiement","concerne","APPRENANT")->with("typePaiement",)->get();
+        })->get();
+
 
         $villes=Ville::all();
         $anneeEnCours=Auth::user()->etablissementAdmin->anneeScolaires->last();
@@ -44,9 +55,9 @@ class InscriptionController extends Controller
 
         $tarifs=Auth::user()->etablissementAdmin->tarifs()->where("annee_scolaire_id",$anneeEnCours->id)->with("typePaiement")->get();
 
-        $inscriptions=Inscription::whereRelation('niveau',"etablissement_id",Auth::user()->etablissementAdmin->id)->with(["apprenant"=>function($query){
+        $inscriptions=Inscription::whereRelation('classe',"etablissement_id",Auth::user()->etablissementAdmin->id)->with(["apprenant"=>function($query){
             return $query->with("tarifs")->get();
-        },"niveau"=>function($query){
+        },"classe"=>function($query){
             return $query->with(["tarifs"=>function($query){
                 return $query->with("typePaiement")->get();
             }])->get();
@@ -55,7 +66,7 @@ class InscriptionController extends Controller
 
         $tuteurs =User::whereRelation("roles","libelle","tuteur")->get("telephone");
 
-        return Inertia::render('Etablissement/Inscription/Index',["niveaux"=>$niveaux,"villes"=>$villes,"tarifs"=>$tarifs,"anneeEnCours"=>$anneeEnCours,"inscriptions"=>$inscriptions,"tuteurs"=>$tuteurs,"anneeScolaires"=>$anneeScolaires]);
+        return Inertia::render('Etablissement/Inscription/Index',["classes"=>$classes,"villes"=>$villes,"tarifs"=>$tarifs,"anneeEnCours"=>$anneeEnCours,"inscriptions"=>$inscriptions,"tuteurs"=>$tuteurs,"anneeScolaires"=>$anneeScolaires]);
     }
 
     /**
@@ -65,7 +76,7 @@ class InscriptionController extends Controller
      */
     public function create()
     {
-        $niveaux=Auth::user()->etablissementAdmin->niveaux()->with(["tarifs"=>function ($query){
+        $classes=Auth::user()->etablissementAdmin->classes()->with(["tarifs"=>function ($query){
             $query->whereRelation("typePaiement","concerne","APPRENANT")->with("typePaiement",)->get();
         },"etablissement.typeEtablissement"])->get();
 
@@ -76,7 +87,7 @@ class InscriptionController extends Controller
 
         $tuteurs =User::whereRelation("roles","libelle","tuteur")->get("telephone");
 
-        return Inertia::render('Etablissement/Inscription/Create',["niveaux"=>$niveaux,"villes"=>$villes,"tarifs"=>$tarifs,"anneeEnCours"=>$anneeEnCours,"tuteurs"=>$tuteurs]);
+        return Inertia::render('Etablissement/Inscription/Create',["classes"=>$classes,"villes"=>$villes,"tarifs"=>$tarifs,"anneeEnCours"=>$anneeEnCours,"tuteurs"=>$tuteurs]);
     }
 
     public function search($userId,$search)
@@ -88,7 +99,7 @@ class InscriptionController extends Controller
 
     public function searchInscription(Request $request,$userId)
     {
-        $niveauId=$request->niveauId;
+        $classeId=$request->classeId;
         $anneeScolaireId=$request->anneeScolaireId;
         $matricule=$request->matricule;
 
@@ -96,7 +107,7 @@ class InscriptionController extends Controller
         {
             $inscriptions =Inscription::whereRelation("etablissement",'id',Auth::user()->etablissementAdmin->id)->whereRelation("apprenant",'matricule',$matricule)->with(["apprenant"=>function($query){
                 return $query->with("tarifs","tuteurs")->get();
-            },"niveau"=>function($query){
+            },"classe"=>function($query){
                 return $query->with(["tarifs"=>function($query){
                     return $query->with("typePaiement")->get();
                 }])->get();
@@ -104,11 +115,11 @@ class InscriptionController extends Controller
         }
         else
         {
-            if($niveauId && $anneeScolaireId)
+            if($classeId && $anneeScolaireId)
             {
-                $inscriptions =Inscription::whereRelation("niveau",'id',$niveauId)->whereRelation("anneeScolaire",'id',$anneeScolaireId)->with(["apprenant"=>function($query){
+                $inscriptions =Inscription::whereRelation("classe",'id',$classeId)->whereRelation("anneeScolaire",'id',$anneeScolaireId)->with(["apprenant"=>function($query){
                     return $query->with("tarifs","tuteurs")->get();
-                },"niveau"=>function($query){
+                },"classe"=>function($query){
                     return $query->with(["tarifs"=>function($query){
                         return $query->with("typePaiement")->get();
                     }])->get();
@@ -116,11 +127,11 @@ class InscriptionController extends Controller
 
             }
             else{
-                if($niveauId)
+                if($classeId)
                 {
-                    $inscriptions =Inscription::whereRelation("niveau",'id',$niveauId)->with(["apprenant"=>function($query){
+                    $inscriptions =Inscription::whereRelation("classe",'id',$classeId)->with(["apprenant"=>function($query){
                         return $query->with("tarifs","tuteurs")->get();
-                    },"niveau"=>function($query){
+                    },"classe"=>function($query){
                         return $query->with(["tarifs"=>function($query){
                             return $query->with("typePaiement")->get();
                         }])->get();
@@ -130,7 +141,7 @@ class InscriptionController extends Controller
                 {
                     $inscriptions =Inscription::whereRelation("anneeScolaire",'id',$anneeScolaireId)->with(["apprenant"=>function($query){
                         return $query->with("tarifs","tuteurs")->get();
-                    },"niveau"=>function($query){
+                    },"classe"=>function($query){
                         return $query->with(["tarifs"=>function($query){
                             return $query->with("typePaiement")->get();
                         }])->get();
@@ -167,7 +178,7 @@ class InscriptionController extends Controller
             "matricule" =>"required",
             "lieuNaissance" =>"required",
             "dateNaissance" =>"required",
-            "niveau" =>"required",
+            "classe" =>"required",
             "tuteursAdd" =>"required"
         ],
         [
@@ -182,7 +193,7 @@ class InscriptionController extends Controller
            $inscription=Inscription::create([
                "montant" =>$request->montant,
                "typePaiement.libelle"=>["required",Rule::unique("tarifs")->where(function($query) use ($request) {
-                   return $query->where("etablissement_id",Auth::user()->etablissementAdmin->id)->where("typePaiement_id",$request->typePaiement["id"])->where("niveau_id",$request->niveau["id"]);
+                   return $query->where("etablissement_id",Auth::user()->etablissementAdmin->id)->where("typePaiement_id",$request->typePaiement["id"])->where("classe_id",$request->classe["id"]);
                })],
            ]);
 
@@ -190,7 +201,7 @@ class InscriptionController extends Controller
                "nom" =>$request->nom,
                "prenom" =>$request->prenom,
                "matricule" =>$request->matricule,
-               "niveau_id" =>$request->niveau["id"],
+               "classe_id" =>$request->classe["id"],
                "date_naissance" =>$request->dateNaissance,
                "lieu_naissance" =>$request->lieuNaissance,
            ]);
@@ -200,13 +211,14 @@ class InscriptionController extends Controller
            {
                if($tuteur["id"]==null)
                {
+                   $tuteur["password"]=Hash::make($tuteur["password"]);
                    $tuteur=User::create($tuteur);
                    $tuteur->roles()->syncWithoutDetaching(Role::where("libelle","tuteur")->first());
                }
                $apprenant->tuteurs()->syncWithoutDetaching(User::find($tuteur["id"]));
            }
 
-           $inscription->niveau()->associate(Niveau::find($request->niveau["id"]))->save();
+           $inscription->classe()->associate(Classe::find($request->classe["id"]))->save();
            $inscription->apprenant()->associate($apprenant)->save();
            $inscription->anneeScolaire()->associate(Auth::user()->etablissementAdmin->anneeEnCours)->save();
 
@@ -288,7 +300,7 @@ class InscriptionController extends Controller
     {
 
         $inscription->update([
-            "niveau_id"=>$request->dataEdit["niveau"]["id"],
+            "classe_id"=>$request->dataEdit["classe"]["id"],
             "montant"=>$request->dataEdit["montant"],
         ]);
 
@@ -311,7 +323,8 @@ class InscriptionController extends Controller
             foreach($request->dataEdit["tarifs"] as $key=>$value){
                 if($value)
                 {
-                    $inscription->apprenant->tarifs()->syncWithoutDetaching(Tarif::find($key));
+                    $tarif=Tarif::find($key);
+                    $inscription->apprenant->tarifs()->syncWithoutDetaching([$tarif->id=>["resteApayer"=>$tarif->montant]]);
                 }
             }
         }

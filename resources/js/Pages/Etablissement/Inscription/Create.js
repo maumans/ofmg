@@ -60,7 +60,7 @@ function Create(props) {
         "nom":"",
         "matricule":"",
         "dateNaissance":"",
-        "niveau":"",
+        "classe":"",
         "lieuNaissance":"",
         "montant":"",
         "tarifs":{},
@@ -76,8 +76,8 @@ function Create(props) {
         prenom: 'mau',
         nom: 'mans',
         email: 'mau@gmail.com',
-        password: "mau",
-        confirm_password: "mau",
+        password: "29101997",
+        confirm_password: "29101997",
         adresse: 'kountia',
         telephone: '621993863',
         telephone2: '622345678',
@@ -264,13 +264,13 @@ function Create(props) {
     },[props.inscriptions]);
 
     useEffect(() => {
-        data.niveau?.tarifs?.length >0 ?
-            data.niveau.tarifs.map((tarif)=>(
+        data.classe?.tarifs?.length >0 ?
+            data.classe.tarifs.map((tarif)=>(
                 tarif.type_paiement.libelle==="INSCRIPTION" &&
                 setData("montant",tarif.montant)
             ))
             :setData("montant",null)
-    },[data.niveau])
+    },[data.classe])
 
     function handleChange (event){
         setTarifs(tarifs=>({
@@ -304,17 +304,17 @@ function Create(props) {
     }
 
     useEffect(() => {
-        if(data.niveau?.tarifs)
+        if(data.classe?.tarifs)
         {
 
             let list={}
-            data.niveau.tarifs.map((tarif)=> {
+            data.classe.tarifs.map((tarif)=> {
                 list = {...list, [tarif.id]: tarif.obligatoire}
             })
             setTarifs(list)
         }
 
-    },[data.niveau])
+    },[data.classe])
 
 
 
@@ -324,11 +324,11 @@ function Create(props) {
 
 
     return (
-        <AdminPanel auth={props.auth} error={props.error} active={"inscription"} >
+        <AdminPanel auth={props.auth} error={props.error} sousActive={"inscrire"} active={"inscription"} >
             <div className={"p-5"}>
                 <div>
                     <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
-                        Inscrire un {props.niveaux[0].etablissement.type_etablissement.libelle==="ecole"?"elève":"etudiant"}
+                        Inscrire un {props.classes[0].etablissement.type_etablissement.libelle==="ecole"?"elève":"etudiant"}
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5"}>
@@ -371,13 +371,13 @@ function Create(props) {
                                         <FormControl  className={"w-full"}>
                                             <Autocomplete
                                                 onChange={(e,val)=>{
-                                                    setData("niveau",val)
+                                                    setData("classe",val)
                                                 }}
                                                 disablePortal={true}
-                                                options={props.niveaux}
+                                                options={props.classes}
                                                 getOptionLabel={(option)=>option.libelle}
                                                 isOptionEqualToValue={(option, value) => option.id === value.id}
-                                                renderInput={(params)=><TextField  fullWidth {...params} placeholder={"niveau"} label={params.libelle}/>}
+                                                renderInput={(params)=><TextField  fullWidth {...params} placeholder={"classe"} label={params.libelle}/>}
                                             />
                                         </FormControl>
                                     </div>
@@ -386,7 +386,7 @@ function Create(props) {
 
                                         <div className={"flex text-red-600"}>{props.errors?.lieuNaissance}</div>
 
-                                        <div className={"flex text-red-600"}>{props.errors?.niveau}</div>
+                                        <div className={"flex text-red-600"}>{props.errors?.classe}</div>
                                     </div>
                                 </div>
                             </div>
@@ -486,14 +486,14 @@ function Create(props) {
 
 
                             {
-                                data.niveau &&
+                                data.classe &&
                                 <div className={"border p-5 space-y-5"}>
                                     <div className={"text-lg font-bold"}>
                                         Les type de frais
                                     </div>
                                     <div className={"flex flex-wrap"}>
                                         {
-                                            data.niveau?.tarifs.map((tarif)=>(
+                                            data.classe?.tarifs.map((tarif)=>(
                                                 <div hidden={tarif.type_paiement.libelle==="INSCRIPTION"} key={tarif.id} className={"mx-5"}>
                                                     <FormControlLabel control={<Checkbox disabled={tarif.obligatoire?true:false} name={tarif.id+""} defaultChecked={tarif.obligatoire?true:false} onChange={handleChange} />} label={<div>{tarif.type_paiement.libelle} <span className={"p-1 rounded bg-orange-600 text-white"}>{formatNumber(tarif.montant)} FG/AN</span></div>} />
                                                 </div>

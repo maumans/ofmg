@@ -26,4 +26,9 @@ class Inscription extends Model
         return $this->belongsTo(Niveau::class);
     }
 
+    public function classe()
+    {
+        return $this->belongsTo(Classe::class);
+    }
+
 }

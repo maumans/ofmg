@@ -19,6 +19,7 @@ class CreateInscriptionsTable extends Migration
             $table->foreignId("annee_scolaire_id")->nullable()->constrained("annee_scolaires")->cascadeOnDelete();
             $table->foreignId("apprenant_id")->nullable()->constrained("apprenants")->cascadeOnDelete();
             $table->foreignId("niveau_id")->nullable()->constrained("niveaux")->cascadeOnDelete();
+            $table->foreignId("classe_id")->nullable()->constrained("classes")->cascadeOnDelete();
             $table->timestamps();
         });
     }

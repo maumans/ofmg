@@ -33,4 +33,10 @@ class Classe extends Model
     {
         return $this->belongsTo(Niveau::class);
     }
+
+    public function option()
+    {
+       return $this->belongsTo(Option::class);
+    }
+
 }

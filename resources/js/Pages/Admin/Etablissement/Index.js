@@ -1,9 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import {DataGrid, gridPageCountSelector, gridPageSelector, useGridApiContext, useGridSelector} from '@mui/x-data-grid';
+import {
+    DataGrid,
+    gridPageCountSelector,
+    gridPageSelector,
+    GridToolbar,
+    useGridApiContext,
+    useGridSelector
+} from '@mui/x-data-grid';
 import {Autocomplete, Divider, FormControl, InputLabel, MenuItem, Pagination, Select, TextField} from "@mui/material";
 import AdminPanel from "@/Layouts/AdminPanel";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-react";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function Index(props) {
 
@@ -33,11 +42,11 @@ function Index(props) {
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700"}>
-                        modifier
+                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
+                        <EditIcon/>
                     </button>
-                    <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white`}>
-                        supprimer
+                    <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
+                        <DeleteIcon/>
                     </button>
                 </div>
             )
@@ -75,7 +84,7 @@ function Index(props) {
     },[data.ville])
 
     return (
-        <AdminPanel auth={props.auth} error={props.error} >
+        <AdminPanel auth={props.auth} error={props.error} active={"etablissement"}>
             <div className={"p-5"}>
                 <div>
 
@@ -89,7 +98,7 @@ function Index(props) {
                         </div>
                         <div className={"gap-4 grid md:grid-cols-3 grid-cols-1"}>
                             <div className={"md:col-span-3 w-full"}>
-                                <TextField  className={"w-full"} name={"nomEtablissement"} label={"Nom de l'etablissement"} value={data.nomEtablissement} onChange={(e)=>setData("nomEtablissement",e.target.value)}/>
+                                <TextField  className={"w-full"} name={"nomEtablissement"} label={"Nom de l'etablissement"} value={data.nomEtablissement} onChange={(e)=>setData("nomEtablissement",e.target.value)} required/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.nomEtablissement}</div>
                             </div>
 
@@ -101,7 +110,7 @@ function Index(props) {
                                         options={props.typeEtablissements}
                                         getOptionLabel={(option)=>option.libelle}
                                         isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        renderInput={(params)=><TextField  fullWidth {...params} placeholder={"type d'etablissements"} label={params.libelle}/>}
+                                        renderInput={(params)=><TextField  fullWidth {...params} placeholder={"type d'etablissements"} label={params.libelle} required/>}
                                     />
                                 </FormControl>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.ville}</div>
@@ -140,30 +149,30 @@ function Index(props) {
                                 Compte de l'administrateur de l'etablissement
                             </div>
                             <div>
-                                <TextField className={"w-full"}  name={"nom"} label={"Nom"} value={data.nom} onChange={(e)=>setData("nom",e.target.value)}/>
+                                <TextField className={"w-full"}  name={"nom"} label={"Nom"} value={data.nom} onChange={(e)=>setData("nom",e.target.value)} required/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.nom}</div>
                             </div>
 
                             <div>
-                                <TextField className={"w-full"}  name={"prenom"} label={"Prenom"} value={data.prenom} onChange={(e)=>setData("prenom",e.target.value)}/>
+                                <TextField className={"w-full"}  name={"prenom"} label={"Prenom"} value={data.prenom} onChange={(e)=>setData("prenom",e.target.value)} required/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.prenom}</div>
                             </div>
 
                             <div>
-                                <TextField className={"w-full"}  name={"email"} label={"Email"} value={data.email} onChange={(e)=>setData("email",e.target.value)}/>
+                                <TextField className={"w-full"}  name={"email"} label={"Email"} value={data.email} onChange={(e)=>setData("email",e.target.value)} required/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.email}</div>
                             </div>
                             <div>
-                                <TextField className={"w-full"} inputProps={{type: "password"}}  name={"password"} label={"Mot de passe"} value={data.password} onChange={(e)=>setData("password",e.target.value)}/>
+                                <TextField className={"w-full"} inputProps={{type: "password"}}  name={"password"} label={"Mot de passe"} value={data.password} onChange={(e)=>setData("password",e.target.value)} required/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.password}</div>
                             </div>
                             <div>
-                                <TextField className={"w-full"}  name={"confirmPassword"} label={"Confirmer le mot de passe"} value={data.confirmPassword} onChange={(e)=>setData("confirmPassword",e.target.value)}/>
+                                <TextField className={"w-full"}  name={"confirmPassword"} label={"Confirmer le mot de passe"} value={data.confirmPassword} onChange={(e)=>setData("confirmPassword",e.target.value)} required/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.confirmPassword}</div>
                             </div>
 
                             <div>
-                                <button className={"p-1 text-white bg-green-600"} type={"submit"}>
+                                <button style={{height: 56}} className={"p-2 text-white bg-green-600 rounded"} type={"submit"}>
                                     Valider
                                 </button>
                             </div>
@@ -175,11 +184,8 @@ function Index(props) {
                         {
                             etablissements &&
                             <DataGrid
-                                componentsProps={{
-                                    columnMenu:{backgroundColor:"red",background:"yellow"},
-                                    cell:{
-                                        align:"center"
-                                    }
+                                components={{
+                                    Toolbar:GridToolbar,
                                 }}
                                 rows={etablissements}
                                 columns={columns}

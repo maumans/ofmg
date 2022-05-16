@@ -130,7 +130,7 @@ function Index(props) {
                                 <div className={"flex text-red-600"}>{props.errors?.description}</div>
                             </div>
                             <div>
-                                <button className={"p-3 text-white bg-green-600 rounded"} type={"submit"}>
+                                <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"}>
                                     Enregister
                                 </button>
                             </div>

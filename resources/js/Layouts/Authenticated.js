@@ -59,18 +59,6 @@ export default function Authenticated({auth, header, children}) {
                                     }
 
                                     {
-                                        !auth.user &&
-                                       <>
-                                           <NavLink href={route('login')} className="text-sm text-gray-700 underline">
-                                               Connexion
-                                           </NavLink>
-
-                                           <NavLink href={route('register')} className="ml-4 text-sm text-gray-700 underline">
-                                               Inscription
-                                           </NavLink>
-                                       </>
-                                    }
-                                    {
 
                                         auth?.admin &&
                                         <NavLink href={route('admin.user.index', auth.user?.id)}
@@ -130,16 +118,15 @@ export default function Authenticated({auth, header, children}) {
                                                 {
                                                     auth?.tuteur &&
                                                     <Link href={route('paiement.index')} className="text-sm text-white">
-                                                        paiement
+                                                        Paiement
                                                     </Link>
                                                 }
 
-                                                <Link href={route('login')} className="text-sm text-white">
-                                                    connexion
+                                                <Link href={route('login')} className="text-sm">
+                                                    Connexion
                                                 </Link>
 
-                                                <Link href={route('register')}
-                                                      className="ml-4 text-sm text-white">
+                                                <Link href={route('register')} className="ml-4 text-sm">
                                                     Inscription
                                                 </Link>
                                             </>
@@ -184,7 +171,7 @@ export default function Authenticated({auth, header, children}) {
 
                         {
                             auth.user
-                                ?
+                                &&
                                 <div className="pt-4 pb-1 border-t border-gray-200">
                                     <div className="mt-3 space-y-1">
                                         {
@@ -222,15 +209,6 @@ export default function Authenticated({auth, header, children}) {
                                             Deconnexion
                                         </ResponsiveNavLink>
                                     </div>
-                                </div>
-                                :
-                                <div className={"z-20"}>
-                                    <ResponsiveNavLink href={route('login')} as="button">
-                                        Connexion
-                                    </ResponsiveNavLink>
-                                    <ResponsiveNavLink href={route('register')} as="button">
-                                        Inscription
-                                    </ResponsiveNavLink>
                                 </div>
 
 

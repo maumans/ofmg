@@ -12,7 +12,8 @@ import {
 import {Autocomplete, FormControl, InputLabel, MenuItem, Pagination, Select, TextField} from "@mui/material";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-react";
-
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 function CustomPagination() {
     const apiRef = useGridApiContext();
     const page = useGridSelector(apiRef, gridPageSelector);
@@ -80,13 +81,13 @@ function Index(props) {
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues,i)=>(
                 <div key={i} className={"space-x-2"}>
-                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white bg-blue-500"}>
-                        voir
+                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white bg-blue-500 rounded hover:text-blue-500 hover:bg-white transition duration-500"}>
+                        <VisibilityIcon/>
                     </button>
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-red-700"}>
-                        modifier
+                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500"}>
+                        <EditIcon/>
                     </button>
-                    <button onClick={()=>handleDelete(cellValues.row.id)} className={`${cellValues.row.status==="Actif"?" bg-red-500":" bg-green-500"} p-2 text-white`}>
+                    <button onClick={()=>handleDelete(cellValues.row.id)} className={`${cellValues.row.status==="Actif"?" bg-red-500 rounded hover:text-red-500 hover:bg-white transition duration-500 p-2":" bg-green-500 rounded hover:text-green-500 hover:bg-white transition duration-500 p-2"} p-2 text-white`}>
                         {
                             cellValues.row.status==="Actif"?"Bloquer":" Debloquer"
                         }
@@ -119,7 +120,7 @@ function Index(props) {
     }
 
     return (
-       <AdminPanel auth={props.auth} error={props.error} >
+       <AdminPanel auth={props.auth} error={props.error} active={"utilisateur"}>
            <div className={"p-5 w-full"}>
                <div className={"w-full"}>
 
@@ -195,10 +196,10 @@ function Index(props) {
                                        </div>
                                    </div>
                                    <div className={"space-x-5 my-5"}>
-                                       <button className={"p-1 text-white bg-green-600"} type={"submit"}>
+                                       <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white transition duration-500 border border-green-600"} style={{height: 56}} type={"submit"}>
                                            Valider
                                        </button>
-                                       <button className={"p-1 text-white bg-red-600"} type={"reset"}>
+                                       <button className={"p-2 text-white bg-red-600 rounded hover:text-red-600 hover:bg-white transition duration-500 border border-red-500"} style={{height: 56}} type={"reset"}>
                                            Annuler
                                        </button>
                                    </div>
@@ -220,27 +221,6 @@ function Index(props) {
                                            Pagination:CustomPagination
                                        }}
 
-                                       componentsProps={{
-                                           row:{
-                                               style:{
-                                                   backgroundColor:"#"
-                                               }
-                                           },
-                                           header:{
-                                               style:{
-                                                   color:"red"
-                                               }
-                                           },
-                                           columnMenu:{
-                                               style:{
-                                                   backgroundColor:"black",
-                                                   color:"white"
-                                               }
-                                           },
-                                           cell:{
-                                               align:"center"
-                                           }
-                                       }}
                                        rows={users}
                                        columns={columns}
                                        pageSize={5}

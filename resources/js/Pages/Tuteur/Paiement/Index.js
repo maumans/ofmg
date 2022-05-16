@@ -53,7 +53,6 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
         <NumberFormat
             isAllowed={(values) => {
                 const {floatValue} = values;
-                console.log(floatValue,values,((floatValue >= 0 || floatValue === undefined) &&  floatValue <= props.max))
                 return ((floatValue >= 0 &&  floatValue <= props.max) || floatValue === undefined);
             }}
 
@@ -212,7 +211,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
         { field: 'Nom_complet', headerName: "NOM COMPLET DE L'APPRENANT",headerClassName:"header", flex: 1, minWidth: 300, fontWeight:"bold", renderCell:(cellValues)=>(
-                cellValues.row.apprenant.prenom+" "+cellValues.row.apprenant.prenom
+                cellValues.row.apprenant.prenom+" "+cellValues.row.apprenant.nom
             ) },
         { field: 'type_paiement', headerName: "TYPE DE FRAIS", flex: 1, minWidth: 150,  renderCell:(cellValues)=>(
                 cellValues.row.type_paiement?.libelle
@@ -223,7 +222,6 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
         { field: 'created_at', headerName: "DATE", flex: 1, minWidth: 150, renderCell:(cellValues)=>(
                 cellValues.row.created_at.split("T")[0]
             ) },
-
         { field: 'action', headerName: 'ACTION',width:100,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
@@ -346,7 +344,6 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                 }
                                 <div>
                                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 "}>
-
                                         {
                                             tuteur?.tuteur_apprenants.map((apprenant)=>(
 
@@ -370,10 +367,10 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                                                         <span className={"font-bold text-lg"}>Nom complet:</span> <span>{apprenant?.prenom} {apprenant?.nom}</span>
                                                                     </div>
                                                                     <div>
-                                                                        <span className={"font-bold text-lg"}>Etablissement:</span> <span>{apprenant?.niveau.etablissement.nom}</span>
+                                                                        <span className={"font-bold text-lg"}>Etablissement:</span> <span>{apprenant?.classe.etablissement.nom}</span>
                                                                     </div>
                                                                     <div>
-                                                                        <span className={"font-bold text-lg"}>Niveau:</span> <span>{apprenant?.niveau?.description+"("+apprenant?.niveau?.libelle+")"}</span>
+                                                                        <span className={"font-bold text-lg"}>classe:</span> <span>{apprenant?.classe?.libelle}</span>
                                                                     </div>
                                                                 </div>
                                                             }
@@ -388,210 +385,103 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                                                 {
                                                                     (apprenant?.tarifs) && apprenant?.tarifs.map((t) =>(
 
-                                                                        <div key={t.id} className={"grid grid-cols-1 gap-2 p-5 border-green-600 rounded"} style={{backgroundColor:"#f8f1eb"}}>
+                                                                        <div className={"relative"}>
                                                                             {
-                                                                                <div className={"text-xl p-2 rounded text-orange-400 bg-white"}>
-                                                                                    <div key={t.id} className={"text-xl"}>
-                                                                                        <FormControlLabel control={<Checkbox name={apprenant.id+"_"+t.id} onChange={handleChangeCheckbox} />} label={t.type_paiement.libelle} />
+                                                                                t.pivot.resteApayer===0 ?
+                                                                                    <div className={"absolute -right-2 -top-3 rounded p-3 bg-green-400 text-white"}>
+                                                                                        Payé
                                                                                     </div>
-                                                                                </div>
+                                                                                    :
+                                                                                    <div className={"absolute -right-2 -top-3 rounded p-3 bg-red-400 text-white"}>
+                                                                                        Non payé
+                                                                                    </div>
                                                                             }
-                                                                            {
-                                                                                t?.montant &&
-                                                                                <div>
-                                                                                    <span className={"font-bold"}>Total à payer: </span> <span>{formatNumber(t.montant)} FG</span>
-                                                                                </div>
-                                                                            }
-                                                                            {
-                                                                                t?.montant &&
-                                                                                <div>
-                                                                                    <span className={"font-bold"}>Somme <span className="lowercase">{t.frequence} à payer: </span> </span> <span> {formatNumber(t.montant/(t.frequence==="MENSUELLE"?t.pivot.nombreMois:t.frequence==="SEMESTRIELLE"?nbrMois/2:t.frequence==="TRIMESTRIELLE"?nbrMois/3:t.frequence==="ANNUELLE"? 1:1))} FG</span>
-                                                                                </div>
-                                                                            }
-                                                                            {
-                                                                                t?.montant &&
-                                                                                <div>
-                                                                                    <span className={"font-bold"}>Reste à payer: </span> <span>{formatNumber(t.pivot.resteApayer)} FG</span>
-                                                                                </div>
-                                                                            }
-
-                                                                            {
-                                                                                t?.montant &&
-                                                                                <div>
-                                                                                    <span className={"font-bold"}>Payé: </span> <span>{formatNumber(t.montant-t.pivot.resteApayer)} FG</span>
-                                                                                </div>
-                                                                            }
-                                                                            {
-                                                                                t?.frequence &&
-                                                                                <div>
-                                                                                    <span className={"font-bold text-lg"}>Frequence de paiement: </span> <span> {t.frequence} </span>
-                                                                                </div>
-                                                                            }
-                                                                            {
-                                                                                t?.echeance &&
-                                                                                <div>
-                                                                                    <span className={"font-bold"}>Echeance: </span> <span>Le {t.echeance} de chaque mois</span>
-                                                                                </div>
-                                                                            }
-
-
-                                                                            {
-                                                                                tarifs &&
-                                                                                <div  className={"grid gap-3 grid-cols-1"}>
+                                                                            <div key={t.id} className={`grid grid-cols-1 gap-2 p-5 rounded ${t.pivot.resteApayer===0 && "border-2 border-green-400"}`} style={{backgroundColor:"#f8f1eb"}}>
+                                                                                {
+                                                                                    <div className={"text-xl p-2 rounded text-orange-400 bg-white"}>
+                                                                                        <div key={t.id} className={"text-xl"}>
+                                                                                            <FormControlLabel  control={<Checkbox checked={t.pivot.resteApayer===0} disabled={t.pivot.resteApayer===0} name={apprenant.id+"_"+t.id} onChange={handleChangeCheckbox} />} label={t.type_paiement.libelle} />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                }
+                                                                                {
+                                                                                    t?.montant &&
                                                                                     <div>
-                                                                                        <TextField
-                                                                                            disabled={!tarifs[apprenant.id+"_"+t.id]}
-                                                                                            alt="Veuillez cocher le champs"
-                                                                                            className={"w-full"}  name={apprenant.id+"_"+t.id} label={"Montant"} value={montants[apprenant.id+"_"+t.id]} onChange={(e)=>setMontants(montants=>({
-                                                                                            ...montants,
-                                                                                            [apprenant.id+"_"+t.id]:e.target.value
-                                                                                        }))}
-                                                                                            InputProps={{
-                                                                                                inputComponent: NumberFormatCustom,
-                                                                                                inputProps:{
-                                                                                                    max:t.pivot.resteApayer,
-                                                                                                    name:apprenant.id+"_"+t.id
-
-                                                                                                },
-                                                                                            }}
-                                                                                            required
-                                                                                        />
-                                                                                        <div className={"flex my-2 text-red-600"}>{errors["montants."+apprenant.id+"_"+t.id] && errors["montants."+apprenant.id+"_"+t.id]}</div>
+                                                                                        <span className={"font-bold"}>Total à payer: </span> <span>{formatNumber(t.montant)} FG</span>
                                                                                     </div>
+                                                                                }
+                                                                                {
+                                                                                    t?.montant &&
+                                                                                    <div>
+                                                                                        <span className={"font-bold"}>Somme <span className="lowercase">{t.frequence} à payer: </span> </span> <span> {formatNumber(t.montant/(t.frequence==="MENSUELLE"?t.pivot.nombreMois:t.frequence==="SEMESTRIELLE"?nbrMois/2:t.frequence==="TRIMESTRIELLE"?nbrMois/3:t.frequence==="ANNUELLE"? 1:1))} FG</span>
+                                                                                    </div>
+                                                                                }
+                                                                                {
+                                                                                    t?.montant &&
+                                                                                    <div>
+                                                                                        <span className={"font-bold"}>Reste à payer: </span> <span>{formatNumber(t.pivot.resteApayer)} FG</span>
+                                                                                    </div>
+                                                                                }
 
-                                                                                </div>
-                                                                            }
+                                                                                {
+                                                                                    t?.montant &&
+                                                                                    <div>
+                                                                                        <span className={"font-bold"}>Payé: </span> <span>{formatNumber(t.montant-t.pivot.resteApayer)} FG</span>
+                                                                                    </div>
+                                                                                }
+                                                                                {
+                                                                                    t?.frequence &&
+                                                                                    <div>
+                                                                                        <span className={"font-bold text-lg"}>Frequence de paiement: </span> <span> {t.frequence} </span>
+                                                                                    </div>
+                                                                                }
+                                                                                {
+                                                                                    t?.echeance &&
+                                                                                    <div>
+                                                                                        <span className={"font-bold"}>Echeance: </span> <span>Le {t.echeance} de chaque mois</span>
+                                                                                    </div>
+                                                                                }
 
+
+                                                                                {
+                                                                                    tarifs &&
+                                                                                    <div  className={"grid gap-3 grid-cols-1"}>
+                                                                                        <div>
+                                                                                            <TextField
+                                                                                                disabled={!tarifs[apprenant.id+"_"+t.id]}
+                                                                                                alt="Veuillez cocher le champs"
+                                                                                                className={"w-full"}  name={apprenant.id+"_"+t.id} label={"Montant"} value={montants[apprenant.id+"_"+t.id]} onChange={(e)=>setMontants(montants=>({
+                                                                                                ...montants,
+                                                                                                [apprenant.id+"_"+t.id]:e.target.value
+                                                                                            }))}
+                                                                                                InputProps={{
+                                                                                                    inputComponent: NumberFormatCustom,
+                                                                                                    inputProps:{
+                                                                                                        max:t.pivot.resteApayer,
+                                                                                                        name:apprenant.id+"_"+t.id
+
+                                                                                                    },
+                                                                                                }}
+                                                                                                required
+                                                                                            />
+
+                                                                                            {console.log(t.pivot)}
+                                                                                            <div className={"flex my-2 text-red-600"}>{errors["montants."+apprenant.id+"_"+t.id] && errors["montants."+apprenant.id+"_"+t.id]}</div>
+                                                                                        </div>
+
+                                                                                    </div>
+                                                                                }
+
+
+                                                                            </div>
 
                                                                         </div>
-
 
                                                                     ))
                                                                 }
                                                             </div>
                                                         </AccordionDetails>
                                                     </Accordion>
-
-
-
-
-
-
-                                                    {
-                                                        /*
-                                                        <div className={"gap-5 space-y-10 grid md:grid-cols-3 grid-cols-1 items-end mb-5"}>
-                                                        {
-                                                            apprenant &&
-                                                            <div className={"col-span-3 grid grid-cols-2 gap-5 p-2 rounded"}>
-                                                                <div>
-                                                                    <span className={"font-bold text-xl"}>Matricule:</span> <span>{apprenant?.matricule}</span>
-                                                                </div>
-                                                                <div>
-                                                                    <span className={"font-bold text-xl"}>Nom complet:</span> <span>{apprenant?.prenom} {apprenant?.nom}</span>
-                                                                </div>
-                                                                <div>
-                                                                    <span className={"font-bold text-xl"}>Etablissement:</span> <span>{apprenant?.niveau.etablissement.nom}</span>
-                                                                </div>
-                                                                <div>
-                                                                    <span className={"font-bold text-xl"}>Niveau:</span> <span>{apprenant?.niveau?.description+"("+apprenant?.niveau?.libelle+")"}</span>
-                                                                </div>
-                                                            </div>
-                                                        }
-                                                        <div className={"grid md:grid-cols-2 sm:grid-cols-2 grid-cols-1 col-span-3 gap-4"}>
-                                                            <div hidden={!apprenant?.tarifs} className={"md:col-span-2 sm:col-span-2 text-lg"}>
-                                                                Veuillez cocher les frais à regler
-                                                            </div>
-                                                            {
-                                                                (apprenant?.tarifs) && apprenant?.tarifs.map((t) =>(
-
-                                                                    <div key={t.id} className={"grid grid-cols-1 gap-2 p-5 border-green-600 rounded"} style={{backgroundColor:"#f8f1eb"}}>
-                                                                        {
-                                                                            <div className={"text-xl p-2 rounded text-orange-400 bg-white"}>
-                                                                                <div key={t.id} className={"text-xl"}>
-                                                                                    <FormControlLabel control={<Checkbox name={apprenant.id+"_"+t.id} onChange={handleChangeCheckbox} />} label={t.type_paiement.libelle} />
-                                                                                </div>
-                                                                            </div>
-                                                                        }
-                                                                        {
-                                                                            t?.montant &&
-                                                                            <div>
-                                                                                <span className={"font-bold text-lg"}>Total à payer: </span> <span>{formatNumber(t.montant)} FG</span>
-                                                                            </div>
-                                                                        }
-                                                                        {
-                                                                            t?.montant &&
-                                                                            <div>
-                                                                                <span className={"font-bold text-lg"}>Somme <span className="lowercase">{t.frequence} à payer: </span> </span> <span> {formatNumber(t.montant/(t.frequence==="MENSUELLE"?nbrMois:t.frequence==="SEMESTRIELLE"?nbrMois/2:t.frequence==="TRIMESTRIELLE"?nbrMois/3:t.frequence==="ANNUELLE"? 1:1))} FG</span>
-                                                                            </div>
-                                                                        }
-                                                                        {
-                                                                            t?.montant &&
-                                                                            <div>
-                                                                                <span className={"font-bold text-lg"}>Reste à payer: </span> <span>{formatNumber(t.resteApayer)} FG</span>
-                                                                            </div>
-                                                                        }
-
-                                                                        {
-                                                                            t?.montant &&
-                                                                            <div>
-                                                                                <span className={"font-bold text-lg"}>Payé: </span> <span>{formatNumber(t.montant-t.resteApayer)} FG</span>
-                                                                            </div>
-                                                                        }
-                                                                        {
-                                                                            t?.frequence &&
-                                                                            <div>
-                                                                                <span className={"font-bold text-lg"}>Frequence de paiement: </span> <span> {t.frequence} </span>
-                                                                            </div>
-                                                                        }
-                                                                        {
-                                                                            t?.echeance &&
-                                                                            <div>
-                                                                                <span className={"font-bold text-lg"}>Echeance: </span> <span>Le {t.echeance} de chaque mois</span>
-                                                                            </div>
-                                                                        }
-
-
-                                                                        {
-                                                                            tarifs &&
-                                                                            <div  className={"grid gap-3 grid-cols-1"}>
-
-                                                                                {console.log(t.resteApayer)}
-                                                                                <div>
-                                                                                    <TextField
-                                                                                        disabled={!tarifs[apprenant.id+"_"+t.id]}
-                                                                                        alt="Veuillez cocher le champs"
-                                                                                        className={"w-full"}  name={apprenant.id+"_"+t.id} label={"Montant"} value={montants[apprenant.id+"_"+t.id]} onChange={(e)=>setMontants(montants=>({
-                                                                                        ...montants,
-                                                                                        [apprenant.id+"_"+t.id]:e.target.value
-                                                                                    }))}
-                                                                                        InputProps={{
-                                                                                            inputComponent: NumberFormatCustom,
-                                                                                            inputProps:{
-                                                                                                max:t.resteApayer,
-                                                                                                name:apprenant.id+"_"+t.id
-
-                                                                                            },
-                                                                                        }}
-                                                                                        required
-                                                                                    />
-                                                                                    <div className={"flex my-2 text-red-600"}>{errors["montants."+apprenant.id+"_"+t.id] && errors["montants."+apprenant.id+"_"+t.id]}</div>
-                                                                                </div>
-
-                                                                            </div>
-                                                                        }
-
-
-                                                                    </div>
-
-
-                                                                ))
-                                                            }
-                                                        </div>
-
-                                                    </div>
-
-                                                         */
-                                                    }
                                                 </div>
                                             ))
                                         }
@@ -647,7 +537,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                 <Save
                                     tuteur={tuteur}
                                     apprenant={tuteur.tuteur_apprenants[0]}
-                                    etablissement={tuteur.tuteur_apprenants[0].niveau.etablissement}
+                                    etablissement={tuteur.tuteur_apprenants[0].classe.etablissement}
                                     paiements={tuteur.paiements}
                                     nbrMois={10}
                                     total={data.total}
@@ -664,7 +554,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                             <Save
                                 tuteur={tuteur}
                                 apprenant={tuteur.tuteur_apprenants[0]}
-                                etablissement={tuteur.tuteur_apprenants[0].niveau.etablissement}
+                                etablissement={tuteur.tuteur_apprenants[0].classe.etablissement}
                                 paiements={tuteur.paiements}
                                 nbrMois={10}
                                 total={data.total}

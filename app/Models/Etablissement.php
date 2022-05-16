@@ -56,6 +56,10 @@ class Etablissement extends Model
     {
         return $this->hasMany(Niveau::class);
     }
+    public function classes()
+    {
+        return $this->hasMany(Classe::class);
+    }
 
     public function anneeScolaires()
     {

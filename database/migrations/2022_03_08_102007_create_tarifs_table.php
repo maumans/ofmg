@@ -20,6 +20,7 @@ class CreateTarifsTable extends Migration
             $table->integer('echeance')->nullable();
             $table->boolean('obligatoire')->default(false);
             $table->foreignId("niveau_id")->nullable()->constrained("niveaux")->cascadeOnDelete();
+            $table->foreignId("classe_id")->nullable()->constrained("classes")->cascadeOnDelete();
             $table->foreignId("etablissement_id")->nullable()->constrained("etablissements")->cascadeOnDelete();
             $table->foreignId("type_paiement_id")->nullable()->constrained("type_paiements")->cascadeOnDelete();
             $table->foreignId("annee_scolaire_id")->nullable()->constrained("annee_scolaires")->cascadeOnDelete();
