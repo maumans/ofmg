@@ -52,7 +52,7 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
         <NumberFormat
             isAllowed={(values) => {
                 const {floatValue} = values;
-                return floatValue >= 0 &&  floatValue <= props.max;
+                return ((floatValue >= 0 &&  floatValue <= props.max) || floatValue === undefined);
             }}
             {...other}
             getInputRef={ref}

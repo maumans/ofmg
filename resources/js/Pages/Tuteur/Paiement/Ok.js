@@ -35,7 +35,7 @@ function Ok({auth,errors,success,tuteur,total}) {
             errors={errors}
         >
             <div className="flex justify-center">
-                <div className={"p-5 text-orange-600 space-y-5 "}>
+                <div className={"p-5 text-green-600 space-y-5 "}>
                     <div>
                         Le paiement a été effectué avec succès cliquez sur le button ci-dessous pour consulter le reçu du paiement
                     </div>
@@ -58,7 +58,7 @@ function Ok({auth,errors,success,tuteur,total}) {
                                 <Save
                                     tuteur={tuteur}
                                     apprenant={tuteur.tuteur_apprenants[0]}
-                                    etablissement={tuteur.tuteur_apprenants[0].niveau.etablissement}
+                                    etablissement={tuteur.tuteur_apprenants[0].classe.etablissement}
                                     paiements={tuteur.paiements}
                                     nbrMois={10}
                                     total={total}

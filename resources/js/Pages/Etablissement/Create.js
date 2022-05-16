@@ -21,7 +21,7 @@ function Create({auth,error,etablissement}) {
                         <span className={"font-bold"}>Nombre de classe: </span> {etablissement.niveaux_count}
                    </span>
                 </div>
-                <div className={"grid grip-col"}>
+                <div className={"grid grid-col"}>
 
                 </div>
             </div>

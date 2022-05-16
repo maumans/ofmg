@@ -19,9 +19,9 @@ class EtablissementController extends Controller
         $etablissement=Etablissement::where("id",Auth::user()->etablissementAdmin->id)->withCount('niveaux')->with("anneeEnCours")->first();
 
         $nombreInscrit=0;
-        foreach ($etablissement->niveaux as $niveau)
+        foreach ($etablissement->classes as $classe)
         {
-            $nombreInscrit=$nombreInscrit+$niveau->apprenants->count();
+            $nombreInscrit=$nombreInscrit+$classe->apprenants->count();
         }
 
         return Inertia::render("Etablissement/Index",["etablissement"=>$etablissement,"nombreInscrit"=>$nombreInscrit]);

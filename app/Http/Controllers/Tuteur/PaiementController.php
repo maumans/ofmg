@@ -34,7 +34,7 @@ class PaiementController extends Controller
         $tuteur=User::where('id',Auth::user()->id)->with(["paiementsTuteur"=>function($query){
             $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif")->get();
         },"tuteurApprenants"=>function($query){
-            $query->with(["niveau.etablissement.anneeEnCours","tarifs.typePaiement","tarifs"=>function($query){
+            $query->with(["classe.etablissement.anneeEnCours","tarifs.typePaiement","tarifs"=>function($query){
                 $query->get();
             }])->get();
         }])->first();
@@ -77,13 +77,13 @@ class PaiementController extends Controller
 
         $apprenant=Apprenant::where("matricule",$matricule)->first();
 
-        $etablissement=$apprenant ? $apprenant->niveau->etablissement:null;
+        $etablissement=$apprenant ? $apprenant->classe->etablissement:null;
 
         $anneeEnCours=$etablissement ? $etablissement->anneeScolaires->last():null;
 
         $apprenant=$apprenant ? Apprenant::where("matricule",$matricule)->with(["tarifs"=>function($query){
             $query->with("typePaiement")->get();
-        },"niveau"=>function($query){
+        },"classe"=>function($query){
             $query->with(["tarifs"=>function($query){
                 $query->with("typePaiement")->get();
             },'etablissement']);
@@ -229,7 +229,7 @@ class PaiementController extends Controller
         $tuteur=User::where('id',Auth::user()->id)->with(["paiementsTuteur"=>function($query){
             $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif")->get();
         },"tuteurApprenants"=>function($query){
-            $query->with(["niveau.etablissement.anneeEnCours","tarifs.typePaiement","tarifs"=>function($query){
+            $query->with(["classe.etablissement.anneeEnCours","tarifs.typePaiement","tarifs"=>function($query){
                 $query->get();
             }])->get();
         }])->first();

@@ -15,23 +15,23 @@ class TypePaiementSeeder extends Seeder
     public function run()
     {
         Type_paiement::create([
-            "libelle" =>"FRAIS SCOLAIRES"
+            "libelle" =>"Scolarité"
         ]);
 
         Type_paiement::create([
-            "libelle" =>"SALAIRE PERSONNEL"
+            "libelle" =>"Salaire du personnel"
         ]);
 
         Type_paiement::create([
-            "libelle" =>"INSCRIPTION"
+            "libelle" =>"Inscription"
         ]);
 
         Type_paiement::create([
-            "libelle" =>"REINSCRIPTION"
+            "libelle" =>"Réinscription"
         ]);
 
         Type_paiement::create([
-            "libelle" =>"FRAIS DE CANTINE"
+            "libelle" =>"Cantine"
         ]);
 
         Type_paiement::create([

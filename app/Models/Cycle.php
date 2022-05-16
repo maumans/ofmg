@@ -9,8 +9,15 @@ class Cycle extends Model
 {
     use HasFactory;
 
+    protected $guarded=[];
+
     public function niveaux()
     {
         return $this->hasMany(Niveau::class);
+    }
+
+    public function options()
+    {
+        return $this->hasMany(Option::class);
     }
 }

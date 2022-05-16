@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Etablissement;
 
 use App\Http\Controllers\Controller;
-use App\Models\Niveau;
+use App\Models\Classe;
 use App\Models\Tarif;
 use App\Models\Type_paiement;
 use Illuminate\Http\Request;
@@ -22,16 +22,16 @@ class TarifController extends Controller
     {
         $etablissement=Auth::user()->etablissementAdmin;
 
-        $tarifs=$etablissement->tarifs()->with("niveau","typePaiement")->get();
+        $tarifs=$etablissement->tarifs()->with("classe","typePaiement")->get();
 
 
         $typePaiements=Type_paiement::all();
 
-        $niveaux=$etablissement->niveaux;
+        $classes=$etablissement->classes;
 
         $anneeScolaire=$etablissement->anneeEnCours;
 
-        return Inertia::render("Etablissement/Tarif/Index",["tarifs"=>$tarifs,"typePaiements"=>$typePaiements,"niveaux"=>$niveaux,"anneeScolaire"=>$anneeScolaire,"etablissementId"=>$etablissement->id]);
+        return Inertia::render("Etablissement/Tarif/Index",["tarifs"=>$tarifs,"typePaiements"=>$typePaiements,"classes"=>$classes,"anneeScolaire"=>$anneeScolaire,"etablissementId"=>$etablissement->id]);
     }
 
     /**
@@ -67,7 +67,7 @@ class TarifController extends Controller
         $tarif->etablissement()->associate(Auth::user()->etablissementAdmin)->save();
         $tarif->anneeScolaire()->associate(Auth::user()->etablissementAdmin->anneeEnCours)->save();
         $tarif->typePaiement()->associate(Type_paiement::find($request->typePaiement["id"]))->save();
-        $request->niveau && $tarif->niveau()->associate(Niveau::find($request->niveau["id"]))->save();
+        $request->classe && $tarif->classe()->associate(Classe::find($request->classe["id"]))->save();
 
        return redirect()->back()->with("success","tarif crée avec succès");
     }

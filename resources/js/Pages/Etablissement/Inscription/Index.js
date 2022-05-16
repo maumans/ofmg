@@ -58,13 +58,13 @@ function Index(props) {
         "nom":"",
         "matricule":"",
         "dateNaissance":"",
-        "niveau":"",
+        "classe":"",
         "lieuNaissance":"",
         "montant":"",
         "tarifs":{},
         anneeScolaireSearch:null,
         matriculeSearch:"",
-        niveauSearch:null,
+        classeSearch:null,
         tuteurs:"",
         tuteursSearch:[],
         tuteursAdd:[],
@@ -120,7 +120,7 @@ function Index(props) {
         "telephoneTuteur":"",
         "emailTuteur":"",
         "dateNaissance":"",
-        "niveau":"",
+        "classe":"",
         "lieuNaissance":"",
         "montant":"",
         "inscription":"",
@@ -142,7 +142,7 @@ function Index(props) {
             "telephoneTuteur":inscription.apprenant.telephoneTuteur,
             "emailTuteur":inscription.apprenant.emailTuteur,
             "dateNaissance":inscription.apprenant.date_naissance,
-            "niveau":inscription.niveau,
+            "classe":inscription.classe,
             "lieuNaissance":inscription.apprenant.lieu_naissance,
             "montant":inscription.montant,
             "inscription":inscription,
@@ -265,7 +265,7 @@ function Index(props) {
         { field: 'matricule', headerName: 'MATRICULE', width:150,renderCell:(cellValues)=>cellValues.row.apprenant?.matricule},
         { field: 'dateNaissance', headerName: 'DATE DE NAISSANCE', width:150,renderCell:(cellValues)=>cellValues.row.apprenant?.date_naissance},
         { field: 'lieuNaissance', headerName: 'LIEU DE NAISSANCE', width:170,renderCell:(cellValues)=>cellValues.row.apprenant?.lieu_naissance},
-        { field: 'niveau', headerName: 'NIVEAU', width:150, renderCell:(cellValues)=>cellValues.row.niveau?.libelle },
+        { field: 'classe', headerName: 'CLASSE', width:150, renderCell:(cellValues)=>cellValues.row.classe?.libelle },
         { field: 'AnneeScolaire', headerName: 'ANNEE SCOLAIRE', width:170, renderCell:(cellValues)=>cellValues.row.annee_scolaire?.dateDebut+" "+cellValues.row.annee_scolaire?.dateFin },
         { field: 'montant', headerName: "FRAIS D'INSCRIPTION", width:170,renderCell:(cellValues)=>formatNumber(cellValues.row.montant)+" FG"},
         { field: 'action', headerName: 'ACTION',width:150,
@@ -307,13 +307,13 @@ function Index(props) {
     }
 
     useEffect(() => {
-        data.niveau?.tarifs?.length >0 ?
-            data.niveau.tarifs.map((tarif)=>(
+        data.classe?.tarifs?.length >0 ?
+            data.classe.tarifs.map((tarif)=>(
                 tarif.type_paiement.libelle==="INSCRIPTION" &&
                 setData("montant",tarif.montant)
             ))
             :setData("montant",null)
-    },[data.niveau])
+    },[data.classe])
 
     function handleChange (event){
         setTarifs(tarifs=>({
@@ -332,9 +332,9 @@ function Index(props) {
 
     function handleSearchButton()
     {
-        //Inertia.post(route("etablissement.inscription.searchInscription",props.auth.user.id),{anneeScolaireId:data.anneeScolaireSearch?.id || null,niveauId:data.niveauSearch?.id || null},{preserveState:true,preserveScroll:true})
+        //Inertia.post(route("etablissement.inscription.searchInscription",props.auth.user.id),{anneeScolaireId:data.anneeScolaireSearch?.id || null,classeId:data.classeSearch?.id || null},{preserveState:true,preserveScroll:true})
 
-        axios.post(route("etablissement.inscription.searchInscription",props.auth.user.id),{matricule:data.matriculeSearch || null ,anneeScolaireId:data.anneeScolaireSearch?.id || null,niveauId:data.niveauSearch?.id || null},{preserveState:true,preserveScroll:true}).then((response)=>{
+        axios.post(route("etablissement.inscription.searchInscription",props.auth.user.id),{matricule:data.matriculeSearch || null ,anneeScolaireId:data.anneeScolaireSearch?.id || null,classeId:data.classeSearch?.id || null},{preserveState:true,preserveScroll:true}).then((response)=>{
             setInscriptions(response.data)
         }).catch(error=>{
             console.log(error)
@@ -348,29 +348,29 @@ function Index(props) {
     }
 
     useEffect(() => {
-        if(data.niveau?.tarifs)
+        if(data.classe?.tarifs)
         {
 
             let list={}
-            data.niveau.tarifs.map((tarif)=> {
+            data.classe.tarifs.map((tarif)=> {
                 list = {...list, [tarif.id]: tarif.obligatoire}
             })
             setTarifs(list)
         }
 
-    },[data.niveau])
+    },[data.classe])
 
     useEffect(() => {
-        if(dataEdit.niveau?.tarifs)
+        if(dataEdit.classe?.tarifs)
         {
             let list={}
-            dataEdit.niveau.tarifs.map((tarif)=>(
+            dataEdit.classe.tarifs.map((tarif)=>(
                 list={...list,[tarif.id]:dataEdit.inscription.apprenant.tarifs.find((t)=>t.id===tarif.id)?true:false}
             ))
             setTarifsEdit(list)
         }
 
-    },[dataEdit.niveau])
+    },[dataEdit.classe])
 
     useEffect(() => {
         setData("tarifs",tarifs)
@@ -382,7 +382,7 @@ function Index(props) {
 
 
     return (
-        <AdminPanel auth={props.auth} error={props.error} active={"inscription"} >
+        <AdminPanel auth={props.auth} error={props.error} sousActive={"liste"} active={"inscription"} >
             <div className={"p-5"}>
                 <div>
                     <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
@@ -407,7 +407,7 @@ function Index(props) {
                                     }}
                                     disablePortal={true}
                                     options={props.anneeScolaires}
-                                    getOptionLabel={(option)=>option.dateDebut+"-"+option.dateFin+"("+option.id+")"}
+                                    getOptionLabel={(option)=>option.dateDebut.split("-")[0]+"/"+option.dateFin.split("-")[0]}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
                                     renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Annee Scolaire"} label={params.libelle}/>}
                                 />
@@ -420,15 +420,15 @@ function Index(props) {
                             <FormControl  className={"w-full"}>
                                 <Autocomplete
                                     onChange={(e,val)=>{
-                                        setData("niveauSearch",val)
+                                        setData("classeSearch",val)
                                     }}
                                     disablePortal={true}
-                                    options={props.niveaux}
+                                    options={props.classes}
                                     getOptionLabel={(option)=>option.libelle}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    renderInput={(params)=><TextField  fullWidth {...params} placeholder={"niveau"} label={params.libelle}/>}
+                                    renderInput={(params)=><TextField  fullWidth {...params} placeholder={"classe"} label={params.libelle}/>}
                                 />
-                                <div className={"flex text-red-600"}>{props.errors?.niveau}</div>
+                                <div className={"flex text-red-600"}>{props.errors?.classe}</div>
                             </FormControl>
                             <button type="button" onClick={handleSearchButton} className={"rounded bg-gray-600 p-3 text-white flex"}>
                                 <SearchIcon/>
@@ -480,34 +480,34 @@ function Index(props) {
                                             </div>
 
                                             {
-                                                dataEdit.niveau &&
+                                                dataEdit.classe &&
                                                 <div>
                                                     <FormControl  className={"w-full"}>
                                                         <Autocomplete
                                                             onChange={(e,val)=>{
-                                                                setDataEdit("niveau",val)
+                                                                setDataEdit("classe",val)
                                                             }}
                                                             disablePortal={true}
-                                                            options={props.niveaux}
+                                                            options={props.classes}
                                                             getOptionLabel={(option)=>option.libelle}
-                                                            renderInput={(params)=><TextField  fullWidth {...params} placeholder={"niveau"} label={params.libelle}/>}
+                                                            renderInput={(params)=><TextField  fullWidth {...params} placeholder={"classe"} label={params.libelle}/>}
                                                         />
                                                     </FormControl>
-                                                    <div className={"flex my-2 text-red-600"}>{props.errors?.niveau}</div>
+                                                    <div className={"flex my-2 text-red-600"}>{props.errors?.classe}</div>
                                                 </div>
                                             }
                                         </div>
                                     </div>
 
                                     {
-                                        dataEdit?.niveau &&
+                                        dataEdit?.classe &&
                                         <div className={"border p-5 space-y-5"}>
                                             <div className={"text-lg font-bold"}>
                                                 Les type de frais
                                             </div>
                                             <div className={"flex flex-wrap"}>
                                                 {
-                                                    dataEdit.niveau?.tarifs.map((tarif)=>(
+                                                    dataEdit.classe?.tarifs.map((tarif)=>(
                                                         <div key={tarif.id} className={"mx-5"}>
                                                             <FormControlLabel control={<Checkbox defaultChecked={dataEdit.inscription.apprenant.tarifs.find((t)=>t.id===tarif.id)?true:false} name={tarif.id+""} onChange={handleChangeEdit} />} label={tarif.type_paiement.libelle} />
                                                         </div>

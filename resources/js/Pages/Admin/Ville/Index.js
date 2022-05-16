@@ -1,9 +1,19 @@
 import React, {useEffect, useState} from 'react';
-import {DataGrid, gridPageCountSelector, gridPageSelector, useGridApiContext, useGridSelector} from '@mui/x-data-grid';
+import {
+    DataGrid,
+    gridPageCountSelector,
+    gridPageSelector,
+    GridToolbar,
+    useGridApiContext,
+    useGridSelector
+} from '@mui/x-data-grid';
 import {Autocomplete, FormControl, InputLabel, MenuItem, Pagination, Select, TextField} from "@mui/material";
 import AdminPanel from "@/Layouts/AdminPanel";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-react";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 function Index(props) {
 
@@ -21,14 +31,14 @@ function Index(props) {
         { field: 'action', headerName: 'ACTION',width:350,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-300"}>
-                        Voir les communes
+                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-300 rounded hover:text-blue-300 hover:bg-white transition duration-500"}>
+                        <VisibilityIcon/> communes
                     </button>
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700"}>
-                        modifier
+                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
+                        <EditIcon/>
                     </button>
-                    <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white`}>
-                        supprimer
+                    <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white rounded hover:text-red-700 hover:bg-white transition duration-500`}>
+                        <DeleteIcon/>
                     </button>
                 </div>
             )
@@ -62,7 +72,7 @@ function Index(props) {
 
 
     return (
-        <AdminPanel auth={props.auth} error={props.error} >
+        <AdminPanel auth={props.auth} error={props.error} sousActive={"ville"} active={"adresse"}>
             <div className={"p-5"}>
                 <div>
 
@@ -71,14 +81,15 @@ function Index(props) {
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 "}>
-                        <div className={"gap-4 grid grid-cols-1"}>
+                        <div className={"gap-4 grid md:grid-cols-3 grid-cols-1"}>
                             <div>
-                                <TextField  name={"libelle"} label={"libelle"} value={data.libelle} onChange={(e)=>setData("libelle",e.target.value)}/>
+                                <TextField  name={"libelle"} label={"libelle"} value={data.libelle} onChange={(e)=>setData("libelle",e.target.value)} required/>
                                 <div className={"flex text-red-600"}>{props.errors?.libelle}</div>
                             </div>
-                            <div className={"flex-1"}>
-                                <FormControl >
+                            <div>
+                                <FormControl className={"w-full"}>
                                     <Autocomplete
+                                        className={"w-full"}
                                         id="tags-standard"
                                         onChange={(e,val)=>setData("region",val)}
                                         disablePortal={true}
@@ -86,13 +97,13 @@ function Index(props) {
                                         options={props.regions}
                                         getOptionLabel={(option)=>option.libelle}
                                         isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        renderInput={(params)=><TextField  fullWidth {...params} placeholder={"regions"} label={params.libelle}/>}
+                                        renderInput={(params)=><TextField  fullWidth {...params} placeholder={"regions"} label={params.libelle} required/>}
                                     />
                                 </FormControl>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.region}</div>
                             </div>
-                            <div>
-                                <button className={"p-1 text-white bg-green-600"} type={"submit"}>
+                            <div className={"col-span-3"}>
+                                <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"}>
                                     Valider
                                 </button>
                             </div>
@@ -104,11 +115,8 @@ function Index(props) {
                         {
                             villes &&
                             <DataGrid
-                                componentsProps={{
-                                    columnMenu:{backgroundColor:"red",background:"yellow"},
-                                    cell:{
-                                        align:"center"
-                                    }
+                                components={{
+                                    Toolbar:GridToolbar,
                                 }}
                                 rows={villes}
                                 columns={columns}

@@ -7,7 +7,7 @@ use App\Models\Apprenant;
 use App\Models\Mode_paiement;
 use App\Models\Mois;
 use App\Models\Mois_Paye;
-use App\Models\Niveau;
+use App\Models\Classe;
 use App\Models\Paiement;
 use App\Models\Tarif;
 use App\Models\User;
@@ -47,11 +47,12 @@ class PaiementController extends Controller
 
         if(!$matricule)
         {
-            $niveau=Niveau::where("id",$request->niveauId)->first();
+            $classe=Classe::where("id",$request->classeId)->first();
 
-            $apprenants=$niveau ? $niveau->apprenants:null;
+            $apprenants=$classe ? $classe->apprenants:null;
 
         }
+
 
         if ($tuteurNumber)
         {
@@ -60,7 +61,7 @@ class PaiementController extends Controller
             $tuteur=User::where("telephone",$tuteurNumber)->with(["paiementsTuteur"=>function($query){
                 $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif")->get();
             },"tuteurApprenants"=>function($query){
-                $query->with(["niveau.etablissement.anneeEnCours","tarifs.typePaiement","tarifs"=>function($query){
+                $query->with(["classe.etablissement.anneeEnCours","tarifs.typePaiement","tarifs"=>function($query){
                     $query->get();
                 }])->get();
             }])->first();
@@ -70,13 +71,13 @@ class PaiementController extends Controller
         {
             $apprenant=Apprenant::where("matricule",$matricule)->first();
 
-            $etablissement=$apprenant ? $apprenant->niveau->etablissement:null;
+            $etablissement=$apprenant ? $apprenant->classe->etablissement:null;
 
             $anneeEnCours=$etablissement ? $etablissement->anneeScolaires->last():null;
 
             $apprenant=$apprenant ? Apprenant::where("matricule",$matricule)->with(["tarifs"=>function($query){
                 $query->with("typePaiement")->get();
-            },"niveau"=>function($query){
+            },"classe"=>function($query){
                 $query->with(["tarifs"=>function($query){
                     $query->with("typePaiement")->get();
                 },"etablissement"]);
@@ -91,10 +92,10 @@ class PaiementController extends Controller
         }
 
         $modePaiements=Mode_paiement::all();
-        $niveaux=Niveau::where('etablissement_id',Auth::user()->etablissementAdmin->id)->with("apprenants")->get();
+        $classes=Classe::where('etablissement_id',Auth::user()->etablissementAdmin->id)->with("apprenants")->get();
 
 
-        return ["apprenant"=>$apprenant,"matricule"=>$matricule,"modePaiements"=>$modePaiements,"niveaux"=>$niveaux,"apprenants"=>$apprenants,"tuteur"=>$tuteur];
+        return ["apprenant"=>$apprenant,"matricule"=>$matricule,"modePaiements"=>$modePaiements,"classes"=>$classes,"apprenants"=>$apprenants,"tuteur"=>$tuteur];
     }
 
     /**
@@ -104,9 +105,9 @@ class PaiementController extends Controller
      */
     public function create()
     {
-        $niveaux=Niveau::where('etablissement_id',Auth::user()->etablissementAdmin->id)->with("apprenants")->get();
+        $classes=Classe::where('etablissement_id',Auth::user()->etablissementAdmin->id)->with("apprenants")->get();
 
-        return Inertia::render("Etablissement/Paiement/Create",["niveaux"=>$niveaux]);
+        return Inertia::render("Etablissement/Paiement/Create",["classes"=>$classes]);
     }
 
     /**
@@ -117,16 +118,16 @@ class PaiementController extends Controller
      */
     public function store(Request $request)
     {
-
-
+        //dd($request->all());
         $request->validate([
-            "matricule"=>"required",
             "tarifs"=>"required",
             "montants.*"=>"required",
             "total"=>"required",
             "numero_retrait"=>"required",
             "tuteurSelectedId"=>"required",
         ]);
+
+
 
         DB::beginTransaction();
 
@@ -205,6 +206,7 @@ class PaiementController extends Controller
                 }
 
             }
+
             DB::commit();
 
             return redirect()->route("etablissement.paiement.create",["etablissement"=>Auth::user()->etablissementAdmin->id])->with(["success"=>"Paiements effectués","montantTotal"=>$request->total]);

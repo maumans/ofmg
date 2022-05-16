@@ -1,9 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import {DataGrid, gridPageCountSelector, gridPageSelector, useGridApiContext, useGridSelector} from '@mui/x-data-grid';
+import {
+    DataGrid,
+    gridPageCountSelector,
+    gridPageSelector,
+    GridToolbar,
+    useGridApiContext,
+    useGridSelector
+} from '@mui/x-data-grid';
 import {Autocomplete, FormControl, InputLabel, MenuItem, Pagination, Select, TextField} from "@mui/material";
 import AdminPanel from "@/Layouts/AdminPanel";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-react";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function Index(props) {
 
@@ -19,11 +28,11 @@ function Index(props) {
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700"}>
-                        modifier
+                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
+                        <EditIcon/>
                     </button>
-                    <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white`}>
-                        supprimer
+                    <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
+                        <DeleteIcon/>
                     </button>
                 </div>
             )
@@ -57,7 +66,7 @@ function Index(props) {
 
 
     return (
-        <AdminPanel auth={props.auth} error={props.error} >
+        <AdminPanel auth={props.auth} error={props.error} active={"role"}>
             <div className={"p-5"}>
                 <div>
 
@@ -68,11 +77,11 @@ function Index(props) {
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5"}>
                         <div className={"space-x-5 flex"}>
                             <div>
-                                <TextField  name={"libelle"} label={"libelle"} value={data.libelle} onChange={(e)=>setData("libelle",e.target.value)}/>
+                                <TextField  name={"libelle"} label={"libelle"} value={data.libelle} onChange={(e)=>setData("libelle",e.target.value)} required/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.libelle}</div>
                             </div>
                             <div>
-                                <button className={"p-1 text-white bg-green-600"} type={"submit"}>
+                                <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"} style={{height:56}}>
                                     Valider
                                 </button>
                             </div>
@@ -84,11 +93,8 @@ function Index(props) {
                         {
                             roles &&
                             <DataGrid
-                                componentsProps={{
-                                    columnMenu:{backgroundColor:"red",background:"yellow"},
-                                    cell:{
-                                        align:"center"
-                                    }
+                                components={{
+                                    Toolbar:GridToolbar,
                                 }}
                                 rows={roles}
                                 columns={columns}

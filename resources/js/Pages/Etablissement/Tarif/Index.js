@@ -99,7 +99,7 @@ function Index(props) {
         "montant":"",
         "frequence":"",
         "echeance":"",
-        "niveau":"",
+        "classe":"",
         "typePaiement":"",
         "AnneeScolaire":"",
         "etablissement_id":"",
@@ -110,7 +110,7 @@ function Index(props) {
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
         { field: 'typePaiement', headerName: 'TYPE PAIEMENT', width:130,renderCell:(cellValues)=>cellValues.row.type_paiement?.libelle },
-        { field: 'niveau', headerName: 'NIVEAU', width:130, renderCell:(cellValues)=>cellValues.row.niveau?.libelle },
+        { field: 'classe', headerName: 'CLASSE', width:130, renderCell:(cellValues)=>cellValues.row.classe?.libelle },
         { field: 'montant', headerName: 'MONTANT', width:130 },
         { field: 'frequence', headerName: 'FREQUENCE', width:130 },
         { field: 'echeance', headerName: 'ECHEANCE', width:130 },
@@ -192,7 +192,7 @@ function Index(props) {
                                    options={props.typePaiements}
                                    getOptionLabel={option=>option.libelle}
                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                   renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Type de paiement"} label={params.libelle}/>}
+                                   renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Type de paiement"} label={params.libelle} required/>}
                                />
                                <div className={"text-red-600"}>{props.errors?.etablissement_id}</div>
                            </div>
@@ -200,15 +200,15 @@ function Index(props) {
                                <Autocomplete
                                    disabled={data.typePaiement?.concerne!=="APPRENANT"}
                                    id="tags-standard"
-                                   onChange={(e,val)=>setData("niveau",val)}
+                                   onChange={(e,val)=>setData("classe",val)}
                                    disablePortal={true}
                                    id={"combo-box-demo"}
-                                   options={props.niveaux}
+                                   options={props.classes}
                                    getOptionLabel={option=>option.libelle}
                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                   renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Niveau"} label={params.libelle}/>}
+                                   renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Classe"} label={params.libelle} required/>}
                                />
-                               <div className={"text-red-600"}>{props.errors?.niveaux}</div>
+                               <div className={"text-red-600"}>{props.errors?.classes}</div>
                            </div>
                             <div>
                                 <FormControl className={"w-full"}>
@@ -257,7 +257,7 @@ function Index(props) {
                             <SnackBar error={error} update={update} success={success}/>
 
                             <div className={"flex md:col-span-3 justify-end"}>
-                                <button className={"p-3 text-white bg-green-600 rounded"}  type={"submit"}>
+                                <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}}  type={"submit"}>
                                     Enregistrer
                                 </button>
                             </div>

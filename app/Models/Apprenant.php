@@ -25,6 +25,11 @@ class Apprenant extends Model
         return $this->belongsTo(Niveau::class);
     }
 
+    public function classe()
+    {
+        return $this->belongsTo(Classe::class);
+    }
+
     public function tarifs()
     {
         return $this->belongsToMany(Tarif::class)->withPivot("id","resteApayer","nombreMois");

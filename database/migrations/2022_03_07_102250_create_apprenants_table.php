@@ -25,7 +25,8 @@ class CreateApprenantsTable extends Migration
             $table->string("lieu_naissance")->nullable();
             $table->enum("status",["actif","inactif"])->default("actif")->nullable();
             $table->date("date_naissance")->nullable();
-            $table->foreignId("niveau_id")->constrained('niveaux')->cascadeOnDelete();
+            $table->foreignId("niveau_id")->nullable()->constrained('niveaux')->cascadeOnDelete();
+            $table->foreignId("classe_id")->nullable()->constrained('classes')->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -26,6 +26,10 @@ Route::middleware(['auth', 'verified',"userIsAdmin","firstConnexion","passwordCh
     Route::resource('admin.etablissement',\App\Http\Controllers\Admin\EtablissementController::class);
     Route::resource('admin.typePaiement',\App\Http\Controllers\Admin\TypePaiementController::class);
     Route::resource('admin.region',\App\Http\Controllers\Admin\RegionController::class);
+    Route::resource('admin.cycle',\App\Http\Controllers\Admin\CycleController::class);
+    Route::resource('admin.departement',\App\Http\Controllers\Admin\DepartementController::class);
+    Route::resource('admin.option',\App\Http\Controllers\Admin\OptionController::class);
+    Route::resource('admin.niveau',\App\Http\Controllers\Admin\NiveauController::class);
     Route::resource('admin.ville',\App\Http\Controllers\Admin\VilleController::class);
     Route::resource('admin.commune',\App\Http\Controllers\Admin\CommuneController::class);
 });
@@ -33,6 +37,7 @@ Route::middleware(['auth', 'verified',"userIsAdmin","firstConnexion","passwordCh
 Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","passwordChangeDate"])->group(function (){
     Route::resource('etablissement',\App\Http\Controllers\EtablissementController::class);
     Route::resource('etablissement.niveau',\App\Http\Controllers\Etablissement\NiveauController::class)->middleware("anneeScolaireIsDefined");
+    Route::resource('etablissement.classe',\App\Http\Controllers\Etablissement\ClasseController::class)->middleware("anneeScolaireIsDefined");
     Route::resource('etablissement.tarif',\App\Http\Controllers\Etablissement\TarifController::class)->middleware("anneeScolaireIsDefined");
     Route::resource('etablissement.paiement',\App\Http\Controllers\Etablissement\PaiementController::class)->middleware("anneeScolaireIsDefined");
     Route::post("etablissement/{userId}/paiement/search/{matricule?}",[\App\Http\Controllers\Etablissement\PaiementController::class,"search"])->middleware("anneeScolaireIsDefined")->name("etablissement.paiement.search");

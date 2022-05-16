@@ -43,4 +43,14 @@ class Niveau extends Model
     {
         return $this->belongsTo(Cycle::class);
     }
+
+    public function departement()
+    {
+        return $this->belongsTo(Departement::class);
+    }
+
+    public function option()
+    {
+        return $this->belongsToMany(Option::class);
+    }
 }

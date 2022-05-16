@@ -47,7 +47,7 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
         <NumberFormat
             isAllowed={(values) => {
                 const {floatValue} = values;
-                return floatValue===null || floatValue <= props.max;
+                return ((floatValue >= 0 &&  floatValue <= props.max) || floatValue === undefined);
             }}
             {...other}
             getInputRef={ref}
@@ -69,7 +69,7 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
     );
 });
 
-function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,success,montantTotal,paiements,errors,error,niveaux,apprenants}) {
+function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,success,montantTotal,paiements,errors,error,classes,apprenants}) {
 
     const [apprenantsList,setApprenantsList]=useState([]);
 
@@ -88,7 +88,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         "montants":[],
         "total":montantTotal?montantTotal:0,
         "numero_retrait":"",
-        niveauSearch:"",
+        classeSearch:"",
         tuteurSearch:"",
         "tuteurSelectedId":null
     });
@@ -122,7 +122,8 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
     function handleSearchMat(matricule)
     {
-        axios.post(route("etablissement.paiement.search",auth?.user?.id),{matricule:matricule || null,niveauId:data?.niveauSearch?.id || null,tuteurNumber:data?.tuteurSearch || null},{preserveScroll:true}).then(response=>{
+        //Inertia.post(route("etablissement.paiement.search",auth?.user?.id),{matricule:matricule || null,classeId:data?.classeSearch?.id || null,tuteurNumber:data?.tuteurSearch || null},{preserveScroll:true})
+        axios.post(route("etablissement.paiement.search",auth?.user?.id),{matricule:matricule || null,classeId:data?.classeSearch?.id || null,tuteurNumber:data?.tuteurSearch || null},{preserveScroll:true}).then(response=>{
             setSearchResult(response.data)
         }).catch(err=>{
             console.log(err)
@@ -281,15 +282,15 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                         <Autocomplete
                                             className={"w-full"}
                                             onChange={(e,val)=>{
-                                                setData("niveauSearch",val)
+                                                setData("classeSearch",val)
                                             }}
                                             disablePortal={true}
-                                            options={niveaux}
+                                            options={classes}
                                             getOptionLabel={(option)=>option.description+" ("+option.libelle+")"}
                                             isOptionEqualToValue={(option, value) => option.id === value.id}
-                                            renderInput={(params)=><TextField  fullWidth {...params} placeholder={"niveau"} label={params.libelle}/>}
+                                            renderInput={(params)=><TextField  fullWidth {...params} placeholder={"classe"} label={params.libelle}/>}
                                         />
-                                        <div className={"flex text-red-600"}>{errors?.niveau}</div>
+                                        <div className={"flex text-red-600"}>{errors?.classe}</div>
                                     </FormControl>
                                 </div>
 
@@ -348,10 +349,10 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                                                     <span className={"font-bold text-lg"}>Nom complet:</span> <span>{apprenant?.prenom} {apprenant?.nom}</span>
                                                                                 </div>
                                                                                 <div>
-                                                                                    <span className={"font-bold text-lg"}>Etablissement:</span> <span>{apprenant?.niveau.etablissement.nom}</span>
+                                                                                    <span className={"font-bold text-lg"}>Etablissement:</span> <span>{apprenant?.classe.etablissement.nom}</span>
                                                                                 </div>
                                                                                 <div>
-                                                                                    <span className={"font-bold text-lg"}>Niveau:</span> <span>{apprenant?.niveau?.description+"("+apprenant?.niveau?.libelle+")"}</span>
+                                                                                    <span className={"font-bold text-lg"}>Classe:</span> <span>{apprenant?.classe?.description+"("+apprenant?.classe?.libelle+")"}</span>
                                                                                 </div>
                                                                             </div>
                                                                         }
@@ -511,7 +512,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                     {
                                                         tarifs && Object.values(tarifs).find(value=>value===true) &&
                                                         <div className={"flex ml-5 col-span-3"}>
-                                                            <button className={"p-2 text-white bg-green-600 font-bold"}  type={"submit"}>
+                                                            <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}}  type={"submit"}>
                                                                 Valider
                                                             </button>
                                                         </div>
