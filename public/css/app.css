@@ -643,6 +643,10 @@ select {
   bottom: 0px;
   left: 0px;
 }
+.inset-x-10 {
+  left: 2.5rem;
+  right: 2.5rem;
+}
 .top-0 {
   top: 0px;
 }
@@ -670,9 +674,6 @@ select {
 .z-10 {
   z-index: 10;
 }
-.z-20 {
-  z-index: 20;
-}
 .col-span-3 {
   grid-column: span 3 / span 3;
 }
@@ -698,14 +699,6 @@ select {
 .mx-5 {
   margin-left: 1.25rem;
   margin-right: 1.25rem;
-}
-.mx-20 {
-  margin-left: 5rem;
-  margin-right: 5rem;
-}
-.mx-10 {
-  margin-left: 2.5rem;
-  margin-right: 2.5rem;
 }
 .ml-3 {
   margin-left: 0.75rem;
@@ -761,11 +754,11 @@ select {
 .mt-10 {
   margin-top: 2.5rem;
 }
-.mt-1 {
-  margin-top: 0.25rem;
-}
 .mt-20 {
   margin-top: 5rem;
+}
+.mt-1 {
+  margin-top: 0.25rem;
 }
 .mb-5 {
   margin-bottom: 1.25rem;
@@ -1098,12 +1091,12 @@ select {
   --tw-bg-opacity: 1;
   background-color: rgb(249 115 22 / var(--tw-bg-opacity));
 }
+.bg-transparent {
+  background-color: transparent;
+}
 .bg-black {
   --tw-bg-opacity: 1;
   background-color: rgb(0 0 0 / var(--tw-bg-opacity));
-}
-.bg-transparent {
-  background-color: transparent;
 }
 .bg-orange-400 {
   --tw-bg-opacity: 1;
@@ -1287,10 +1280,6 @@ select {
 .text-4xl {
   font-size: 2.25rem;
   line-height: 2.5rem;
-}
-.text-5xl {
-  font-size: 3rem;
-  line-height: 1;
 }
 .font-medium {
   font-weight: 500;
@@ -1484,7 +1473,9 @@ select {
 }
 .swiper-button-next,
 .swiper-button-prev {
-    z-index:100;
+
+    color: #FB923C !important;
+
 }
 .hover\:cursor-pointer:hover {
   cursor: pointer;
@@ -1778,6 +1769,11 @@ select {
   .sm\:text-right {
     text-align: right;
   }
+
+  .sm\:text-3xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
 }
 @media (min-width: 768px) {
 
@@ -1811,6 +1807,11 @@ select {
 
   .md\:border-l {
     border-left-width: 1px;
+  }
+
+  .md\:text-5xl {
+    font-size: 3rem;
+    line-height: 1;
   }
 }
 @media (min-width: 1024px) {

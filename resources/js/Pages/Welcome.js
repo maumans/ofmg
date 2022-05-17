@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, Head } from '@inertiajs/inertia-react';
 import Authenticated from "@/Layouts/Authenticated";
+import TypeAnimation from 'react-type-animation';
 
 import img1 from "../img/img1.jpg"
 import img2 from "../img/img2.jpg"
@@ -22,9 +23,13 @@ export default function Welcome(props) {
                 <div className={"relative"}>
                     {
                         props.auth.etablissement &&
-                        <div className={"absolute text-4xl z-10 flex text-center items-center p-20 text-white"}>
-                            <div className={"bg-white rounded bg-transparent uppercase"}>
-                                Bienvenue à {props.auth?.user?.etablissement_admin?.nom}
+                        <div className={"absolute text-4xl z-10 flex justify-center mt-20 w-full text-white"}>
+                            <div className={"bg-white rounded bg-transparent uppercase inset-x-10 md:text-5xl sm:text-3xl text-2xl "}>
+                                <TypeAnimation
+                                    cursor={false}
+                                    sequence={[`Bienvenue à ${props.auth?.user?.etablissement_admin?.nom}`
+                                        , 5000]}
+                                />
                             </div>
                         </div>
                     }
