@@ -378,14 +378,14 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                                         <AccordionDetails
                                                             aria-expanded={true}
                                                         >
-                                                            <div className={"grid md:grid-cols-2 grid-cols-1 col-span-3 gap-4"}>
+                                                            <div className={"grid md:grid-cols-2 grid-cols-1 col-span-3 gap-10"}>
                                                                 <div hidden={apprenant?.tarifs?.length===0} className={"md:col-span-2 sm:col-span-2 text-lg"}>
                                                                     Veuillez cocher les frais à regler
                                                                 </div>
                                                                 {
                                                                     (apprenant?.tarifs) && apprenant?.tarifs.map((t) =>(
 
-                                                                        <div className={"relative"}>
+                                                                        <div key={t.id} className={"relative"}>
                                                                             {
                                                                                 t.pivot.resteApayer===0 ?
                                                                                     <div className={"absolute -right-2 -top-3 rounded p-3 bg-green-400 text-white"}>
@@ -393,14 +393,14 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                                                                     </div>
                                                                                     :
                                                                                     <div className={"absolute -right-2 -top-3 rounded p-3 bg-red-400 text-white"}>
-                                                                                        Non payé
+                                                                                        Reste à payer
                                                                                     </div>
                                                                             }
-                                                                            <div key={t.id} className={`grid grid-cols-1 gap-2 p-5 rounded ${t.pivot.resteApayer===0 && "border-2 border-green-400"}`} style={{backgroundColor:"#f8f1eb"}}>
+                                                                            <div key={t.id} className={`grid grid-cols-1 gap-2 p-5 rounded h-full ${t.pivot.resteApayer===0 ? "border-2 border-green-400":"border-2 border-red-400"}`} style={{backgroundColor:"#f8f1eb"}}>
                                                                                 {
                                                                                     <div className={"text-xl p-2 rounded text-orange-400 bg-white"}>
                                                                                         <div key={t.id} className={"text-xl"}>
-                                                                                            <FormControlLabel  control={<Checkbox checked={t.pivot.resteApayer===0} disabled={t.pivot.resteApayer===0} name={apprenant.id+"_"+t.id} onChange={handleChangeCheckbox} />} label={t.type_paiement.libelle} />
+                                                                                            <FormControlLabel  control={<Checkbox defaultChecked={t.pivot.resteApayer===0} disabled={t.pivot.resteApayer===0} name={apprenant.id+"_"+t.id} onChange={handleChangeCheckbox} />} label={t.type_paiement.libelle} />
                                                                                         </div>
                                                                                     </div>
                                                                                 }
@@ -520,31 +520,23 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                     </form>
 
                                 </div>
+
+                                {
+                                    tuteur.tuteur_apprenants.length===0 &&
+                                        <div className={"flex flex-col items-center py-10 space-y-5"}>
+                                            <div>
+                                                Vous n'avez aucun apprenant inscrit pour le moment
+                                            </div>
+                                            <div className={"text-blue-500"}>
+                                                 Veuillez contacter l'etablissement si ce n'est pas le cas
+                                            </div>
+                                        </div>
+
+                                }
                             </div>
                         </div>
                     </div>
 
-                    <Modal
-                        keepMounted
-                        open={openModal}
-                        onClose={handleCloseModal}
-                        aria-labelledby="keep-mounted-modal-title"
-                        aria-describedby="keep-mounted-modal-description"
-                    >
-                        <Box sx={style}>
-                            {
-
-                                <Save
-                                    tuteur={tuteur}
-                                    apprenant={tuteur.tuteur_apprenants[0]}
-                                    etablissement={tuteur.tuteur_apprenants[0].classe.etablissement}
-                                    paiements={tuteur.paiements}
-                                    nbrMois={10}
-                                    total={data.total}
-                                />
-                            }
-                        </Box>
-                    </Modal>
                 </TabPanel>
 
                 <TabPanel value={value} index={1}>
@@ -554,10 +546,10 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                             <Save
                                 tuteur={tuteur}
                                 apprenant={tuteur.tuteur_apprenants[0]}
-                                etablissement={tuteur.tuteur_apprenants[0].classe.etablissement}
-                                paiements={tuteur.paiements}
+                                etablissement={tuteur.tuteur_apprenants[0]?.classe?.etablissement}
+                                paiements={tuteur?.paiements}
                                 nbrMois={10}
-                                total={data.total}
+                                total={data?.total}
                             />
                         }
                     </Box>

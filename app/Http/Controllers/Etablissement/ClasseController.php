@@ -24,7 +24,7 @@ class ClasseController extends Controller
     {
         $options=null;
         $departements=null;
-        $classes=Auth::user()->etablissementAdmin->classes()->with("option.departement")->get();
+        $classes=Auth::user()->etablissementAdmin->classes()->with("option.departement","niveau")->get();
 
         Auth::user()->etablissementAdmin->typeEtablissement->libelle=="Université" && $niveaux=Niveau::whereRelation("cycle","libelle","Université")->with("cycle")->get();
         Auth::user()->etablissementAdmin->typeEtablissement->libelle=="Ecole" && $niveaux=Niveau::whereRelation("cycle","libelle","Lycée")->with("cycle")->get();
@@ -54,8 +54,12 @@ class ClasseController extends Controller
      */
     public function store(Request $request)
     {
+        $request["etablissement_id"]=Auth::user()->etablissementAdmin->id;
+
         $request->validate([
-            "libelle"=>"required|unique:classes",
+            "libelle"=>["required",Rule::unique("classes")->where(function($query) use ($request){
+                $query->where("libelle",$request["libelle"])->where("etablissement_id",$request["etablissement_id"]);
+            })],
             "niveau"=>"required",
         ],
         [
@@ -64,14 +68,17 @@ class ClasseController extends Controller
 
         $classe=Classe::create([
             "libelle"=>$request->libelle,
-            "description"=>$request->description,
+            "code"=>$request->code,
         ]);
+
+        $classe->niveau()->associate(Niveau::find($request->niveau["id"]))->save();
+
 
         $request->option!=null && $classe->option()->associate(Option::find($request->option["id"]))->save();
 
         $classe->etablissement()->associate(Auth::user()->etablissementAdmin)->save();
 
-        return redirect()->back();
+        return redirect()->back()->with("success","Classe ajoutée avec succès");
     }
 
     /**

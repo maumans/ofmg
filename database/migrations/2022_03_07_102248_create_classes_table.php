@@ -16,6 +16,7 @@ class CreateClassesTable extends Migration
         Schema::create('classes', function (Blueprint $table) {
             $table->id();
             $table->string('libelle')->nullable();
+            $table->string('code')->nullable();
             $table->string('description')->nullable();
             $table->foreignId("niveau_id")->nullable()->constrained("niveaux");
             $table->foreignId('etablissement_id')->nullable()->constrained("etablissements");
