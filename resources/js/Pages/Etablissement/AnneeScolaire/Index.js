@@ -1,16 +1,66 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {DataGrid, gridPageCountSelector, gridPageSelector, useGridApiContext, useGridSelector} from '@mui/x-data-grid';
-import {Autocomplete, FormControl, InputLabel, MenuItem, Pagination, Select, TextField} from "@mui/material";
+import {
+    Autocomplete,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Modal,
+    Pagination,
+    Select,
+    TextField,
+    Tooltip
+} from "@mui/material";
 import AdminPanel from "@/Layouts/AdminPanel";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-react";
 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SnackBar from "@/Components/SnackBar";
+import Box from "@mui/material/Box";
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    minWidth: 400,
+    bgcolor: 'background.paper',
+    borderRadius:2,
+    boxShadow: 24,
+    p: 4,
+};
 
 function Index(props) {
 
     const [anneeScolaires,setAnneeScolaires] = useState();
+
+    const [open, setOpen] = React.useState(false);
+
+    const {data:dataEdit,setData:setDataEdit}=useForm({
+        dateDebutEdit:"",
+        dateFinEdit:"",
+    });
+    const handleOpen = (anneeScolaire) => {
+        setDataEdit((dataEdit) => ({
+            id:anneeScolaire.id,
+           dateDebutEdit:anneeScolaire.dateDebut,
+           dateFinEdit:anneeScolaire.dateFin,
+        }))
+
+        setOpen(true);
+    }
+    const handleClose = () => setOpen(false);
+
+    useLayoutEffect(() => {
+
+        props.success && setData(data=>({
+            "dateDebut":null,
+            "dateFin":null,
+            })
+        )
+    },[props.success])
 
     const {data,setData,post}=useForm({
         "dateDebut":"",
@@ -24,7 +74,7 @@ function Index(props) {
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleOpen(cellValues.row)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
                         <EditIcon/>
                     </button>
                     <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
@@ -40,8 +90,9 @@ function Index(props) {
         confirm("Voulez-vous supprimer cette anné scolaire") && Inertia.delete(route("etablissement.anneeScolaire.destroy",[props.auth.user.id,id]),{preserveScroll:true})
     }
 
-    function handleEdit(id){
-
+    function handleEdit(e){
+        e.preventDefault()
+        Inertia.post(route("etablissement.anneeScolaire.update",[props.auth.user.id,dataEdit.id]),{_method: "put",dataEdit},{preserveScroll:true})
     }
 
     function handleShow(id){
@@ -76,26 +127,108 @@ function Index(props) {
                             <div className={"text-lg font-bold"}>
                                 Ajouter une année scolaire
                             </div>
-                            <div className={"space-x-5 flex items-center"}>
+                            <div className={"grid md:grid-cols-2 grid-cols-1"} style={{maxWidth: 600}}>
                                 <div>
                                     <div>Date de debut</div>
-                                    <TextField inputProps={{type:"date"}}  name={"dateDebut"} value={data.dateDebut} onChange={(e)=>setData("dateDebut",e.target.value)}/>
+                                    <TextField
+                                        inputProps={{
+                                            type:"date",
+                                            min:props.aujourdhui
+                                        }}  name={"dateDebut"} onChange={(e)=>setData("dateDebut",e.target.value)}/>
                                     <div className={"flex my-2 text-red-600"}>{props.errors?.dateDebut}</div>
                                 </div>
                                 <div>
                                     <div>Date de fin</div>
-                                    <TextField inputProps={{type:"date"}}  name={"dateFin"} value={data.dateFin} onChange={(e)=>setData("dateFin",e.target.value)}/>
+                                    <TextField
+                                        inputProps={{
+                                            type:"date",
+                                            min:props.aujourdhui
+                                        }}
+                                        name={"dateFin"} onChange={(e)=>setData("dateFin",e.target.value)}/>
                                     <div className={"flex my-2 text-red-600"}>{props.errors?.dateFin}</div>
                                 </div>
-                                <button className={"p-3 text-white bg-green-600 rounded"} type={"submit"}>
-                                    Enregistrer
-                                </button>
+                                <div>
+                                    {
+                                        !props.anneeEnCoursFinie ?
+                                            <Tooltip title="Impossible d'ajouter une année scolaire avant la fin de celle encours">
+                                                <button style={{height: 56}} className={"p-3 text-white bg-gray-600 rounded"} type={"button"}>
+                                                    Enregistrer
+                                                </button>
+                                            </Tooltip>
+                                            :
+                                            <button style={{height: 56}} className={"p-3 text-white bg-green-600 rounded"} type={"submit"}>
+                                                Enregistrer
+                                            </button>
+                                    }
+                                </div>
+
+
                             </div>
                         </div>
 
 
 
                     </form>
+
+
+
+                    <Modal
+                        keepMounted
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="keep-mounted-modal-title"
+                        aria-describedby="keep-mounted-modal-description"
+                    >
+                        <Box sx={style}>
+                            <form action="" onSubmit={handleEdit} className={"space-y-5 my-5 p-2 border rounded"}>
+                                <div className={"text-lg font-bold mb-5"}>
+                                    Modifier une anneee scolaire
+                                </div>
+                                <div className={"flex flex-wrap gap-4"}>
+                                    <div className={"w-full"}>
+                                        <div>Date de debut</div>
+                                        <TextField className={"w-full"}
+                                            value={dataEdit.dateDebutEdit}
+                                               inputProps={{
+                                                   type:"date",
+                                                   min:props.aujourdhui
+                                               }}
+                                               name={"dateDebutEdit"} onChange={(e)=>setDataEdit("dateDebutEdit",e.target.value)}/>
+                                        <div className={"flex my-2 text-red-600"}>{props.errors["dataEdit.dateDebutEdit"] && props.errors["dataEdit.dateDebutEdit"]}</div>
+                                    </div>
+                                    <div className={"w-full"}>
+                                        <div>Date de fin</div>
+                                        <TextField
+                                            className={"w-full"}
+                                            value={dataEdit.dateFinEdit}
+                                            inputProps={{
+                                                type:"date",
+                                                min:props.aujourdhui
+                                            }}
+                                            name={"dateFinEdit"} onChange={(e)=>setDataEdit("dateFinEdit",e.target.value)}/>
+                                        <div className={"flex my-2 text-red-600"}>{props.errors["dataEdit.dateFinEdit"] && props.errors["dataEdit.dateFinEdit"]}</div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    {
+                                        0 ?
+                                            <Tooltip title="Impossible d'ajouter une année scolaire avant la fin de celle encours">
+                                                <button style={{height: 56}} className={"p-3 text-white bg-gray-600 rounded"} type={"button"}>
+                                                    Enregistrer
+                                                </button>
+                                            </Tooltip>
+                                            :
+                                            <button style={{height: 56}} className={"p-3 text-white bg-green-600 rounded"} type={"submit"}>
+                                                Enregistrer
+                                            </button>
+                                    }
+                                </div>
+
+                            </form>
+                        </Box>
+                    </Modal>
+
 
                     <div style={{height:450, width: '100%' }} className={"flex justify-center"}>
                         {
@@ -113,6 +246,7 @@ function Index(props) {
                             />
                         }
                     </div>
+                    <SnackBar success={ props.success }/>
                 </div>
             </div>
         </AdminPanel>

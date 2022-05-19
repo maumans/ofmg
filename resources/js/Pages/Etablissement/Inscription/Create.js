@@ -289,13 +289,14 @@ function Create(props) {
 
     function handleSearchButton()
     {
-        data.search &&
-        axios.get(route("etablissement.inscription.search",[props.auth.user.id,data.search]),{preserveState:true,preserveScroll:true}).then((response)=>{
-            console.log(response.data)
+        data.search?
+        axios.get(route("etablissement.inscription.tuteur.search",[props.auth.user.id,data.search]),{preserveState:true,preserveScroll:true}).then((response)=>{
             setData("tuteurs",response.data)
         }).catch(error=>{
             console.log(error)
-        });
+        })
+            :
+            setData("tuteursSearch",null)
     }
 
     function deleteTuteurInTuteursAdd(telephone)

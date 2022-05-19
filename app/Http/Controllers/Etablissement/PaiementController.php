@@ -181,26 +181,31 @@ class PaiementController extends Controller
 
                     $moisPaye=Mois_Paye::where("apprenant_tarif_id",$tarif->pivot->id)->where("mois_id",$moisId)->first();
 
-                    if($repartition>=$sommeMensuelle)
+                    if($moisPaye)
                     {
-                        $moisPaye->montant=$sommeMensuelle;
-                        $moisPaye->save();
-                        $repartition=$repartition-$sommeMensuelle;
-                    }
-                    else
-                    {
-                        if($repartition==0)
+                        if($repartition>=$sommeMensuelle)
                         {
-                            $moisPaye->montant=0;
+
+                            $moisPaye->montant=$sommeMensuelle;
                             $moisPaye->save();
+                            $repartition=$repartition-$sommeMensuelle;
                         }
                         else
                         {
-                            $moisPaye->montant=$repartition;
-                            $moisPaye->save();
-                            $repartition=0;
+                            if($repartition==0)
+                            {
+                                $moisPaye->montant=0;
+                                $moisPaye->save();
+                            }
+                            else
+                            {
+                                $moisPaye->montant=$repartition;
+                                $moisPaye->save();
+                                $repartition=0;
+                            }
                         }
                     }
+
 
 
                 }

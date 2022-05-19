@@ -11,6 +11,16 @@ import img4 from "../img/img4.jpg"
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Scrollbar,Autoplay, EffectFade } from 'swiper';
 
+// Components
+import HeroSlider, {
+    Slide,
+    Nav,
+    OverlayContainer,
+} from "hero-slider"
+import BasicSlider from "@/Components/heroSliders/BasicSlider";
+import BlendModeSlider from "@/Components/heroSliders/BlendModeSlider";
+import NavBarSlider from "@/Components/heroSliders/NavBarSlider";
+
 export default function Welcome(props) {
     return (
         <Authenticated
@@ -18,66 +28,12 @@ export default function Welcome(props) {
             errors={props.errors}
         >
             <Head title="Accueil" />
+            <div>
 
-            <div className={"relative"}>
-                <div className={"relative"}>
-                    {
-                        props.auth.etablissement &&
-                        <div className={"absolute text-4xl z-10 flex justify-center mt-20 w-full text-white"}>
-                            <div className={"bg-white rounded bg-transparent uppercase inset-x-10 md:text-5xl sm:text-3xl text-2xl "}>
-                                <TypeAnimation
-                                    cursor={false}
-                                    sequence={[`Bienvenue à ${props.auth?.user?.etablissement_admin?.nom}`
-                                        , 5000]}
-                                />
-                            </div>
-                        </div>
-                    }
-                    <Swiper
-                        modules={[Navigation,Pagination,Autoplay,EffectFade]}
-                        slidesPerView={1}
-                        loop={true}
-                        autoplay={{delay:3000}}
-                        navigation
-                        pagination={{ clickable: true }}
-                    >
-
-                        <SwiperSlide>
-                            {
-                                props.auth.etablissement &&
-                                <div className={"absolute text-4xl z-10 w-full h-full flex justify-center items-center text-center p-20 bg-black text-white opacity-50"}>
-
-                                </div>
-                            }
-                            <img className={"w-full"} style={{maxHeight:"80vh",objectFit:"cover"}} src={img1} alt=""/></SwiperSlide>
-                        <SwiperSlide>
-                            {
-                                props.auth.etablissement &&
-                                <div className={"absolute text-4xl z-10 w-full h-full flex justify-center items-center text-center p-20 bg-black text-white opacity-50"}>
-
-                                </div>
-                            }
-
-                            <img className={"w-full"} style={{maxHeight:"80vh",objectFit:"cover"}} src={img2} alt=""/></SwiperSlide>
-                        <SwiperSlide>
-                            {
-                                props.auth.etablissement &&
-                                <div className={"absolute text-4xl z-10 w-full h-full flex justify-center items-center text-center p-20 bg-black text-white opacity-50"}>
-
-                                </div>
-                            }
-                            <img className={"w-full"} style={{maxHeight:"80vh",objectFit:"cover"}} src={img3} alt=""/></SwiperSlide>
-                        <SwiperSlide>
-                            {
-                                props.auth.etablissement &&
-                                <div className={"absolute text-4xl z-10 w-full h-full flex justify-center items-center text-center p-20 bg-black text-white opacity-50"}>
-
-                                </div>
-                            }
-                            <img className={"w-full"} style={{maxHeight:"80vh",objectFit:"cover"}} src={img4} alt=""/>
-                        </SwiperSlide>
-                    </Swiper>
-                </div>
+                <NavBarSlider
+                    titre={props.auth.etablissement ?"Bienvenue à"+props.auth?.user?.etablissement_admin?.nom:"La plateforme idéale pour vos paiements scolaires et universitaires"}
+                    images={[{image:img1,description:"Frais scolaires"},{image:img2,description:"Paiement de salaire"},{image:img3,description:"Rapport de paiement"},{image:img1,description:"Alerte sur les paiements"},]}
+                />
             </div>
         </Authenticated>
     );

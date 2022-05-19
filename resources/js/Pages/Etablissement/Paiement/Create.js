@@ -286,7 +286,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                             }}
                                             disablePortal={true}
                                             options={classes}
-                                            getOptionLabel={(option)=>option.description+" ("+option.libelle+")"}
+                                            getOptionLabel={(option)=>option.libelle}
                                             isOptionEqualToValue={(option, value) => option.id === value.id}
                                             renderInput={(params)=><TextField  fullWidth {...params} placeholder={"classe"} label={params.libelle}/>}
                                         />

@@ -109,7 +109,7 @@ function Index(props) {
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'typePaiement', headerName: 'TYPE PAIEMENT', width:130,renderCell:(cellValues)=>cellValues.row.type_paiement?.libelle },
+        { field: 'typePaiement', headerName: 'TYPE FRAIS', width:130,renderCell:(cellValues)=>cellValues.row.type_paiement?.libelle },
         { field: 'classe', headerName: 'CLASSE', width:130, renderCell:(cellValues)=>cellValues.row.classe?.libelle },
         { field: 'montant', headerName: 'MONTANT', width:130 },
         { field: 'frequence', headerName: 'FREQUENCE', width:130 },
@@ -170,17 +170,17 @@ function Index(props) {
 
 
     return (
-        <AdminPanel auth={props.auth} error={props.error} active={"tarif"}>
+        <AdminPanel auth={props.auth} error={props.error} active={"Service"}>
             <div className={"p-5"}>
                 <div>
 
                     <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
-                        Gestions des tarifs
+                        Gestions des services
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"my-5 p-2 border rounded"}>
                         <div className={"text-lg font-bold mb-5"}>
-                            Ajouter un tarif
+                            Ajouter un service (Tarif)
                         </div>
                         <div className={"gap-5 grid md:grid-cols-3 grid-cols-1"}>
                            <div>
@@ -286,6 +286,7 @@ function Index(props) {
                             />
                         }
                     </div>
+                    <SnackBar success={ props.success }/>
                 </div>
             </div>
         </AdminPanel>

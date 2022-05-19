@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {DataGrid, gridPageCountSelector, gridPageSelector, useGridApiContext, useGridSelector} from '@mui/x-data-grid';
 import {
     Autocomplete,
@@ -48,6 +48,17 @@ function Index(props) {
         "code":""
     });
 
+    useLayoutEffect(() => {
+        props.success && setData(data=>({
+            "libelle":null,
+            "niveau":null,
+            "option":null,
+            "departement":null,
+            "code":""
+            })
+        )
+    },[props.success])
+
     const {data:dataEdit,setData:setDataEdit}=useForm({
         "id":null,
         "libelle":"",
@@ -58,9 +69,11 @@ function Index(props) {
     const handleOpen = (classe) => {
         setDataEdit((dataEdit) => ({
             "id":classe.id,
-            "code":classe.libelle,
-            "description":classe.description,
-            "libelle":""
+            "code":classe.code ? classe.code : null,
+            "libelle":classe.libelle,
+            "niveau":classe.niveau,
+            "departement":classe.departement,
+            "option":classe.option,
         }))
 
         setOpen(true);
@@ -100,7 +113,7 @@ function Index(props) {
 
     function handleEdit(e){
         e.preventDefault()
-        Inertia.post(route("etablissement.classe.update",[props.auth.user.id,dataEdit.id]),{_method: "put",dataEdit},{preserveState:false,preserveScroll:true})
+        Inertia.post(route("etablissement.classe.update",[props.auth.user.id,dataEdit.id]),{_method: "put",dataEdit},{preserveScroll:true})
 
     }
 
@@ -112,7 +125,7 @@ function Index(props) {
     {
         e.preventDefault();
 
-        post(route("etablissement.classe.store",props.auth.user.id),data)
+        Inertia.post(route("etablissement.classe.store",props.auth.user.id),data,{preserveScroll:true})
 
     }
 
@@ -144,6 +157,20 @@ function Index(props) {
 
     },[data.niveau,data.option,data.code])
 
+
+    useEffect(() => {
+        let libelle=""
+
+        dataEdit.niveau && (libelle=libelle+dataEdit.niveau.libelle)
+
+        dataEdit.option && (libelle=libelle+" "+dataEdit.option.libelle)
+
+        dataEdit.code !==null && (libelle=libelle+" "+dataEdit.code)
+
+        setDataEdit("libelle",libelle)
+
+    },[dataEdit.niveau,dataEdit.option,dataEdit.code])
+
     return (
         <AdminPanel auth={props.auth} error={props.error} active={"classe"}>
             <div className={"p-5"}>
@@ -163,6 +190,7 @@ function Index(props) {
                                 Aperçu: <div className={"flex text-blue-600"}>{data.libelle}</div>
                             </span>
                                 <div className={"flex text-red-600"}>{props.errors?.libelle}</div>
+                                <div className={"flex text-red-600"}>{props.errors?.classe}</div>
                             </div>
 
                         }
@@ -170,6 +198,7 @@ function Index(props) {
                             <div>
                                 <FormControl  className={"w-full"}>
                                     <Autocomplete
+                                        value={data.niveau}
 
                                         onChange={(e,val)=>{
                                             setData("niveau",val)
@@ -189,7 +218,7 @@ function Index(props) {
                                 <div>
                                     <FormControl  className={"w-full"}>
                                         <Autocomplete
-
+                                            value={data.departement}
                                             onChange={(e,val)=>{
                                                 setData("departement",val)
                                                 setOptions(val?.options)
@@ -210,7 +239,7 @@ function Index(props) {
                                 <div>
                                     <FormControl  className={"w-full"}>
                                         <Autocomplete
-
+                                            value={data.option}
                                             onChange={(e,val)=>{
                                                 setData("option",val)
                                             }}
@@ -226,7 +255,9 @@ function Index(props) {
                             }
 
                             <div className={"w-full"}>
-                                <TextField className={"w-full"}  name={"code"} label={"Code"} onChange={(e)=>setData("code",e.target.value)}
+                                <TextField
+                                    value={data.code}
+                                    className={"w-full"}  name={"code"} label={"Code"} onChange={(e)=>setData("code",e.target.value)}
                                 />
                             </div>
 
@@ -240,6 +271,117 @@ function Index(props) {
                     </form>
 
                     <Modal
+                        keepMounted
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="keep-mounted-modal-title"
+                        aria-describedby="keep-mounted-modal-description"
+                    >
+                        <Box sx={style}>
+                            <form action="" onSubmit={handleEdit} className={"space-y-5 my-5 p-2 border rounded"}>
+                                <div className={"text-lg font-bold mb-5"}>
+                                    Modifier une classe
+                                </div>
+                                <div className={"gap-4 grid md:grid-cols-3 grid-cols-1 items-center"}>
+                                </div>
+                                {
+                                    dataEdit.libelle!=="" &&
+                                    <div>
+                                <span className={"w-full text-lg"}>
+                                Aperçu: <div className={"flex text-blue-600"}>{dataEdit.libelle}</div>
+                            </span>
+                                        <div className={"flex text-red-600"}>{props.errors?.libelle}</div>
+                                        <div className={"flex text-red-600"}>{props.errors?.classe}</div>
+                                    </div>
+
+                                }
+                                <div className={"gap-4 grid md:grid-cols-2 sm:grid-cols-2 grid-cols-1 items-center"} style={{maxWidth:1000}}>
+                                    {
+                                        dataEdit.niveau &&
+                                        <div className={"w-full"}>
+                                            <FormControl  className={"w-full"}>
+                                                <Autocomplete
+                                                    value={dataEdit.niveau}
+
+                                                    onChange={(e,val)=>{
+                                                        setDataEdit("niveau",val)
+                                                    }}
+                                                    disablePortal={true}
+                                                    options={props.niveaux}
+                                                    getOptionLabel={(option)=>option.libelle}
+                                                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                                                    renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Niveau"}  required label={params.libelle}/>}
+
+                                                />
+                                            </FormControl>
+                                        </div>
+                                    }
+
+                                    {
+                                        dataEdit.departement &&
+                                        <div className={"w-full"}>
+                                            <FormControl  className={"w-full"}>
+                                                <Autocomplete
+                                                    value={dataEdit.departement}
+                                                    onChange={(e,val)=>{
+                                                        setDataEdit("departement",val)
+                                                        setOptions(val?.options)
+                                                    }}
+                                                    disablePortal={true}
+                                                    options={props.departements}
+                                                    getOptionLabel={(option)=>option.libelle}
+                                                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                                                    renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Departement"}  required label={params.libelle}/>}
+
+                                                />
+                                            </FormControl>
+                                        </div>
+                                    }
+
+                                    {
+                                        dataEdit.option &&
+                                        <div className={"w-full"}>
+                                            <FormControl  className={"w-full"}>
+                                                <Autocomplete
+                                                    value={dataEdit.option}
+                                                    onChange={(e,val)=>{
+                                                        setDataEdit("option",val)
+                                                    }}
+                                                    disablePortal={true}
+                                                    options={options}
+                                                    getOptionLabel={(option)=>option.libelle}
+                                                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                                                    renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Option"} label={params.libelle}/>}
+
+                                                />
+                                            </FormControl>
+                                        </div>
+                                    }
+
+                                    {
+                                        <div className={"w-full"}>
+                                            <TextField
+                                                value={dataEdit.code}
+                                                className={"w-full"}  name={"code"} label={"Code"} onChange={(e)=>setDataEdit("code",e.target.value)}
+                                            />
+                                        </div>
+
+                                    }
+
+                                    <div className={"md:grid-cols-2 sm:grid-cols-2"}>
+                                        <button className={"p-3 text-white bg-green-600 rounded"} type={"submit"}>
+                                            Enregister
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </Box>
+                    </Modal>
+
+                    {/*
+
+                             <Modal
                         keepMounted
                         open={open}
                         onClose={handleClose}
@@ -270,6 +412,9 @@ function Index(props) {
                             </form>
                         </Box>
                     </Modal>
+
+                    */
+                    }
 
                     <div style={{height:450, width: '100%' }} className={"flex justify-center"}>
                         {

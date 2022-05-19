@@ -44,7 +44,7 @@ Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","pa
 
     Route::resource('etablissement.anneeScolaire',\App\Http\Controllers\Etablissement\AnneeScolaireController::class);
     Route::resource('etablissement.inscription',\App\Http\Controllers\Etablissement\InscriptionController::class)->middleware("anneeScolaireIsDefined");
-    Route::get("etablissement/{userId}/inscription/search/tuteur/{matricule?}/{search}",[\App\Http\Controllers\Etablissement\InscriptionController::class,"search"])->name("etablissement.inscription.search")->middleware("anneeScolaireIsDefined");
+    Route::get("etablissement/{userId}/inscription/search/tuteur/{search}",[\App\Http\Controllers\Etablissement\InscriptionController::class,"search"])->name("etablissement.inscription.tuteur.search")->middleware("anneeScolaireIsDefined");
     Route::resource('etablissement.apprenant',\App\Http\Controllers\Etablissement\ApprenantController::class);
 
     Route::post("etablissement/{userId}/inscription/searchInscription",[\App\Http\Controllers\Etablissement\InscriptionController::class,"searchInscription"])->name("etablissement.inscription.searchInscription");
