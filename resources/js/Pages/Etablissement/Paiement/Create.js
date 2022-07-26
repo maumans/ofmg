@@ -26,6 +26,7 @@ import {CheckBox} from "@mui/icons-material";
 import List from "@mui/material/List";
 import capitalize from "@/Utils/Capitalize";
 import SnackBar from "@/Components/SnackBar";
+import {motion} from "framer-motion";
 
 const style = {
     position: 'absolute',
@@ -79,7 +80,11 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
     const [open, setOpen] = useState(false);
 
-    const {data,setData}=useForm({
+    const [apprenantsSt, setApprenantsSt] = useState([]);
+
+    const [aucunResultat, setAucunResultat] = useState(null)
+
+    const {data,setData,post,reset}=useForm({
         "matricule":"",
         "modePaiements":"",
         "typePaiements":"",
@@ -92,6 +97,11 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         tuteurSearch:"",
         "tuteurSelectedId":null
     });
+
+
+    useEffect(() => {
+        setApprenantsSt(apprenants)
+    },[])
 
     function handleClose()
     {
@@ -117,18 +127,27 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
     function handleSubmit(e)
     {
         e.preventDefault();
-        Inertia.post(route("etablissement.paiement.store",[auth?.user?.id]),data,{preserveScroll:true})
+        post(route("etablissement.paiement.store",[auth?.user?.id]),{data:data,preserveScroll:true,onSuccess:()=>reset()})
     }
 
     function handleSearchMat(matricule)
     {
         //Inertia.post(route("etablissement.paiement.search",auth?.user?.id),{matricule:matricule || null,classeId:data?.classeSearch?.id || null,tuteurNumber:data?.tuteurSearch || null},{preserveScroll:true})
+
         axios.post(route("etablissement.paiement.search",auth?.user?.id),{matricule:matricule || null,classeId:data?.classeSearch?.id || null,tuteurNumber:data?.tuteurSearch || null},{preserveScroll:true}).then(response=>{
             setSearchResult(response.data)
         }).catch(err=>{
             console.log(err)
         })
     }
+
+    useEffect(() => {
+        console.log(searchResult)
+    })
+
+    useEffect(() => {
+        searchResult?.apprenants && setApprenantsSt(searchResult.apprenants)
+    },[searchResult?.apprenants])
 
     useLayoutEffect(() => {
         setSuccessSt(success)
@@ -223,10 +242,17 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         { field: 'nom', headerName: 'NOM' ,flex:1,minWidth: 130 },
         { field: 'matricule', headerName: 'MATRICULE',flex:1,minWidth: 130 },
         { field: 'date_naissance', headerName: 'DATE DE NAISSANCE',flex:1,minWidth: 200 },
+        { field: 'classe', headerName: 'CLASSE',flex:1,minWidth:250,
+            renderCell:(cellValues)=>(
+                <div className={"space-x-2"}>
+                    {cellValues.row.classe.libelle}
+                </div>
+            )
+        },
         { field: 'action', headerName: 'ACTION',flex:1,minWidth:200,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button type="button" onClick={()=>handleSearchMat(cellValues.row.matricule)} className={"p-2 text-white bg-blue-400"}>
+                    <button type="button" onClick={()=>handleSearchMat(cellValues.row.matricule)} className={"p-2 text-white bg-blue-400 rounded"}>
                         Proceder au paiement
                     </button>
                 </div>
@@ -262,7 +288,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         <AdminPanel auth={auth} error={error} active={"paiement"}>
 
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white shadow-sm sm:rounded-lg">
                         <h1 className="p-6 bg-white border-b border-gray-200 text-xl p-2 text-white bg-orange-400">PAIEMENT</h1>
 
@@ -300,17 +326,22 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                 </div>
                             </div>
 
-                            <div>
+                            <div className={"p-5"}>
                                 {
-                                    searchResult?.apprenants && searchResult.apprenants.length > 0 && !apprenantsList &&
+                                     apprenantsSt.length > 0 &&
                                     <DataGrid
-                                        rows={searchResult.apprenants}
+                                        rows={apprenantsSt}
                                         columns={columns}
-                                        pageSize={5}
-                                        rowsPerPageOptions={[5]}
-                                        checkboxSelection
+                                        pageSize={7}
+                                        rowsPerPageOptions={[7]}
                                         autoHeight
                                     />
+                                }
+                            </div>
+
+                            <div className={"flex justify-center"}>
+                                {
+                                    aucunResultat && aucunResultat
                                 }
                             </div>
 
@@ -322,16 +353,23 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                         <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                                             <div>
                                                 <form onSubmit={handleSubmit} className={"space-y-5 my-5 "}>
-
                                                     {
-                                                        apprenantsList?.map((apprenant)=>(
+                                                        apprenantsList?.map((apprenant,i)=>(
 
 
-                                                            <div key={apprenant.id} className={"w-full p-5 divide-y"}>
-                                                                {console.log(searchResult)}
+                                                            <motion.div
+                                                                initial={{y:-100,opacity:0}}
+                                                                animate={{y:0,opacity:1}}
+                                                                transition={{
+                                                                    duration:0.5,
+                                                                    type:"spring",
+                                                                    delay:i*0.1
+                                                                }}
+
+                                                                key={apprenant.id} className={"w-full p-5 divide-y"}>
 
                                                                 <Accordion
-                                                                    defaultExpanded={searchResult?.apprenant!==null}
+                                                                    defaultExpanded={ apprenantsList?.length===1}
                                                                 >
                                                                     <AccordionSummary
                                                                         expandIcon={<ExpandMoreIcon />}
@@ -352,7 +390,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                                                     <span className={"font-bold text-lg"}>Etablissement:</span> <span>{apprenant?.classe.etablissement.nom}</span>
                                                                                 </div>
                                                                                 <div>
-                                                                                    <span className={"font-bold text-lg"}>Classe:</span> <span>{apprenant?.classe?.description+"("+apprenant?.classe?.libelle+")"}</span>
+                                                                                    <span className={"font-bold text-lg"}>Classe:</span> <span>{apprenant?.classe?.libelle}</span>
                                                                                 </div>
                                                                             </div>
                                                                         }
@@ -395,6 +433,9 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                                                             );
                                                                                         })}
                                                                                     </List>
+                                                                                    <div className="text-red-600">
+                                                                                        {errors?.tuteurSelectedId}
+                                                                                    </div>
 
                                                                                 </div>
 
@@ -404,83 +445,98 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                                             </div>
                                                                             {
                                                                                 (apprenant?.tarifs) && apprenant?.tarifs.map((t) =>(
-
-                                                                                    <div key={t.id} className={"grid grid-cols-1 gap-2 p-5 rounded"} style={{backgroundColor:"#f8f1eb"}}>
+                                                                                    <div key={t.id} className={"relative shadow-lg"}>
                                                                                         {
-                                                                                            <div className={"text-xl p-2 rounded text-orange-400 bg-white"}>
-                                                                                                <div key={t.id} className={"text-xl"}>
-                                                                                                    <FormControlLabel control={<Checkbox name={apprenant.id+"_"+t.id} onChange={handleChangeCheckbox} />} label={t.type_paiement.libelle} />
+                                                                                            t.pivot.resteApayer===0 ?
+                                                                                                <div className={"absolute -right-2 -top-3 rounded p-3 bg-green-400 text-white"}>
+                                                                                                    Payé
                                                                                                 </div>
-                                                                                            </div>
-                                                                                        }
-                                                                                        {
-                                                                                            t?.montant &&
-                                                                                            <div>
-                                                                                                <span className={"font-bold"}>Total à payer: </span> <span>{formatNumber(t.montant)} FG</span>
-                                                                                            </div>
-                                                                                        }
-                                                                                        {
-                                                                                            t?.montant &&
-                                                                                            <div>
-                                                                                                <span className={"font-bold"}>Somme <span className="lowercase">{t.frequence} à payer: </span> </span> <span> {formatNumber(t.montant/(t.frequence==="MENSUELLE"?t.pivot.nombreMois:t.frequence==="SEMESTRIELLE"?nbrMois/2:t.frequence==="TRIMESTRIELLE"?nbrMois/3:t.frequence==="ANNUELLE"? 1:1))} FG</span>
-                                                                                            </div>
-                                                                                        }
-                                                                                        {
-                                                                                            t?.montant &&
-                                                                                            <div>
-                                                                                                <span className={"font-bold"}>Reste à payer: </span> <span>{formatNumber(t.pivot.resteApayer)} FG</span>
-                                                                                            </div>
+                                                                                                :
+                                                                                                <div className={"absolute -right-2 -top-3 rounded p-3 bg-red-400 text-white"}>
+                                                                                                    Reste à payer
+                                                                                                </div>
                                                                                         }
 
-                                                                                        {
-                                                                                            t?.montant &&
-                                                                                            <div>
-                                                                                                <span className={"font-bold"}>Payé: </span> <span>{formatNumber(t.montant-t.pivot.resteApayer)} FG</span>
-                                                                                            </div>
-                                                                                        }
-                                                                                        {
-                                                                                            t?.frequence &&
-                                                                                            <div>
-                                                                                                <span className={"font-bold text-lg"}>Frequence de paiement: </span> <span> {t.frequence} </span>
-                                                                                            </div>
-                                                                                        }
-                                                                                        {
-                                                                                            t?.echeance &&
-                                                                                            <div>
-                                                                                                <span className={"font-bold"}>Echeance: </span> <span>Le {t.echeance} de chaque mois</span>
-                                                                                            </div>
-                                                                                        }
-
-
-                                                                                        {
-                                                                                            tarifs &&
-                                                                                            <div  className={"grid gap-3 grid-cols-1"}>
+                                                                                        <div className={"grid grid-cols-1 gap-2 p-5 rounded h-full"} style={{backgroundColor:"#f8f1eb"}}>
+                                                                                            {
+                                                                                                <div className={"text-xl p-2 rounded text-orange-400 bg-white"}>
+                                                                                                    <div key={t.id} className={"text-xl"}>
+                                                                                                        <FormControlLabel control={<Checkbox defaultChecked={t.pivot.resteApayer===0} disabled={t.pivot.resteApayer===0} name={apprenant.id+"_"+t.id} onChange={handleChangeCheckbox} />} label={t.type_paiement.libelle} />
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            }
+                                                                                            {
+                                                                                                t?.montant &&
                                                                                                 <div>
-                                                                                                    <TextField
-                                                                                                        disabled={!tarifs[apprenant.id+"_"+t.id]}
-                                                                                                        alt="Veuillez cocher le champs"
-                                                                                                        className={"w-full"}  name={apprenant.id+"_"+t.id} label={"Montant"} value={montants[apprenant.id+"_"+t.id]} onChange={(e)=>setMontants(montants=>({
-                                                                                                        ...montants,
-                                                                                                        [apprenant.id+"_"+t.id]:e.target.value
-                                                                                                    }))}
-                                                                                                        InputProps={{
-                                                                                                            inputComponent: NumberFormatCustom,
-                                                                                                            inputProps:{
-                                                                                                                max:t.pivot.resteApayer,
-                                                                                                                name:apprenant.id+"_"+t.id
-
-                                                                                                            },
-                                                                                                        }}
-                                                                                                        required
-                                                                                                    />
-                                                                                                    <div className={"flex my-2 text-red-600"}>{errors["montants."+apprenant.id+"_"+t.id] && errors["montants."+apprenant.id+"_"+t.id]}</div>
+                                                                                                    <span className={"font-bold"}>Total à payer: </span> <span>{formatNumber(t.montant)} FG</span>
                                                                                                 </div>
+                                                                                            }
+                                                                                            {
+                                                                                                t?.montant &&
+                                                                                                <div>
+                                                                                                    <span className={"font-bold"}>Somme <span className="lowercase">{t.frequence} à payer: </span> </span> <span> {formatNumber(t.montant/(t.frequence==="MENSUELLE"?t.pivot.nombreMois:t.frequence==="SEMESTRIELLE"?nbrMois/2:t.frequence==="TRIMESTRIELLE"?nbrMois/3:t.frequence==="ANNUELLE"? 1:1))} FG</span>
+                                                                                                </div>
+                                                                                            }
+                                                                                            {
+                                                                                                t?.montant &&
+                                                                                                <div>
+                                                                                                    <span className={"font-bold"}>Reste à payer: </span> <span>{formatNumber(t.pivot.resteApayer)} FG</span>
+                                                                                                </div>
+                                                                                            }
 
-                                                                                            </div>
-                                                                                        }
+                                                                                            {
+                                                                                                t?.montant &&
+                                                                                                <div>
+                                                                                                    <span className={"font-bold"}>Payé: </span> <span>{formatNumber(t.montant-t.pivot.resteApayer)} FG</span>
+                                                                                                </div>
+                                                                                            }
+                                                                                            {
+                                                                                                t?.frequence &&
+                                                                                                <div>
+                                                                                                    <span className={"font-bold text-lg"}>Frequence de paiement: </span> <span> {t.frequence} </span>
+                                                                                                </div>
+                                                                                            }
+                                                                                            {
+                                                                                                t?.echeance &&
+                                                                                                <div>
+                                                                                                    <span className={"font-bold"}>Echeance: </span> <span>Le {t.echeance} de chaque mois</span>
+                                                                                                </div>
+                                                                                            }
+
+
+                                                                                            {
+                                                                                                (tarifs && t.pivot.resteApayer!==0) &&
+                                                                                                <div  className={"grid gap-3 grid-cols-1"}>
+                                                                                                    <div>
+                                                                                                        <TextField
+                                                                                                            disabled={!tarifs[apprenant.id+"_"+t.id]}
+                                                                                                            alt="Veuillez cocher le champs"
+                                                                                                            className={"w-full"}  name={apprenant.id+"_"+t.id} label={"Montant"} value={montants[apprenant.id+"_"+t.id]} onChange={(e)=>setMontants(montants=>({
+                                                                                                            ...montants,
+                                                                                                            [apprenant.id+"_"+t.id]:e.target.value
+                                                                                                        }))}
+                                                                                                            InputProps={{
+                                                                                                                inputComponent: NumberFormatCustom,
+                                                                                                                inputProps:{
+                                                                                                                    max:t.pivot.resteApayer,
+                                                                                                                    name:apprenant.id+"_"+t.id
+
+                                                                                                                },
+                                                                                                            }}
+                                                                                                            required
+                                                                                                        />
+                                                                                                        <div className={"flex my-2 text-red-600"}>{errors["montants."+apprenant.id+"_"+t.id] && errors["montants."+apprenant.id+"_"+t.id]}</div>
+                                                                                                    </div>
+
+                                                                                                </div>
+                                                                                            }
+
+
+                                                                                        </div>
 
 
                                                                                     </div>
+
 
 
                                                                                 ))
@@ -488,7 +544,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                                         </div>
                                                                     </AccordionDetails>
                                                                 </Accordion>
-                                                            </div>
+                                                            </motion.div>
                                                         ))
                                                     }
 

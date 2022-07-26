@@ -9,6 +9,8 @@ import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {frFR} from '@mui/material/locale';
 import {frFR as dgfrFR} from '@mui/x-data-grid';
 
+import {motion} from 'framer-motion'
+
 
 const theme = createTheme(
     {
@@ -40,7 +42,9 @@ export default function Authenticated({auth, header, children}) {
                             <div className="flex">
                                 <div className="shrink-0 flex items-center">
                                     <Link href="/">
-                                        <div className={"text-3xl font-bold text-orange-400"}>
+                                        <div
+                                            className={"text-3xl font-bold text-orange-400"}
+                                        >
                                            E-School
                                         </div>
                                     </Link>
@@ -51,9 +55,8 @@ export default function Authenticated({auth, header, children}) {
                                         Accueil
                                     </NavLink>
                                     {
-
-                                        auth?.tuteur &&
-                                        <NavLink href={route('tuteur.paiement.index',[auth?.user.id])} active={route().current('tuteur.paiement.index') || route().current('tuteur.paiement.search')}>
+                                        (auth?.tuteur || !auth?.user) &&
+                                        <NavLink href={auth?.tuteur?route('tuteur.paiement.index',[auth?.user.id]):route('paiement.create')} active={route().current('tuteur.paiement.index') || route().current('tuteur.paiement.search') || route().current('paiement.create') || route().current('paiement.search')}>
                                             Paiement
                                         </NavLink>
                                     }
@@ -195,7 +198,7 @@ export default function Authenticated({auth, header, children}) {
 
                         {
                             auth.user
-                                &&
+                                ?
                                 <div className="pt-4 pb-1 border-t border-gray-200">
 
                                     <div className="px-4">
@@ -209,7 +212,15 @@ export default function Authenticated({auth, header, children}) {
                                         </ResponsiveNavLink>
                                     </div>
                                 </div>
-
+                                :
+                                <>
+                                    <ResponsiveNavLink active={route().current() === "login"} method="get" href={route('login')} as="button">
+                                        Connexion
+                                    </ResponsiveNavLink>
+                                    <ResponsiveNavLink method="get" active={route().current() === "register"} href={route('register')} as="button">
+                                        Inscription
+                                    </ResponsiveNavLink>
+                                </>
 
                         }
                     </div>

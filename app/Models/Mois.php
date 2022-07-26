@@ -16,5 +16,15 @@ class Mois extends Model
         return $this->hasMany(Mois_Paye::class);
     }
 
+    public function salaires()
+    {
+        return $this->hasMany(Salaire::class);
+    }
+
+    public function contratFonctionMois()
+    {
+        return $this->hasMany(Contrat_fonction_mois::class);
+    }
+
 
 }

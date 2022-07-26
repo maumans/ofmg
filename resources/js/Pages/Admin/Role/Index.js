@@ -13,18 +13,20 @@ import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-react";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SnackBar from "@/Components/SnackBar";
 
 function Index(props) {
 
     const [roles,setRoles] = useState();
 
-    const {data,setData,post}=useForm({
+    const {data,setData,post,reset}=useForm({
         "libelle":"",
+        "typeRole":"",
     });
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'libelle', headerName: 'LIBELLE', width: 130 },
+        { field: 'libelle', headerName: 'LIBELLE', width: 250 },
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
@@ -41,7 +43,7 @@ function Index(props) {
     ];
 
     function handleDelete(id){
-        confirm("Voulez-vous supprimer role") && Inertia.delete(route("admin.role.destroy",[props.auth.user.id,id]),{preserveScroll:true})
+        confirm("Voulez-vous supprimer ce role") && Inertia.delete(route("admin.role.destroy",[props.auth.user.id,id]),{preserveScroll:true})
     }
 
     function handleEdit(id){
@@ -56,7 +58,7 @@ function Index(props) {
     {
         e.preventDefault();
 
-        post(route("admin.role.store",props.auth.user.id),data,)
+        post(route("admin.role.store",props.auth.user.id),{data,onSuccess: ()=>reset("libelle")})
 
     }
 
@@ -71,14 +73,27 @@ function Index(props) {
                 <div>
 
                     <div className={"my-5 text-2xl"}>
-                        Gestions des roles
+                        Gestion des roles
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5"}>
-                        <div className={"space-x-5 flex"}>
+                        <div className={"grid md:grid-cols-2 grid-col-1 gap-4"} style={{maxWidth:800}}>
                             <div>
                                 <TextField  name={"libelle"} label={"libelle"} value={data.libelle} onChange={(e)=>setData("libelle",e.target.value)} required/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.libelle}</div>
+                            </div>
+
+                            <div>
+                                <Autocomplete
+                                    onChange={(e,val)=>setData("typeRole",val)}
+                                    disablePortal={true}
+                                    id={"combo-box-demo"}
+                                    options={props.typeRoles}
+                                    getOptionLabel={option=>option.libelle}
+                                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                                    renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Type de role"} label={params.libelle}/>}
+                                />
+                                <div className={"text-red-600"}>{props.errors?.roles}</div>
                             </div>
                             <div>
                                 <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"} style={{height:56}}>
@@ -98,13 +113,13 @@ function Index(props) {
                                 }}
                                 rows={roles}
                                 columns={columns}
-                                pageSize={5}
-                                rowsPerPageOptions={[5]}
-                                checkboxSelection
+                                pageSize={10}
+                                rowsPerPageOptions={[10]}
                                 autoHeight
                             />
                         }
                     </div>
+                    <SnackBar success={ props.success } />
                 </div>
             </div>
         </AdminPanel>

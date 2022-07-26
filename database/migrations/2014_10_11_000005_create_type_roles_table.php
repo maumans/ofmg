@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddColumnCodeToClassesTable extends Migration
+class CreateTypeRolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class AddColumnCodeToClassesTable extends Migration
      */
     public function up()
     {
-        Schema::table('classes', function (Blueprint $table) {
-            $table->string('code')->nullable();
+        Schema::create('type_roles', function (Blueprint $table) {
+            $table->id();
+            $table->string("libelle");
+            $table->timestamps();
         });
     }
 
@@ -25,8 +27,6 @@ class AddColumnCodeToClassesTable extends Migration
      */
     public function down()
     {
-        Schema::table('classes', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('type_roles');
     }
 }

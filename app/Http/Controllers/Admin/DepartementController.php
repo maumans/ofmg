@@ -47,7 +47,7 @@ class DepartementController extends Controller
             "libelle"=>"required"
         ]));
 
-        return redirect()->back();
+        return redirect()->back()->with("success", "Departement créé avec succès");;
     }
 
     /**

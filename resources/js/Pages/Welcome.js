@@ -31,7 +31,7 @@ export default function Welcome(props) {
             <div>
 
                 <NavBarSlider
-                    titre={props.auth.etablissement ?"Bienvenue à"+props.auth?.user?.etablissement_admin?.nom:"La plateforme idéale pour vos paiements scolaires et universitaires"}
+                    titre={props.auth.etablissement ?"Bienvenue à "+props.auth?.user?.etablissement_admin?.nom:"La plateforme idéale pour vos paiements scolaires et universitaires"}
                     images={[{image:img1,description:"Frais scolaires"},{image:img2,description:"Paiement de salaire"},{image:img3,description:"Rapport de paiement"},{image:img1,description:"Alerte sur les paiements"},]}
                 />
             </div>

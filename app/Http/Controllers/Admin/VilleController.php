@@ -52,7 +52,7 @@ class VilleController extends Controller
 
         $ville->region()->associate(Region::find($request->region["id"]))->save();
 
-        return redirect()->back();
+        return redirect()->back()->with("success", "Ville créée avec succès");;
     }
 
     /**

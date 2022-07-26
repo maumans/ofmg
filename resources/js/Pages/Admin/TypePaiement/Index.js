@@ -13,18 +13,19 @@ import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-react";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SnackBar from "@/Components/SnackBar";
 
 function Index(props) {
 
     const [typePaiements,setTypePaiements] = useState();
 
-    const {data,setData,post}=useForm({
+    const {data,setData,post,reset}=useForm({
         "libelle":"",
     });
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'libelle', headerName: 'LIBELLE', width: 130 },
+        { field: 'libelle', headerName: 'LIBELLE', width: 250 },
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
@@ -41,7 +42,7 @@ function Index(props) {
     ];
 
     function handleDelete(id){
-        confirm("Voulez-vous supprimer ce type de paiement") && Inertia.delete(route("admin.typePaiement.destroy",[props.auth.user.id,id]),{preserveScroll:true})
+        confirm("Voulez-vous supprimer ce type de frais") && Inertia.delete(route("admin.typePaiement.destroy",[props.auth.user.id,id]),{preserveScroll:true})
     }
 
     function handleEdit(id){
@@ -56,7 +57,7 @@ function Index(props) {
     {
         e.preventDefault();
 
-        post(route("admin.typePaiement.store",props.auth.user.id),data,)
+        post(route("admin.typePaiement.store",props.auth.user.id),{data,onSuccess: ()=>reset("libelle")})
 
     }
 
@@ -71,7 +72,7 @@ function Index(props) {
                 <div>
 
                     <div className={"my-5 text-2xl"}>
-                        Gestions des types de paiements
+                        Gestion des types de paiements
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5"}>
@@ -100,11 +101,13 @@ function Index(props) {
                                 columns={columns}
                                 pageSize={5}
                                 rowsPerPageOptions={[5]}
-                                checkboxSelection
                                 autoHeight
                             />
                         }
                     </div>
+
+                    <SnackBar success={ props.success } />
+
                 </div>
             </div>
         </AdminPanel>

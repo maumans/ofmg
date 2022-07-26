@@ -8,6 +8,7 @@ use App\Models\Tarif;
 use App\Models\Type_paiement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
@@ -22,10 +23,14 @@ class TarifController extends Controller
     {
         $etablissement=Auth::user()->etablissementAdmin;
 
-        $tarifs=$etablissement->tarifs()->with("classe","typePaiement")->get();
+        $tarifs=$etablissement->tarifs()->with("classe","typePaiement")->orderByDesc('created_at')->get();
 
 
-        $typePaiements=Type_paiement::all();
+        $typePaiements=Type_paiement::with(["tarifs"=>function($query){
+            $query->where('etablissement_id',Auth::user()->etablissementAdmin->id)->get();
+        }])->get();
+
+        //dd($typePaiements);
 
         $classes=$etablissement->classes;
 
@@ -57,19 +62,48 @@ class TarifController extends Controller
             "montant" =>"required",
         ]);
 
-        $tarif=Tarif::create([
-            "montant"=>$request->montant,
-            "obligatoire"=>$request->obligatoire,
-            "frequence"=>$request->typePaiement["libelle"]=="INSCRIPTION"?"ANNUELLE":$request->frequence,
-            "echeance"=>$request->typePaiement["libelle"]=="INSCRIPTION"?null:$request->echeance,
-        ]);
+        DB::beginTransaction();
 
-        $tarif->etablissement()->associate(Auth::user()->etablissementAdmin)->save();
-        $tarif->anneeScolaire()->associate(Auth::user()->etablissementAdmin->anneeEnCours)->save();
-        $tarif->typePaiement()->associate(Type_paiement::find($request->typePaiement["id"]))->save();
-        $request->classe && $tarif->classe()->associate(Classe::find($request->classe["id"]))->save();
+        try{
 
-       return redirect()->back()->with("success","tarif crée avec succès");
+            foreach($request->classes as $classe)
+            {
+
+                /*
+                    $request->validate([
+                        "classes.*" =>Rule::unique("tarifs")->where(function($query) use ($request,$classe){
+                           return $query->where("type_paiement_id",$request->typePaiement["id"])->where("classe_id",$classe["id"]);
+                        }),
+                    ],
+                    [
+                        "classes.*.unique"=>["tarifs existant"]
+                    ]);
+                 */
+
+
+                $tarif=Tarif::create([
+                    "montant"=>$request->montant,
+                    "obligatoire"=>$request->obligatoire,
+                    "frequence"=>$request->typePaiement["libelle"]=="INSCRIPTION"?"ANNUELLE":$request->frequence,
+                    "echeance"=>$request->typePaiement["libelle"]=="INSCRIPTION"?null:$request->echeance,
+                ]);
+
+                $tarif->etablissement()->associate(Auth::user()->etablissementAdmin)->save();
+                $tarif->anneeScolaire()->associate(Auth::user()->etablissementAdmin->anneeEnCours)->save();
+                $tarif->typePaiement()->associate(Type_paiement::find($request->typePaiement["id"]))->save();
+                $classe && $tarif->classe()->associate(Classe::find($classe["id"]))->save();
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with("success","Service(s) crée(s) avec succès");
+        }
+        catch(Exception $e){
+
+            echo($e);
+            DB::rollback();
+        }
+
     }
 
     /**

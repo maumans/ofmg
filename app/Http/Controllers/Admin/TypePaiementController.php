@@ -43,7 +43,7 @@ class TypePaiementController extends Controller
             "libelle"=>"required"
         ]));
 
-        return redirect()->back();
+        return redirect()->back()->with("success", "Type de frais créé avec succès");;
     }
 
     /**

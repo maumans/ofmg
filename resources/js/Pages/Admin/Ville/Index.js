@@ -19,7 +19,7 @@ function Index(props) {
 
     const [villes,setVilles] = useState();
 
-    const {data,setData,post}=useForm({
+    const {data,setData,post,reset}=useForm({
         "libelle":"",
         "region":""
     });
@@ -27,7 +27,7 @@ function Index(props) {
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
         { field: 'libelle', headerName: 'VILLE', width: 130 },
-        { field: 'region', headerName: 'REGION', width: 130,renderCell:(r)=>r.row.region?.libelle },
+        { field: 'region', headerName: 'REGION', width: 250,renderCell:(r)=>r.row.region?.libelle },
         { field: 'action', headerName: 'ACTION',width:350,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
@@ -62,7 +62,7 @@ function Index(props) {
     {
         e.preventDefault();
 
-        post(route("admin.ville.store",props.auth.user.id),data,)
+        post(route("admin.ville.store",props.auth.user.id),{data,onSuccess: ()=>reset("libelle")})
 
     }
 
@@ -77,7 +77,7 @@ function Index(props) {
                 <div>
 
                     <div className={"my-5 text-2xl"}>
-                        Gestions des villes
+                        Gestion des villes
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 "}>

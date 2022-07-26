@@ -36,5 +36,13 @@ class Annee_scolaire extends Model
         return $this->hasOne(Apprenant_tarif::class,"annee_scolaire_id");
     }
 
+    public function salaire()
+    {
+        return $this->hasMany(Salaire::class);
+    }
 
+    public function contratFonctions()
+    {
+        return $this->hasMany(Contrat::class);
+    }
 }

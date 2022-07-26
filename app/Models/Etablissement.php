@@ -78,5 +78,30 @@ class Etablissement extends Model
         else return false;
     }
 
+    public function fonctions()
+    {
+        return $this->hasMany(Fonction::class);
+    }
+
+    public function personnels()
+    {
+        return $this->hasMany(Personnel::class);
+    }
+
+    public function salaires()
+    {
+        return $this->hasMany(Salaire::class);
+    }
+
+    public function paiements()
+    {
+        return $this->hasMany(Salaire::class);
+    }
+
+    public function contrats()
+    {
+        return $this->belongsToMany(Contrat::class);
+    }
+
 
 }

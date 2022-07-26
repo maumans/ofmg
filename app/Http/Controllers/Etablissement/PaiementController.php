@@ -26,7 +26,10 @@ class PaiementController extends Controller
      */
     public function index()
     {
-        //
+        $paiements=Paiement::whereRelation("tarif.etablissement","id",Auth::user()->etablissementAdmin->id)->with("apprenant","typePaiement","modePaiement")->orderByDesc('created_at')->get();
+
+
+        return Inertia::render('Etablissement/Paiement/Index',["paiements"=>$paiements]);
     }
 
     /**
@@ -47,9 +50,17 @@ class PaiementController extends Controller
 
         if(!$matricule)
         {
-            $classe=Classe::where("id",$request->classeId)->first();
+            if($request->classeId)
+            {
+                $classe=Classe::where("id",$request->classeId)->first();
 
-            $apprenants=$classe ? $classe->apprenants:null;
+                $apprenants=$classe ? $classe->apprenants()->with("classe")->orderByDesc("created_at")->get() : null;
+            }
+            else
+            {
+                $apprenants=Apprenant::whereRelation("classe.etablissement","id",Auth::user()->etablissementAdmin->id)->with("classe")->orderByDesc('created_at')->get();
+            }
+
 
         }
 
@@ -107,7 +118,10 @@ class PaiementController extends Controller
     {
         $classes=Classe::where('etablissement_id',Auth::user()->etablissementAdmin->id)->with("apprenants")->get();
 
-        return Inertia::render("Etablissement/Paiement/Create",["classes"=>$classes]);
+        $apprenants=Apprenant::whereRelation("classe.etablissement","id",Auth::user()->etablissementAdmin->id)->with("classe")->orderByDesc('created_at')->get();
+
+
+        return Inertia::render("Etablissement/Paiement/Create",["classes"=>$classes,"apprenants"=>$apprenants]);
     }
 
     /**
@@ -125,7 +139,12 @@ class PaiementController extends Controller
             "total"=>"required",
             "numero_retrait"=>"required",
             "tuteurSelectedId"=>"required",
+        ],
+        [
+            "tuteurSelectedId.required"=>"Veuillez selectionner un tuteur",
         ]);
+
+
 
 
 
@@ -175,20 +194,24 @@ class PaiementController extends Controller
 
                 //dd($payeParTarif,$sommeMensuelle,$tarif->montant);
 
+
                 foreach($intervalle as $date)
                 {
+
+
                     $moisId=Mois::where("position",$date->month)->first()->id;
+
+
 
                     $moisPaye=Mois_Paye::where("apprenant_tarif_id",$tarif->pivot->id)->where("mois_id",$moisId)->first();
 
-                    if($moisPaye)
-                    {
+
                         if($repartition>=$sommeMensuelle)
                         {
-
                             $moisPaye->montant=$sommeMensuelle;
                             $moisPaye->save();
                             $repartition=$repartition-$sommeMensuelle;
+
                         }
                         else
                         {
@@ -196,6 +219,8 @@ class PaiementController extends Controller
                             {
                                 $moisPaye->montant=0;
                                 $moisPaye->save();
+
+
                             }
                             else
                             {
@@ -204,9 +229,6 @@ class PaiementController extends Controller
                                 $repartition=0;
                             }
                         }
-                    }
-
-
 
                 }
 
@@ -214,7 +236,7 @@ class PaiementController extends Controller
 
             DB::commit();
 
-            return redirect()->route("etablissement.paiement.create",["etablissement"=>Auth::user()->etablissementAdmin->id])->with(["success"=>"Paiements effectués","montantTotal"=>$request->total]);
+            return redirect()->route("etablissement.paiement.index",["etablissement"=>Auth::user()->etablissementAdmin->id])->with(["success"=>"Paiements effectués","montantTotal"=>$request->total]);
         }
         catch(Exception $e){
 

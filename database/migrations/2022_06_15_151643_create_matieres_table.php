@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddColumnOptionIdToClassesTable extends Migration
+class CreateMatieresTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class AddColumnOptionIdToClassesTable extends Migration
      */
     public function up()
     {
-        Schema::table('classes', function (Blueprint $table) {
-            $table->foreignId('option_id')->nullable()->constrained("options");
+        Schema::create('matieres', function (Blueprint $table) {
+            $table->id();
+            $table->string('libelle');
+            $table->timestamps();
         });
     }
 
@@ -25,8 +27,6 @@ class AddColumnOptionIdToClassesTable extends Migration
      */
     public function down()
     {
-        Schema::table('classes', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('matieres');
     }
 }

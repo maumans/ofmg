@@ -13,20 +13,21 @@ import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-react";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SnackBar from "@/Components/SnackBar";
 
 function Index(props) {
 
     const [communes,setCommunes] = useState();
 
-    const {data,setData,post}=useForm({
+    const {data,setData,post,reset}=useForm({
         "libelle":"",
         "ville":""
     });
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'libelle', headerName: 'COMMUNE', width: 130 },
-        { field: 'ville', headerName: 'VILLE', width: 130,renderCell:(r)=>r.row.ville?.libelle },
+        { field: 'libelle', headerName: 'COMMUNE', width: 250 },
+        { field: 'ville', headerName: 'VILLE', width: 250,renderCell:(r)=>r.row.ville?.libelle },
         { field: 'action', headerName: 'ACTION',width:300,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
@@ -43,7 +44,7 @@ function Index(props) {
     ];
 
     function handleDelete(id){
-        confirm("Voulez-vous supprimer cette region") && Inertia.delete(route("admin.commune.destroy",[props.auth.user.id,id]),{preserveScroll:true})
+        confirm("Voulez-vous supprimer cette commune") && Inertia.delete(route("admin.commune.destroy",[props.auth.user.id,id]),{preserveScroll:true,onSuccess: ()=>reset("libelle","ville")})
     }
 
     function handleEdit(id){
@@ -58,7 +59,7 @@ function Index(props) {
     {
         e.preventDefault();
 
-        post(route("admin.commune.store",props.auth.user.id),data,)
+        post(route("admin.commune.store",props.auth.user.id),{data,onSuccess: ()=>reset("libelle")})
 
     }
 
@@ -73,7 +74,7 @@ function Index(props) {
                 <div>
 
                     <div className={"my-5 text-2xl"}>
-                        Gestions des communes
+                        Gestion des communes
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5"}>
@@ -118,11 +119,11 @@ function Index(props) {
                                 columns={columns}
                                 pageSize={5}
                                 rowsPerPageOptions={[5]}
-                                checkboxSelection
                                 autoHeight
                             />
                         }
                     </div>
+                    <SnackBar success={ props.success }/>
                 </div>
             </div>
         </AdminPanel>

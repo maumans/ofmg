@@ -20,11 +20,13 @@ class AnneeScolaireController extends Controller
     {
         $anneeScolaires=Auth::user()->etablissementAdmin->anneeScolaires;
 
-        $anneeEnCoursFinie=Carbon::make(Auth::user()->etablissementAdmin->anneeEnCours->dateFin)->isBefore(Carbon::now());
+        $anneeEnCoursFinie=Auth::user()->etablissementAdmin->anneeEnCours ==null;
+
+        $anneeEnCours=Auth::user()->etablissementAdmin->anneeEnCours;
 
         $aujourdhui=Carbon::now()->format('Y-m-d');
 
-        return Inertia::render('Etablissement/AnneeScolaire/Index',["anneeScolaires"=>$anneeScolaires,"anneeEnCoursFinie"=>$anneeEnCoursFinie,"aujourdhui"=>$aujourdhui]);
+        return Inertia::render('Etablissement/AnneeScolaire/Index',["anneeScolaires"=>$anneeScolaires,"anneeEnCoursFinie"=>$anneeEnCoursFinie,"aujourdhui"=>$aujourdhui,"anneeEnCours"=>$anneeEnCours]);
     }
 
     /**
@@ -46,8 +48,8 @@ class AnneeScolaireController extends Controller
     public function store(Request $request)
     {
         $anneeScolaire=Annee_scolaire::create($request->validate([
-            "dateDebut"=>"required|date|leq:dateFin",
-            "dateFin"=>"required|date",
+            "dateDebut"=>"required|date",
+            "dateFin"=>"required|date|after_or_equal:dateDebut'",
         ]));
 
         $anneeScolaire->etablissement()->associate(Auth::user()->etablissementAdmin)->save();
@@ -121,5 +123,14 @@ class AnneeScolaireController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function cloture()
+    {
+       $anneeEnCours=Annee_scolaire::find(Auth::user()->etablissementAdmin->anneeEnCours->id);
+       $anneeEnCours->actif=false;
+       $anneeEnCours->save();
+        Auth::user()->etablissementAdmin->anneeEnCours()->dissociate()->save();
+        return redirect()->back()->with("succcess","Année cloturée avec succès à l'année prochaine");
     }
 }

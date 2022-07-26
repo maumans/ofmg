@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Role;
+use App\Models\Type_role;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -16,9 +17,11 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles=Role::all();
+        $roles=Role::with('typeRole')->orderByDesc("created_at")->get();
 
-        return Inertia::render('Admin/Role/Index',["roles"=>$roles]);
+        $typeRoles=Type_role::all();
+
+        return Inertia::render('Admin/Role/Index',["roles"=>$roles,"typeRoles"=>$typeRoles]);
 
     }
 
@@ -40,14 +43,12 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            "libelle"=>"required|unique:role"
-        ]);
-        Role::create($request->validate([
-            "libelle"=>"required"
+        $role=Role::create($request->validate([
+            "libelle"=>"required|unique:roles"
         ]));
+        $role->typeRole()->associate(Type_role::find($request->typeRole["id"]))->save();
 
-        return redirect()->back();
+        return redirect()->back()->with("success","Role ajouté avec succès");
     }
 
     /**
@@ -94,6 +95,6 @@ class RoleController extends Controller
     {
         $role->delete();
 
-        return redirect()->back();
+        return redirect()->back()->with("error","Role supprimé avec succès");
     }
 }

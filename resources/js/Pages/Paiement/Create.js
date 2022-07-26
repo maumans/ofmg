@@ -46,6 +46,11 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
 
     return (
         <NumberFormat
+            isAllowed={(values) => {
+                const {floatValue} = values;
+                return ((floatValue >= 0 &&  floatValue <= props.max) || floatValue === undefined);
+            }}
+
             {...other}
             getInputRef={ref}
             onValueChange={(values) => {
@@ -68,8 +73,6 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
 
 function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,success,montantTotal,paiements,errors,tuteur,}) {
 
-    const [typePaiements,setTypePaiements]=useState([]);
-
     const [successSt, setSuccessSt]=useState();
 
     const [montants,setMontants]=useState({})
@@ -83,15 +86,12 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         setValue(newValue);
     };
 
-
     const {data,setData,post}=useForm({
-        "matricule":"",
-        "modePaiements":"",
-        "typePaiements":"",
-        "apprenant":apprenant,
         "tarifs":"",
         "montants":[],
-        "total":montantTotal?montantTotal:0
+        "total":montantTotal?montantTotal:0,
+        "numero_retrait":"",
+        "matricule":""
     });
 
     function handleClose()
@@ -126,6 +126,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         data.matricule && Inertia.get(route("paiement.search",[data.matricule]),{preserveScroll:true})
     }
 
+
     useEffect(() => {
         setSuccessSt(success)
     },[success])
@@ -135,35 +136,44 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
             setOpen(true);
     },[successSt])
 
+    const [tarifs,setTarifs]=useState()
+
+    useEffect(() => {
+        setData("tarifs",tarifs)
+    },[tarifs])
 
 
+    function handleChangeCheckbox (event){
+        if(!event.target.checked) montants[event.target.name]=""
+
+        setTarifs(tarifs=>({
+            ...tarifs,
+            [event.target.name]: event.target.checked,
+        }));
+    }
+
+    useEffect(() => {
+        let list=null
+        tuteur?.tuteur_apprenants.map((apprenant)=>(
+            apprenant?.tarifs.map((tarif)=>(
+                list={...list,[apprenant.id+"_"+tarif.id]:false}
+            ))))
+        setTarifs(list)
+    },[])
 
     useEffect(() => {
 
-        if(data.typePaiements) {
-            let tab=[]
+        if(tarifs) {
+
             let list=null
 
-            data.typePaiements.map((typePaiement) => (
-                        tab.push(typePaiement.id)
-            ))
-
-            for (const [key,value] of Object.entries(tab)) {
-                list={...list,[value]:""}
+            for (const [key,value] of Object.entries(tarifs)) {
+                list={...list,[key]:montants[key]||""}
             }
             setMontants(list)
         }
 
-
-        if(data.typePaiements) {
-            let tpTab=[]
-
-            data.typePaiements.map((typePaiement)=>{
-                tpTab.push(apprenant.niveau.tarifs.filter((t)=>t.type_paiement_id===typePaiement.id)[0])
-            })
-            setData("tarifs",tpTab)
-        }
-    },[data.typePaiements])
+    },[tarifs])
 
 
     function sum( obj ) {
@@ -187,41 +197,8 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
 
     useEffect(() => {
-        matricule && setData("matricule",matricule)
-    },[matricule])
-
-    useEffect(() => {
         montantTotal && handleOpenModal()
     },[montantTotal])
-
-    const [tarifs,setTarifs]=useState()
-
-    useEffect(() => {
-        setData("tarifs",tarifs)
-    },[tarifs])
-
-
-    function handleChangeCheckbox (event){
-        setTarifs(tarifs=>({
-            ...tarifs,
-            [event.target.name]: event.target.checked,
-        }));
-    }
-
-    useEffect(() => {
-        if(apprenant?.tarifs)
-        {
-            let list={}
-            apprenant.tarifs.map((tarif)=>(
-                list={...list,[tarif.id]:false}
-            ))
-            setTarifs(list)
-        }
-
-    },[])
-
-
-    //////TAB 2 CODES
 
     function handleShow(id) {
         return undefined;
@@ -269,7 +246,6 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                     <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" centered>
                         <Tab label="PAIEMENT" {...a11yProps(0)} />
                         <Tab label="HISTORIQUE DE PAIEMENT" {...a11yProps(1)} />
-                        <Tab label="Item Three" {...a11yProps(2)} />
                     </Tabs>
                 </Box>
                 <TabPanel value={value} index={0}>
@@ -279,12 +255,19 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                 <h1 className="p-6 bg-white border-b border-gray-200 text-xl p-2 text-white bg-orange-400">PAIEMENT</h1>
 
                                 <div>
-                                    <div className="flex space-x-5 p-5 mt-20">
+                                    <div className="flex space-x-5 p-5 mt-20 w-full">
                                         <TextField
                                             className={"w-full"}  name={"matricule"} label={"Entrez le matricule de l'apprenant"} value={data.matricule} onChange={(e)=>setData("matricule",e.target.value)}/>
                                         <button onClick={handleSearchMat} className={"p-2 bg-green-400 text-white hover:bg-green-600 rounded"}>Rechercher</button>
                                         <div className={"flex my-2 text-red-600"}>{errors?.matricule}</div>
                                     </div>
+
+                                    {
+                                        (matricule && !apprenant) &&
+                                            <div className={"m-5 p-2 mt-4 bg-gray-100 rounded font-bold text-red-500"}>
+                                                L'apprenant de matricule {matricule} n'existe pas
+                                            </div>
+                                    }
 
                                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 "}>
 
@@ -303,7 +286,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                             <span className={"font-bold text-xl"}>Etablissement:</span> <span>{etablissement?.nom}</span>
                                                         </div>
                                                         <div>
-                                                            <span className={"font-bold text-xl"}>Niveau:</span> <span>{apprenant?.niveau?.description+"("+apprenant?.niveau?.libelle+")"}</span>
+                                                            <span className={"font-bold text-xl"}>Niveau:</span> <span>{apprenant?.classe?.libelle}</span>
                                                         </div>
                                                     </div>
                                                 }
@@ -314,37 +297,48 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                         {
                                                         (apprenant?.tarifs) && apprenant?.tarifs.map((t) =>(
 
-                                                                <div key={t.id} className={"grid grid-cols-1 gap-5 p-5 border-green-600 rounded"} style={{backgroundColor:"#f8f1eb"}}>
+                                                            <div key={t.id} className={"relative shadow-lg"}>
+                                                                {
+                                                                    t.pivot.resteApayer===0 ?
+                                                                        <div className={"absolute -right-2 -top-3 rounded p-3 bg-green-400 text-white"}>
+                                                                            Payé
+                                                                        </div>
+                                                                        :
+                                                                        <div className={"absolute -right-2 -top-3 rounded p-3 bg-red-400 text-white"}>
+                                                                            Reste à payer
+                                                                        </div>
+                                                                }
+                                                                <div key={t.id} className={`grid grid-cols-1 gap-2 p-5 rounded h-full ${t.pivot.resteApayer===0 ? "border-2 border-green-400":"border-2 border-red-400"}`} style={{backgroundColor:"#f8f1eb"}}>
                                                                     {
-                                                                        <div className={"text-xl p-2 rounded text-orange-400 bg-white"}>
+                                                                        <div className={"flex items-center p-2 rounded text-orange-400 bg-white"} style={{height:50}}>
                                                                             <div key={t.id} className={"text-xl"}>
-                                                                                <FormControlLabel control={<Checkbox name={t.id+""} onChange={handleChangeCheckbox} />} label={t.type_paiement.libelle} />
+                                                                                <FormControlLabel  control={<Checkbox defaultChecked={t.pivot.resteApayer===0} disabled={t.pivot.resteApayer===0} name={apprenant.id+"_"+t.id} onChange={handleChangeCheckbox} />} label={t.type_paiement.libelle} />
                                                                             </div>
                                                                         </div>
                                                                     }
                                                                     {
                                                                         t?.montant &&
                                                                         <div>
-                                                                            <span className={"font-bold text-lg"}>Total à payer: </span> <span>{formatNumber(t.montant)} FG</span>
+                                                                            <span className={"font-bold"}>Total à payer: </span> <span>{formatNumber(t.montant)} FG</span>
                                                                         </div>
                                                                     }
                                                                     {
                                                                         t?.montant &&
                                                                         <div>
-                                                                            <span className={"font-bold text-lg"}>Somme <span className="lowercase">{t.frequence} à payer: </span> </span> <span> {formatNumber(t.montant/(t.frequence==="MENSUELLE"?nbrMois:t.frequence==="SEMESTRIELLE"?nbrMois/2:t.frequence==="TRIMESTRIELLE"?nbrMois/3:t.frequence==="ANNUELLE"? 1:1))} FG</span>
+                                                                            <span className={"font-bold"}>Somme <span className="lowercase">{t.frequence} à payer: </span> </span> <span> {formatNumber(t.montant/(t.frequence==="MENSUELLE"?t.pivot.nombreMois:t.frequence==="SEMESTRIELLE"?nbrMois/2:t.frequence==="TRIMESTRIELLE"?nbrMois/3:t.frequence==="ANNUELLE"? 1:1))} FG</span>
                                                                         </div>
                                                                     }
                                                                     {
                                                                         t?.montant &&
                                                                         <div>
-                                                                            <span className={"font-bold text-lg"}>Reste à payer: </span> <span>{formatNumber(t.resteApayer)} FG</span>
+                                                                            <span className={"font-bold"}>Reste à payer: </span> <span>{formatNumber(t.pivot.resteApayer)} FG</span>
                                                                         </div>
                                                                     }
 
                                                                     {
                                                                         t?.montant &&
                                                                         <div>
-                                                                            <span className={"font-bold text-lg"}>Payé: </span> <span>{formatNumber(t.montant-t.resteApayer)} FG</span>
+                                                                            <span className={"font-bold"}>Payé: </span> <span>{formatNumber(t.montant-t.pivot.resteApayer)} FG</span>
                                                                         </div>
                                                                     }
                                                                     {
@@ -356,34 +350,33 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                                     {
                                                                         t?.echeance &&
                                                                         <div>
-                                                                            <span className={"font-bold text-lg"}>Echeance: </span> <span>Le {t.echeance} de chaque mois</span>
+                                                                            <span className={"font-bold"}>Echeance: </span> <span>Le {t.echeance} de chaque mois</span>
                                                                         </div>
                                                                     }
 
-                                                                    {
-                                                                        console.log(data?.tarifs)
-                                                                    }
 
                                                                     {
-                                                                        tarifs &&
+                                                                        (tarifs && t.pivot.resteApayer!==0) &&
                                                                         <div  className={"grid gap-3 grid-cols-1"}>
                                                                             <div>
                                                                                 <TextField
-                                                                                    disabled={!tarifs[t.id]}
-                                                                                    alt="Veillez cocher le champs"
-                                                                                    className={"w-full"}  name={montants[t.type_paiement.id]} label={"Montant"} value={montants[t.type_paiement.id]} onChange={(e)=>setMontants(montants=>({
+                                                                                    disabled={!tarifs[apprenant.id+"_"+t.id]}
+                                                                                    alt="Veuillez cocher le champs"
+                                                                                    className={"w-full"}  name={apprenant.id+"_"+t.id} label={"Montant"} value={montants[apprenant.id+"_"+t.id]} onChange={(e)=>setMontants(montants=>({
                                                                                     ...montants,
-                                                                                    [t.type_paiement.id]:e.target.value
+                                                                                    [apprenant.id+"_"+t.id]:e.target.value
                                                                                 }))}
                                                                                     InputProps={{
                                                                                         inputComponent: NumberFormatCustom,
                                                                                         inputProps:{
-                                                                                            max:t.resteApayer,
+                                                                                            max:t.pivot.resteApayer,
+                                                                                            name:apprenant.id+"_"+t.id
+
                                                                                         },
                                                                                     }}
                                                                                     required
                                                                                 />
-                                                                                <div className={"flex my-2 text-red-600"}>{errors["montants."+t.type_paiement.id] && errors["montants."+t.type_paiement.id]}</div>
+                                                                                <div className={"flex my-2 text-red-600"}>{errors["montants."+apprenant.id+"_"+t.id] && errors["montants."+apprenant.id+"_"+t.id]}</div>
                                                                             </div>
 
                                                                         </div>
@@ -391,6 +384,9 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
 
                                                                 </div>
+
+                                                            </div>
+
 
 
                                                         ))
@@ -401,15 +397,26 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
 
                                             {
-                                                data.montant &&
-                                                <div className={"p-2 bg-orange-400 my-5 text-white w-max-c text-lg"} style={{width:"fit-content"}}>
+                                                tarifs && Object.values(tarifs).find(value=>value===true) &&
+                                                <div className={"p-2 bg-orange-400 mt-5 text-white w-max-c text-lg"} style={{width:"fit-content"}}>
                                                     <span className={"font-bold"}>Montant total:</span> <span>{formatNumber(data.total)} FG</span>
                                                 </div>
                                             }
+
                                             {
                                                 tarifs && Object.values(tarifs).find(value=>value===true) &&
-                                                <div hidden={data.typePaiements} className={"flex col-span-3"}>
-                                                    <button className={"p-2 text-white bg-green-600 font-bold"}  type={"submit"}>
+                                                <div className={"my-5"}>
+                                                    <TextField
+                                                        className={"w-6/12"}  name={"numero_retrait"} label={"Entrez votre numero OM"} onChange={(e)=>setData("numero_retrait",e.target.value)}
+                                                        required
+                                                    />
+                                                </div>
+                                            }
+
+                                            {
+                                                tarifs && Object.values(tarifs).find(value=>value===true) &&
+                                                <div className={"flex col-span-3"}>
+                                                    <button className={"p-2 text-white bg-green-400 font-bold rounded"}  type={"submit"}>
                                                         Valider
                                                     </button>
                                                 </div>
@@ -428,28 +435,11 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                         </div>
                     </div>
 
-                    <Modal
-                        keepMounted
-                        open={openModal}
-                        onClose={handleCloseModal}
-                        aria-labelledby="keep-mounted-modal-title"
-                        aria-describedby="keep-mounted-modal-description"
-                    >
-                        <Box sx={style}>
-                            {
-                                apprenant &&
-                                <Save
-                                    apprenant={apprenant}
-                                    etablissement={etablissement}
-                                    paiements={apprenant.paiements}
-                                    nbrMois={nbrMois}
-                                    total={data.total}
-                                />
-                            }
-                        </Box>
-                    </Modal>
+
                 </TabPanel>
-                <TabPanel value={value} index={1}>
+                {
+                    /*
+                    <TabPanel value={value} index={1}>
                     <div hidden={true}>
                         {
                             paiements &&
@@ -494,9 +484,8 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                         }
                     </div>
                 </TabPanel>
-                <TabPanel value={value} index={2}>
-                    <div>3</div>
-                </TabPanel>
+                     */
+                }
             </Box>
 
 

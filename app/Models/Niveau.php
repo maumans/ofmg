@@ -28,11 +28,6 @@ class Niveau extends Model
         return $this->belongsTo(Etablissement::class);
     }
 
-    public function apprenants()
-    {
-        return $this->hasMany(Apprenant::class);
-    }
-
 
     public function classes()
     {

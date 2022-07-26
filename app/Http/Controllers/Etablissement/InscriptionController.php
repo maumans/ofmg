@@ -55,13 +55,13 @@ class InscriptionController extends Controller
 
         $tarifs=Auth::user()->etablissementAdmin->tarifs()->where("annee_scolaire_id",$anneeEnCours->id)->with("typePaiement")->get();
 
-        $inscriptions=Inscription::whereRelation('classe',"etablissement_id",Auth::user()->etablissementAdmin->id)->with(["apprenant"=>function($query){
+        $inscriptions=Inscription::whereRelation('classe.etablissement',"etablissement_id",Auth::user()->etablissementAdmin->id)->with(["apprenant"=>function($query){
             return $query->with("tarifs")->get();
         },"classe"=>function($query){
             return $query->with(["tarifs"=>function($query){
                 return $query->with("typePaiement")->get();
             }])->get();
-        }])->get();
+        },"anneeScolaire"])->orderByDesc('created_at')->get();
 
 
         $tuteurs =User::whereRelation("roles","libelle","tuteur")->get("telephone");
@@ -81,7 +81,7 @@ class InscriptionController extends Controller
         },"etablissement.typeEtablissement"])->get();
 
         $villes=Ville::all();
-        $anneeEnCours=Auth::user()->etablissementAdmin->anneeScolaires->last();
+        $anneeEnCours=Auth::user()->etablissementAdmin->anneeEnCours()->with("etablissement.typeEtablissement")->first();
 
         $tarifs=Auth::user()->etablissementAdmin->tarifs()->where("annee_scolaire_id",$anneeEnCours->id)->with("typePaiement")->get();
 
@@ -105,13 +105,44 @@ class InscriptionController extends Controller
 
         if($matricule)
         {
-            $inscriptions =Inscription::whereRelation("etablissement",'id',Auth::user()->etablissementAdmin->id)->whereRelation("apprenant",'matricule',$matricule)->with(["apprenant"=>function($query){
+            $inscriptions =Inscription::whereRelation("classe.etablissement",'id',Auth::user()->etablissementAdmin->id)->whereRelation("apprenant",'matricule',$matricule)->with(["apprenant"=>function($query){
                 return $query->with("tarifs","tuteurs")->get();
             },"classe"=>function($query){
                 return $query->with(["tarifs"=>function($query){
                     return $query->with("typePaiement")->get();
                 }])->get();
-            },"anneeScolaire"])->get();
+            },"anneeScolaire"])->orderByDesc('created_at')->get();
+
+            if($classeId && $anneeScolaireId)
+            {
+                $inscriptions =$inscriptions->whereRelation("classe",'id',$classeId)->whereRelation("anneeScolaire",'id',$anneeScolaireId)->with(["apprenant"=>function($query){
+                    return $query->with("tarifs","tuteurs")->get();
+                },"classe"=>function($query){
+                    return $query->with(["tarifs"=>function($query){
+                        return $query->with("typePaiement")->get();
+                    }])->get();
+                },"anneeScolaire"])->get();
+
+            }
+            else {
+                if ($classeId) {
+                    $inscriptions = $inscriptions->whereRelation("classe", 'id', $classeId)->with(["apprenant" => function ($query) {
+                        return $query->with("tarifs", "tuteurs")->get();
+                    }, "classe" => function ($query) {
+                        return $query->with(["tarifs" => function ($query) {
+                            return $query->with("typePaiement")->get();
+                        }])->get();
+                    }, "anneeScolaire"])->get();
+                } else if ($anneeScolaireId) {
+                    $inscriptions = $inscriptions->whereRelation("anneeScolaire", 'id', $anneeScolaireId)->with(["apprenant" => function ($query) {
+                        return $query->with("tarifs", "tuteurs")->get();
+                    }, "classe" => function ($query) {
+                        return $query->with(["tarifs" => function ($query) {
+                            return $query->with("typePaiement")->get();
+                        }])->get();
+                    }, "anneeScolaire"])->orderByDesc('created_at')->get();
+                }
+            }
         }
         else
         {
@@ -123,7 +154,7 @@ class InscriptionController extends Controller
                     return $query->with(["tarifs"=>function($query){
                         return $query->with("typePaiement")->get();
                     }])->get();
-                },"anneeScolaire"])->get();
+                },"anneeScolaire"])->orderByDesc('created_at')->get();
 
             }
             else{
@@ -135,7 +166,7 @@ class InscriptionController extends Controller
                         return $query->with(["tarifs"=>function($query){
                             return $query->with("typePaiement")->get();
                         }])->get();
-                    },"anneeScolaire"])->get();
+                    },"anneeScolaire"])->orderByDesc('created_at')->get();
                 }
                 else if($anneeScolaireId)
                 {
@@ -145,7 +176,7 @@ class InscriptionController extends Controller
                         return $query->with(["tarifs"=>function($query){
                             return $query->with("typePaiement")->get();
                         }])->get();
-                    },"anneeScolaire"])->get();
+                    },"anneeScolaire"])->orderByDesc('created_at')->get();
 
                 }
                 else
@@ -180,6 +211,7 @@ class InscriptionController extends Controller
             "dateNaissance" =>"required",
             "classe" =>"required",
             "tuteursAdd" =>"required"
+
         ],
         [
             "tuteursAdd.required"=>"L'apprenant doit avoir au moins un tuteur"
@@ -207,10 +239,19 @@ class InscriptionController extends Controller
            ]);
 
 
-           foreach($request->tuteursAdd as $tuteur)
+           foreach($request->tuteursAdd as $key =>$tuteur)
            {
+
                if($tuteur["id"]==null)
                {
+                   $request->validate([
+                       "tuteursAdd.*.email"=>"required|unique:users",
+                       "tuteursAdd.*.telephone"=>"required|unique:users"
+                   ],
+                       [
+                           "tuteursAdd.*.email.unique"=>"La valeur du champ email est déjà utilisée",
+                           "tuteursAdd.*.telephone.unique"=>"La valeur du champ telephone est déjà utilisée"
+                       ]);
                    $tuteur["password"]=Hash::make($tuteur["password"]);
                    $tuteur=User::create($tuteur);
                    $tuteur->roles()->syncWithoutDetaching(Role::where("libelle","tuteur")->first());
@@ -254,8 +295,7 @@ class InscriptionController extends Controller
 
            DB::commit();
 
-
-           return redirect()->back()->with('success',"Apprenant inscrit avec succès");
+           return redirect()->route("etablissement.inscription.index",Auth::user()->id)->with('success',"Apprenant inscrit avec succès");
 
        }
        catch(Exception $e){
@@ -308,10 +348,6 @@ class InscriptionController extends Controller
             "prenom"=>$request->dataEdit["prenom"],
             "nom"=>$request->dataEdit["nom"],
             "matricule"=>$request->dataEdit["matricule"],
-            "prenomTuteur"=>$request->dataEdit["prenomTuteur"],
-            "nomTuteur"=>$request->dataEdit["nomTuteur"],
-            "telephoneTuteur"=>$request->dataEdit["telephoneTuteur"],
-            "emailTuteur"=>$request->dataEdit["emailTuteur"],
             "date_naissance"=>$request->dataEdit["dateNaissance"],
             "lieu_naissance"=>$request->dataEdit["lieuNaissance"],
         ]);
@@ -325,9 +361,33 @@ class InscriptionController extends Controller
                 {
                     $tarif=Tarif::find($key);
                     $inscription->apprenant->tarifs()->syncWithoutDetaching([$tarif->id=>["resteApayer"=>$tarif->montant]]);
+
+
+                    //////////////////
+
+                    $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin);
+
+
+                    $anneeScolaire=$tarif->anneeScolaire;
+
+                    $inscription->apprenant->tarifs()->syncWithoutDetaching([$key=>["resteApayer"=>$tarif->montant,"nombreMois"=>$intervalle->count(),"annee_scolaire_id"=>$anneeScolaire->id]]);
+
+
+                    foreach($intervalle as $date)
+                    {
+                        $moisPaye=Mois_Paye::create([
+                            "montant"=>0
+                        ]);
+
+                        $moisPaye->mois()->associate(Mois::where("position",$date->month)->first())->save();
+                        $moisPaye->apprenantTarif()->associate(Apprenant_tarif::where("tarif_id",$tarif->id)->where("apprenant_id",$inscription->apprenant->id)->first())->save();
+
+                    }
                 }
             }
+
         }
+
 
 
         return redirect()->back()->with("success","Inscription modifiée avec success");
@@ -341,8 +401,21 @@ class InscriptionController extends Controller
      */
     public function destroy($id, Inscription $inscription)
     {
-        $inscription->delete();
+        DB::beginTransaction();
+        try {
 
-        return redirect()->back();
+            $inscription->delete();
+
+            DB::commit();
+
+            return redirect()->back()->with("success","Inscription supprimée avec succès");
+
+         }
+        catch(Exception $e){
+
+            echo($e);
+            DB::rollback();
+        }
+
     }
 }
