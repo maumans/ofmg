@@ -39,4 +39,9 @@ class Classe extends Model
        return $this->belongsTo(Option::class);
     }
 
+    public function cours()
+    {
+        return $this->hasMany(Cours::class);
+    }
+
 }

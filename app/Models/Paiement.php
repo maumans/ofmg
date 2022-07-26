@@ -48,6 +48,11 @@ class Paiement extends Model implements iHasTransaction
         return $this->belongsTo(User::class);
     }
 
+    public function etablissement()
+    {
+        return $this->belongsTo(Etablissement::class);
+    }
+
     public function etablissementUser()
     {
         return $this->belongsTo(User::class,"etablissementUser_id");

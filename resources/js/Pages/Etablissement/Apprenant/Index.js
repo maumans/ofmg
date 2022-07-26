@@ -79,7 +79,7 @@ function Index(props) {
                 <div>
 
                     <div className={"my-5 text-2xl"}>
-                        Gestions des tarifs
+                        Gestion des tarifs
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 "}>
@@ -175,7 +175,6 @@ function Index(props) {
                                 columns={columns}
                                 pageSize={5}
                                 rowsPerPageOptions={[5]}
-                                checkboxSelection
                                 autoHeight
                             />
                         }

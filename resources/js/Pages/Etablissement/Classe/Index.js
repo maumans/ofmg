@@ -22,6 +22,8 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import SnackBar from "@/Components/SnackBar";
 
+import {motion} from "framer-motion";
+
 const style = {
     position: 'absolute',
     top: '50%',
@@ -57,7 +59,7 @@ function Index(props) {
             "code":""
             })
         )
-    },[props.success])
+    },[props])
 
     const {data:dataEdit,setData:setDataEdit}=useForm({
         "id":null,
@@ -261,7 +263,7 @@ function Index(props) {
                                 />
                             </div>
 
-                            <div>
+                            <div className={"md:col-span-2"}>
                                 <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"}>
                                     Enregister
                                 </button>
@@ -317,56 +319,7 @@ function Index(props) {
                                         </div>
                                     }
 
-                                    {
-                                        dataEdit.departement &&
-                                        <div className={"w-full"}>
-                                            <FormControl  className={"w-full"}>
-                                                <Autocomplete
-                                                    value={dataEdit.departement}
-                                                    onChange={(e,val)=>{
-                                                        setDataEdit("departement",val)
-                                                        setOptions(val?.options)
-                                                    }}
-                                                    disablePortal={true}
-                                                    options={props.departements}
-                                                    getOptionLabel={(option)=>option.libelle}
-                                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                                    renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Departement"}  required label={params.libelle}/>}
 
-                                                />
-                                            </FormControl>
-                                        </div>
-                                    }
-
-                                    {
-                                        dataEdit.option &&
-                                        <div className={"w-full"}>
-                                            <FormControl  className={"w-full"}>
-                                                <Autocomplete
-                                                    value={dataEdit.option}
-                                                    onChange={(e,val)=>{
-                                                        setDataEdit("option",val)
-                                                    }}
-                                                    disablePortal={true}
-                                                    options={options}
-                                                    getOptionLabel={(option)=>option.libelle}
-                                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                                    renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Option"} label={params.libelle}/>}
-
-                                                />
-                                            </FormControl>
-                                        </div>
-                                    }
-
-                                    {
-                                        <div className={"w-full"}>
-                                            <TextField
-                                                value={dataEdit.code}
-                                                className={"w-full"}  name={"code"} label={"Code"} onChange={(e)=>setDataEdit("code",e.target.value)}
-                                            />
-                                        </div>
-
-                                    }
 
                                     <div className={"md:grid-cols-2 sm:grid-cols-2"}>
                                         <button className={"p-3 text-white bg-green-600 rounded"} type={"submit"}>
@@ -379,44 +332,14 @@ function Index(props) {
                         </Box>
                     </Modal>
 
-                    {/*
-
-                             <Modal
-                        keepMounted
-                        open={open}
-                        onClose={handleClose}
-                        aria-labelledby="keep-mounted-modal-title"
-                        aria-describedby="keep-mounted-modal-description"
-                    >
-                        <Box sx={style}>
-                            <form action="" onSubmit={handleEdit} className={"space-y-5 my-5 p-2 border rounded"}>
-                                <div className={"text-lg font-bold mb-5"}>
-                                    Modifier un classe
-                                </div>
-                                <div className={"gap-4 grid md:grid-cols-3 grid-cols-1 items-center"}>
-                                    <div className={"w-full"}>
-                                        <TextField className={"w-full"}  name={"libelle"} label={"libelle"} value={dataEdit.libelle} onChange={(e)=>setDataEdit("libelle",e.target.value)}/>
-                                        <div className={"flex text-red-600"}>{props.errors?.libelle}</div>
-                                    </div>
-                                    <div className={"w-full"}>
-                                        <TextField className={"w-full"}  name={"description"} label={"description"} value={dataEdit.description} onChange={(e)=>setDataEdit("description",e.target.value)}/>
-                                        <div className={"flex text-red-600"}>{props.errors?.description}</div>
-                                    </div>
-                                    <div>
-                                        <button className={"p-3 text-white bg-green-600 rounded"} type={"submit"}>
-                                            Enregister
-                                        </button>
-                                    </div>
-                                </div>
-
-                            </form>
-                        </Box>
-                    </Modal>
-
-                    */
-                    }
-
-                    <div style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                    <motion.div
+                        initial={{y:-100,opacity:0}}
+                        animate={{y:0,opacity:1}}
+                        transition={{
+                            duration:0.5,
+                            type:"spring",
+                        }}
+                        style={{height:450, width: '100%' }} className={"flex justify-center"}>
                         {
                             classes &&
                             <DataGrid
@@ -427,12 +350,11 @@ function Index(props) {
                                 columns={columns}
                                 pageSize={5}
                                 rowsPerPageOptions={[5]}
-                                checkboxSelection
                                 autoHeight
                                 onCellEditCommit={handleCellEditCommit}
                             />
                         }
-                    </div>
+                    </motion.div>
 
                     <SnackBar success={ props.success }/>
                 </div>

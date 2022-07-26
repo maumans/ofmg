@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable // implements MustVerifyEmail
@@ -17,6 +18,8 @@ class User extends Authenticatable // implements MustVerifyEmail
      *
      * @var array<int, string>
      */
+
+    /*
     protected $fillable = [
         'nom',
         'prenom',
@@ -26,8 +29,16 @@ class User extends Authenticatable // implements MustVerifyEmail
         'situation_matrimoniale',
         "date_naissance",
         "telephone",
-        "commentaire"
+        "commentaire",
+        "adresse"
     ];
+    */
+
+    protected $guarded=[];
+
+    protected $appends = ['salairesAp'];
+
+    protected $salairesAp;
 
     /**
      * The attributes that should be hidden for serialization.
@@ -48,6 +59,12 @@ class User extends Authenticatable // implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
+    public function getSalairesApAttribute(){
+        return $this->salairesAp;
+    }
+    public function setSalairesApAttribute($salairesAp){
+        $this->salairesAp = $salairesAp;
+    }
 
     public function roles()
     {
@@ -94,6 +111,11 @@ class User extends Authenticatable // implements MustVerifyEmail
         return $this->belongsTo(Etablissement::class,"etablissement_id");
     }
 
+    public function etablissement()
+    {
+        return $this->belongsTo(Etablissement::class,"etablissement_id");
+    }
+
     public function isAdmin()
     {
         if($this->roles()->where("libelle","admin")->first())
@@ -119,6 +141,44 @@ class User extends Authenticatable // implements MustVerifyEmail
     public function tuteurApprenants()
     {
         return $this->belongsToMany(Apprenant::class,"apprenant_tuteur","tuteur_id","apprenant_id");
+    }
+
+    public function contrats()
+    {
+        return $this->hasMany(Contrat::class);
+    }
+
+    public function salaires()
+    {
+        return $this->hasMany(Salaire::class,"personnel_id");
+    }
+
+    public function contratFonctions()
+    {
+        return $this->hasMany(Contrat_fonction::class);
+    }
+
+    public function contratEnCours()
+    {
+        return $this->belongsTo(Contrat::class,"contrat_id");
+    }
+
+    public function contratFonctionMois()
+    {
+        return $this->hasMany(Contrat_fonction_mois::class);
+    }
+
+
+    public function getJWTIdentifier() {
+        return $this->getKey();
+    }
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims() {
+        return [];
     }
 
 }

@@ -13,13 +13,14 @@ import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-react";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SnackBar from "@/Components/SnackBar";
 
 function Index(props) {
 
     const [etablissements,setEtablissements] = useState();
     const [communesVilles,setCommunesVilles] = useState();
 
-    const {data,setData,post}=useForm({
+    const {data,setData,post,reset}=useForm({
         "nomEtablissement":"",
         "typeEtablissement":"",
         "ville":"",
@@ -34,11 +35,11 @@ function Index(props) {
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
         { field: 'code', headerName: 'CODE', width: 200 },
-        { field: 'nom', headerName: 'NOM', width: 130 },
-        { field: 'type', headerName: 'TYPE', width: 130,renderCell:(r)=>r.row.type_etablissement?.libelle },
-        { field: 'ville', headerName: 'VILLE', width: 130,renderCell:(r)=>r.row.ville?.libelle },
-        { field: 'commune', headerName: 'COMMUNE', width: 130,renderCell:(r)=>r.row.commune?.libelle },
-        { field: 'email', headerName: 'EMAIL ADMIN', width: 130,renderCell:(r)=>r.row.admins[0]?.email },
+        { field: 'nom', headerName: 'NOM', width: 250 },
+        { field: 'type', headerName: 'TYPE', width: 250,renderCell:(r)=>r.row.type_etablissement?.libelle },
+        { field: 'ville', headerName: 'VILLE', width: 250,renderCell:(r)=>r.row.ville?.libelle },
+        { field: 'commune', headerName: 'COMMUNE', width: 250,renderCell:(r)=>r.row.commune?.libelle },
+        { field: 'email', headerName: 'EMAIL ADMIN', width: 250,renderCell:(r)=>r.row.admins[0]?.email },
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
@@ -70,7 +71,17 @@ function Index(props) {
     {
         e.preventDefault();
 
-        post(route("admin.etablissement.store",props.auth.user.id),data)
+        post(route("admin.etablissement.store",props.auth.user.id),{data,onSuccess: ()=>reset(
+            "nomEtablissement",
+                "typeEtablissement",
+                "ville",
+                "commune",
+                "nom",
+                "prenom",
+                "email",
+                "password",
+                "confirmPassword",
+            )})
 
     }
 
@@ -89,7 +100,7 @@ function Index(props) {
                 <div>
 
                     <div className={"my-5 text-2xl"}>
-                        Gestions des etablissements
+                        Gestion des etablissements
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5"}>
@@ -191,11 +202,11 @@ function Index(props) {
                                 columns={columns}
                                 pageSize={5}
                                 rowsPerPageOptions={[5]}
-                                checkboxSelection
                                 autoHeight
                             />
                         }
                     </div>
+                    <SnackBar success={ props.success }/>
                 </div>
             </div>
         </AdminPanel>

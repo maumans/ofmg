@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {
     DataGrid,
     gridPageCountSelector,
@@ -30,6 +30,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import formatNumber from "@/Utils/formatNumber";
 import List from "@mui/material/List";
 import capitalize from "@/Utils/Capitalize";
+import {motion} from "framer-motion";
 
 
 const style = {
@@ -53,6 +54,24 @@ function Index(props) {
     const [tarifs,setTarifs] = useState();
     const [tarifsEdit,setTarifsEdit] = useState();
 
+    const [success,setSuccess] = useState(null);
+
+    useEffect(() => {
+        props.success && setSuccess(props.success);
+    },[props.success])
+
+    function update()
+    {
+        setSuccess(null)
+    }
+
+
+
+    useEffect(() => {
+        (data.matriculeSearch==="" && data.anneeScolaireSearch===null && data.classeSearch===null ) && setInscriptions(props.inscriptions);
+
+    },[inscriptions])
+
     const {data,setData,post}=useForm({
         "prenom":"",
         "nom":"",
@@ -68,8 +87,6 @@ function Index(props) {
         tuteurs:"",
         tuteursSearch:[],
         tuteursAdd:[],
-
-
     });
 
     const {data:dataTuteur,setData:setDataTuteur} = useForm({
@@ -130,8 +147,6 @@ function Index(props) {
 
     const [open, setOpen] = React.useState(false);
     const handleOpen = (inscription) => {
-
-        console.log(inscription)
         setDataEdit((dataEdit) => ({
             "id":inscription.id,
             "prenom":inscription.apprenant.prenom,
@@ -266,7 +281,7 @@ function Index(props) {
         { field: 'dateNaissance', headerName: 'DATE DE NAISSANCE', width:150,renderCell:(cellValues)=>cellValues.row.apprenant?.date_naissance},
         { field: 'lieuNaissance', headerName: 'LIEU DE NAISSANCE', width:170,renderCell:(cellValues)=>cellValues.row.apprenant?.lieu_naissance},
         { field: 'classe', headerName: 'CLASSE', width:150, renderCell:(cellValues)=>cellValues.row.classe?.libelle },
-        { field: 'AnneeScolaire', headerName: 'ANNEE SCOLAIRE', width:170, renderCell:(cellValues)=>cellValues.row.annee_scolaire?.dateDebut+" "+cellValues.row.annee_scolaire?.dateFin },
+        { field: 'AnneeScolaire', headerName: 'ANNEE SCOLAIRE', width:170, renderCell:(cellValues)=>cellValues.row.annee_scolaire?.dateDebut+"/"+cellValues.row.annee_scolaire?.dateFin },
         { field: 'montant', headerName: "FRAIS D'INSCRIPTION", width:170,renderCell:(cellValues)=>formatNumber(cellValues.row.montant)+" FG"},
         { field: 'action', headerName: 'ACTION',width:150,
             renderCell:(cellValues)=>(
@@ -329,16 +344,22 @@ function Index(props) {
         }));
     }
 
+    useEffect(() => {
+        setInscriptions(props.inscriptions)
+    },[props.inscriptions])
+
 
     function handleSearchButton()
     {
-        //Inertia.post(route("etablissement.inscription.searchInscription",props.auth.user.id),{anneeScolaireId:data.anneeScolaireSearch?.id || null,classeId:data.classeSearch?.id || null},{preserveState:true,preserveScroll:true})
+        //Inertia.post(route("etablissement.inscription.searchInscription",props.auth.user.id),{matricule:data.matriculeSearch,anneeScolaireId:data.anneeScolaireSearch?.id || null,classeId:data.classeSearch?.id || null},{preserveState:true,preserveScroll:true})
 
-        axios.post(route("etablissement.inscription.searchInscription",props.auth.user.id),{matricule:data.matriculeSearch || null ,anneeScolaireId:data.anneeScolaireSearch?.id || null,classeId:data.classeSearch?.id || null},{preserveState:true,preserveScroll:true}).then((response)=>{
+
+        axios.post(route("etablissement.inscription.searchInscription",props.auth.user.id),{matricule:data.matriculeSearch ,anneeScolaireId:data.anneeScolaireSearch?.id,classeId:data.classeSearch?.id},{preserveState:true,preserveScroll:true}).then((response)=>{
             setInscriptions(response.data)
         }).catch(error=>{
             console.log(error)
         });
+
 
     }
 
@@ -382,7 +403,7 @@ function Index(props) {
 
 
     return (
-        <AdminPanel auth={props.auth} error={props.error} sousActive={"liste"} active={"inscription"} >
+        <AdminPanel auth={props.auth} error={props.error} sousActive={"listeInscripton"} active={"inscription"} >
             <div className={"p-5"}>
                 <div>
                     <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
@@ -529,9 +550,16 @@ function Index(props) {
                         </Box>
                     </Modal>
 
-                    <div style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                    <motion.div
+                        initial={{y:-100,opacity:0}}
+                        animate={{y:0,opacity:1}}
+                        transition={{
+                            duration:0.5,
+                            type:"spring",
+                        }}
+
+                        style={{height:450, width: '100%' }} className={"flex justify-center"}>
                         {
-                            inscriptions &&
                             <DataGrid
 
                                 components={{
@@ -541,18 +569,17 @@ function Index(props) {
                                 componentsProps={{
                                     columnMenu:{backgroundColor:"red",background:"yellow"},
                                 }}
-                                rows={inscriptions}
+                                rows={inscriptions ?inscriptions:[]}
                                 columns={columns}
                                 pageSize={10}
                                 rowsPerPageOptions={[10]}
-                                checkboxSelection
                                 autoHeight
                             />
                         }
-                    </div>
+                    </motion.div>
                 </div>
             </div>
-            <SnackBar error={tuteurAddError} success={ props.success || tuteurAddSuccess }  update={updateSnackBar}/>
+            <SnackBar success={ success } update={update}/>
         </AdminPanel>
     );
 }

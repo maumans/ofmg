@@ -18,7 +18,6 @@ import NumberFormat from 'react-number-format';
 
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
 import {TabPanel, a11yProps} from "../../../Components/TabPanel"
@@ -28,10 +27,10 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 
 import {DataGrid, GridToolbar} from "@mui/x-data-grid";
 
-import List from "@mui/material/List";
-
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import {fontWeight, minWidth} from "@mui/system";
+
+
+import {motion} from 'framer-motion'
 
 const style = {
     position: 'absolute',
@@ -241,21 +240,27 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
         >
             <Head title="Accueil" />
 
-            <Box sx={{ width: '100%',marginTop:10 }}>
-                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Box sx={{ width: '100%'}}>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider',backgroundColor:"#f8f1eb",paddingTop:10 }}>
                     <Tabs
-
                         TabIndicatorProps={{ sx: { display: 'none' } }}
                         sx={{
                             '& .MuiTabs-flexContainer': {
                                 flexWrap: 'wrap',
+                                backgroundColor:"#f8f1eb"
                             },
+
+                            "& .MuiTab-root.Mui-selected": {
+                                color: '#fb923c',
+                                fontWeight:"bold",
+                            }
                         }}
 
 
                         value={value} onChange={handleChange} aria-label="basic tabs example" centered>
-                        <Tab label="PAIEMENT" {...a11yProps(0)} />
-                        <Tab label="APERCU DU RECU" {...a11yProps(1)} />
+                        <Tab
+                            label="PAIEMENT" {...a11yProps(0)} />
+                        <Tab label="APERCU DU RECU" {...a11yProps(1)}/>
                         <Tab label="HISTORIQUE DE PAIEMENT" {...a11yProps(2)}/>
                     </Tabs>
                 </Box>
@@ -263,12 +268,18 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                     <div className="py-12">
                         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                             <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                                <h1 className="p-6 bg-white border-b border-gray-200 text-xl p-2 text-white bg-orange-400">PAIEMENT</h1>
+                                <h1 className="p-6 bg-white border-b border-gray-200 text-xl p-2 text-white" style={{backgroundColor:'#fb923c'}}>PAIEMENT</h1>
 
                                 {
                                     tuteur?.tuteur_apprenants?.length > 0 &&
                                     <div className="p-6">
-                                        <div className={"space-y-5 border p-2 rounded"}>
+                                        <motion.div
+                                            initial={{x:-100,opacity:0}}
+                                            animate={{x:0,opacity:1}}
+                                            transition={{
+                                                duration:0.5,
+                                            }}
+                                            className={"space-y-5 border p-2 rounded"}>
                                             <Accordion>
                                                 <AccordionSummary
                                                     expandIcon={<ExpandMoreIcon />}
@@ -312,7 +323,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                                             {
                                                                 donneesParFrais.map((frais)=>(
                                                                     <div key={frais.libelle} className="space-y-3 p-2 shadow-lg">
-                                                                        <div className={"font-bold p-2 bg-orange-400 text-white rounded"}>
+                                                                        <div className={"font-bold p-2 text-white rounded"} style={{backgroundColor:'#fb923c'}}>
                                                                             {
                                                                                 frais.libelle
                                                                             }
@@ -339,16 +350,24 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                             </Accordion>
 
 
-                                        </div>
+                                        </motion.div>
                                     </div>
                                 }
                                 <div>
                                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 "}>
                                         {
-                                            tuteur?.tuteur_apprenants.map((apprenant)=>(
+                                            tuteur?.tuteur_apprenants.map((apprenant,i)=>(
 
 
-                                                <div key={apprenant.id} className={"w-full p-5 divide-y"}>
+                                                <motion.div
+                                                    initial={{y:-100,opacity:0}}
+                                                    animate={{y:0,opacity:1}}
+                                                    transition={{
+                                                        duration:0.5,
+                                                        type:"spring",
+                                                        delay:i*0.1
+                                                    }}
+                                                    key={apprenant.id} className={"w-full p-5 divide-y"}>
 
                                                     <Accordion>
                                                         <AccordionSummary
@@ -385,7 +404,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                                                 {
                                                                     (apprenant?.tarifs) && apprenant?.tarifs.map((t) =>(
 
-                                                                        <div key={t.id} className={"relative"}>
+                                                                        <div key={t.id} className={"relative shadow-lg"}>
                                                                             {
                                                                                 t.pivot.resteApayer===0 ?
                                                                                     <div className={"absolute -right-2 -top-3 rounded p-3 bg-green-400 text-white"}>
@@ -398,7 +417,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                                                             }
                                                                             <div key={t.id} className={`grid grid-cols-1 gap-2 p-5 rounded h-full ${t.pivot.resteApayer===0 ? "border-2 border-green-400":"border-2 border-red-400"}`} style={{backgroundColor:"#f8f1eb"}}>
                                                                                 {
-                                                                                    <div className={"text-xl p-2 rounded text-orange-400 bg-white"}>
+                                                                                    <div className={"flex items-center p-2 rounded text-orange-400 bg-white"} style={{height:50}}>
                                                                                         <div key={t.id} className={"text-xl"}>
                                                                                             <FormControlLabel  control={<Checkbox defaultChecked={t.pivot.resteApayer===0} disabled={t.pivot.resteApayer===0} name={apprenant.id+"_"+t.id} onChange={handleChangeCheckbox} />} label={t.type_paiement.libelle} />
                                                                                         </div>
@@ -444,7 +463,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
 
 
                                                                                 {
-                                                                                    tarifs &&
+                                                                                    (tarifs && t.pivot.resteApayer!==0) &&
                                                                                     <div  className={"grid gap-3 grid-cols-1"}>
                                                                                         <div>
                                                                                             <TextField
@@ -464,8 +483,6 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                                                                                 }}
                                                                                                 required
                                                                                             />
-
-                                                                                            {console.log(t.pivot)}
                                                                                             <div className={"flex my-2 text-red-600"}>{errors["montants."+apprenant.id+"_"+t.id] && errors["montants."+apprenant.id+"_"+t.id]}</div>
                                                                                         </div>
 
@@ -482,7 +499,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                                             </div>
                                                         </AccordionDetails>
                                                     </Accordion>
-                                                </div>
+                                                </motion.div>
                                             ))
                                         }
 
@@ -506,7 +523,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                         {
                                             tarifs && Object.values(tarifs).find(value=>value===true) &&
                                             <div className={"flex ml-5 col-span-3"}>
-                                                <button className={"p-2 text-white bg-green-600 font-bold"}  type={"submit"}>
+                                                <button className={"p-2 text-white bg-green-400 font-bold rounded"}  type={"submit"}>
                                                     Valider
                                                 </button>
                                             </div>
@@ -559,7 +576,13 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                     <div className={"flex justify-center"}>
                         {
                             tuteur &&
-                            <div style={{width:1200,minWidth:400}}>
+                            <motion.div
+                                initial={{y:-10,opacity:0}}
+                                animate={{y:0,opacity:1}}
+                                transition={{
+                                    duration:0.5,
+                                }}
+                                style={{width:1200,minWidth:400}}>
                                 <DataGrid
                                     componentsProps={{
                                         columnMenu:{backgroundColor:"red",background:"yellow"},
@@ -577,7 +600,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
 
 
                                 />
-                            </div>
+                            </motion.div>
                         }
                     </div>
                 </TabPanel>

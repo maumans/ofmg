@@ -20,11 +20,6 @@ class Apprenant extends Model
         return $this->hasMany(Paiement::class);
     }
 
-    public function niveau()
-    {
-        return $this->belongsTo(Niveau::class);
-    }
-
     public function classe()
     {
         return $this->belongsTo(Classe::class);

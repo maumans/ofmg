@@ -11,10 +11,12 @@ use App\Models\Type_paiement;
 use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use function Sodium\add;
 
@@ -34,7 +36,7 @@ class PaiementController extends Controller
         $tuteur=User::where('id',Auth::user()->id)->with(["paiementsTuteur"=>function($query){
             $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif")->get();
         },"tuteurApprenants"=>function($query){
-            $query->with(["classe.etablissement.anneeEnCours","tarifs.typePaiement","tarifs"=>function($query){
+            $query->whereHas("classe.etablissement.anneeEnCours")->with(["classe.etablissement.anneeEnCours","tarifs.typePaiement","tarifs"=>function($query){
                 $query->get();
             }])->get();
         }])->first();
@@ -144,37 +146,48 @@ class PaiementController extends Controller
     public function store(Request $request)
     {
 
-        foreach ($request->tarifs as $key =>$value)
-        {
-            $info=explode("_",$key);
-            $apprenant=Apprenant::find($info[0]);
-            $tarif=Tarif::find($info[1]);
+        DB::beginTransaction();
 
-            if($value)
+        try{
+
+
+            foreach ($request->tarifs as $key =>$value)
             {
+                $info=explode("_",$key);
+                $apprenant=Apprenant::find($info[0]);
+                $tarif=Tarif::find($info[1]);
 
-                $paiement=Paiement::create([
-                    "montant"=>$request->montants[$info[0]."_".$info[1]],
-                    "numero_retrait"=>$request->numero_retrait,
-                    "type_paiement_id"=>$tarif["type_paiement_id"],
-                    "mode_paiement_id"=>Mode_paiement::where("libelle","OM")->first()->id,
-                    "tuteur_id"=>Auth::user()->id,
-                ]);
+                if($value)
+                {
 
-                //Paiement::where("id",$paiement->id)->first()->cashin();
+                    $paiement=Paiement::create([
+                        "montant"=>$request->montants[$info[0]."_".$info[1]],
+                        "numero_retrait"=>$request->numero_retrait,
+                        "type_paiement_id"=>$tarif["type_paiement_id"],
+                        "mode_paiement_id"=>Mode_paiement::where("libelle","OM")->first()->id,
+                        "tuteur_id"=>Auth::user()->id,
+                    ]);
 
-                $paiement->tarif()->associate(Tarif::find($tarif["id"]))->save();
-                $paiement->apprenant()->associate(Apprenant::find($apprenant["id"]))->save();
+                    //Paiement::where("id",$paiement->id)->first()->cashin();
 
-                $resteApayer=$tarif["montant"]-$apprenant->paiements->where("type_paiement_id",$tarif["type_paiement_id"])->sum("montant");
+                    $paiement->tarif()->associate(Tarif::find($tarif["id"]))->save();
+                    $paiement->apprenant()->associate(Apprenant::find($apprenant["id"]))->save();
 
-                $apprenant->tarifs()->syncWithoutDetaching([$tarif->id=>["resteApayer"=>$resteApayer]]);
+                    $resteApayer=$tarif["montant"]-$apprenant->paiements->where("type_paiement_id",$tarif["type_paiement_id"])->sum("montant");
+
+                    $apprenant->tarifs()->syncWithoutDetaching([$tarif->id=>["resteApayer"=>$resteApayer]]);
+                }
             }
+
+            DB::commit();
+
+            return redirect()->route('tuteur.paiement.ok',['total'=>$request->total]);
         }
+        catch(Exception $e){
 
-        return redirect()->route('tuteur.paiement.ok',['total'=>$request->total]);
-
-
+            echo($e);
+            DB::rollback();
+        }
     }
 
     /**

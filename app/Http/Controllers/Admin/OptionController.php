@@ -20,7 +20,7 @@ class OptionController extends Controller
      */
     public function index()
     {
-        $options=Option::with("cycle","departement")->get();
+        $options=Option::with("cycle","departement")->orderByDesc('created_at')->get();
 
         $cycles=Cycle::all();
 
@@ -59,7 +59,7 @@ class OptionController extends Controller
         $option->cycle()->associate(Cycle::find($request->cycle["id"]))->save();
         $request->departement!=null && $option->departement()->associate(Departement::find($request->departement["id"]))->save();
 
-        return redirect()->back();
+        return redirect()->back()->with("success", "Option créée avec succès");;
     }
 
     /**

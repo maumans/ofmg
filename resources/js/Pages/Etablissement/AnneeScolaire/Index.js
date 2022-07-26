@@ -19,6 +19,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SnackBar from "@/Components/SnackBar";
 import Box from "@mui/material/Box";
+import {motion} from "framer-motion";
 
 const style = {
     position: 'absolute',
@@ -111,6 +112,11 @@ function Index(props) {
         setAnneeScolaires(props.anneeScolaires);
     },[props.anneeScolaires]);
 
+    function handleCloture()
+    {
+        confirm("Voulez-vous vraiment cloturer l'année ?") && Inertia.get(route("etablissement.anneeScolaire.cloture"));
+    }
+
 
 
     return (
@@ -119,18 +125,29 @@ function Index(props) {
                 <div>
 
                     <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
-                        Gestions des annees scolaires
+                        Gestion des annees scolaires
+                    </div>
+
+                    <div className={"border p-5 rounded space-y-5 text-lg"}>
+                         {props.anneeEnCours ? <span><span className={"font-bold text-lg"}>Année scolaire encours:</span> {props.anneeEnCours?.dateDebut+"/"+props.anneeEnCours?.dateFin} </span> : <span className={"text-blue-500"}>Aucune année scolaire encours!!! Veuillez demarrer une nouvelle année</span>  }
+                        {
+                            props.anneeEnCours &&
+                            <button className={"bg-red-600 text-white rounded p-2 hover:bg-white hover:text-red-600 border hover:border-red-600 transition duration-500"} onClick={handleCloture}>
+                                Cloturer l'année scolaire encours
+                            </button>
+                        }
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5"}>
                         <div className={"border p-5 rounded space-y-5"}>
                             <div className={"text-lg font-bold"}>
-                                Ajouter une année scolaire
+                                Demarrer une année scolaire
                             </div>
-                            <div className={"grid md:grid-cols-2 grid-cols-1"} style={{maxWidth: 600}}>
+                            <div className={"grid md:grid-cols-2 grid-cols-1 gap-4"} style={{maxWidth: 600}}>
                                 <div>
                                     <div>Date de debut</div>
                                     <TextField
+                                        className={"w-full"}
                                         inputProps={{
                                             type:"date",
                                             min:props.aujourdhui
@@ -140,6 +157,7 @@ function Index(props) {
                                 <div>
                                     <div>Date de fin</div>
                                     <TextField
+                                        className={"w-full"}
                                         inputProps={{
                                             type:"date",
                                             min:props.aujourdhui
@@ -150,18 +168,17 @@ function Index(props) {
                                 <div>
                                     {
                                         !props.anneeEnCoursFinie ?
-                                            <Tooltip title="Impossible d'ajouter une année scolaire avant la fin de celle encours">
-                                                <button style={{height: 56}} className={"p-3 text-white bg-gray-600 rounded"} type={"button"}>
-                                                    Enregistrer
-                                                </button>
-                                            </Tooltip>
-                                            :
-                                            <button style={{height: 56}} className={"p-3 text-white bg-green-600 rounded"} type={"submit"}>
+                                        <Tooltip title="Veuilez cloturer l'année scolaire encours">
+                                            <button style={{height: 56}} className={"p-3 text-white bg-gray-600 rounded"} type={"button"}>
                                                 Enregistrer
                                             </button>
+                                        </Tooltip>
+                                        :
+                                        <button style={{height: 56}} className={"p-3 text-white bg-green-600 rounded"} type={"submit"}>
+                                            Enregistrer
+                                        </button>
                                     }
                                 </div>
-
 
                             </div>
                         </div>
@@ -230,7 +247,14 @@ function Index(props) {
                     </Modal>
 
 
-                    <div style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                    <motion.div
+                        initial={{y:-100,opacity:0}}
+                        animate={{y:0,opacity:1}}
+                        transition={{
+                            duration:0.5,
+                            type:"spring",
+                        }}
+                        style={{height:450, width: '100%' }} className={"flex justify-center"}>
                         {
                             anneeScolaires &&
                             <DataGrid
@@ -241,11 +265,10 @@ function Index(props) {
                                 columns={columns}
                                 pageSize={5}
                                 rowsPerPageOptions={[5]}
-                                checkboxSelection
                                 autoHeight
                             />
                         }
-                    </div>
+                    </motion.div>
                     <SnackBar success={ props.success }/>
                 </div>
             </div>

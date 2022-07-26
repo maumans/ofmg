@@ -11,6 +11,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import SnackBar from "@/Components/SnackBar";
+import {motion} from "framer-motion";
 
 const style = {
     position: 'absolute',
@@ -113,7 +114,7 @@ function Index(props) {
             <div className={"p-5"}>
                 <div>
                     <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
-                        Gestions des niveaux
+                        Gestion des niveaux
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 p-2 border rounded"}>
@@ -170,7 +171,14 @@ function Index(props) {
                         </Box>
                     </Modal>
 
-                    <div style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                    <motion.div
+                        initial={{y:-100,opacity:0}}
+                        animate={{y:0,opacity:1}}
+                        transition={{
+                            duration:0.5,
+                            type:"spring",
+                        }}
+                        style={{height:450, width: '100%' }} className={"flex justify-center"}>
                         {
                             niveaux &&
                             <DataGrid
@@ -181,12 +189,11 @@ function Index(props) {
                                 columns={columns}
                                 pageSize={5}
                                 rowsPerPageOptions={[5]}
-                                checkboxSelection
                                 autoHeight
                                 onCellEditCommit={handleCellEditCommit}
                             />
                         }
-                    </div>
+                    </motion.div>
 
                     <SnackBar success={ props.success }/>
                 </div>

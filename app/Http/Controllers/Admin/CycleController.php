@@ -48,7 +48,7 @@ class CycleController extends Controller
             "libelle"=>"required"
         ]));
 
-        return redirect()->back();
+        return redirect()->back()->with("success", "Cycle créé avec succès");;
     }
 
     /**

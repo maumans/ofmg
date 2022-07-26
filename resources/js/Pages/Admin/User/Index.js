@@ -14,6 +14,7 @@ import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-react";
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import SnackBar from "@/Components/SnackBar";
 function CustomPagination() {
     const apiRef = useGridApiContext();
     const page = useGridSelector(apiRef, gridPageSelector);
@@ -42,7 +43,7 @@ function Index(props) {
 
     const [users,setUsers] = useState();
 
-    const {data,setData,post}=useForm({
+    const {data,setData,post,reset}=useForm({
         "nom":"",
         "prenom":"",
         "email":"",
@@ -100,7 +101,7 @@ function Index(props) {
     ];
 
     function handleDelete(id){
-        confirm("Voulez-vous ... cet user") && Inertia.delete(route("admin.user.destroy",[props.auth.user.id,id]),{preserveScroll:true})
+        confirm("Voulez-vous supprimer cet utilisateur") && Inertia.delete(route("admin.user.destroy",[props.auth.user.id,id]),{preserveScroll:true})
     }
 
     function handleEdit(id){
@@ -115,7 +116,7 @@ function Index(props) {
     {
         e.preventDefault();
 
-        post(route("admin.user.store",props.auth.user.id),data)
+        post(route("admin.user.store",props.auth.user.id),{data,onSuccess: ()=>reset("libelle")})
 
     }
 
@@ -125,7 +126,7 @@ function Index(props) {
                <div className={"w-full"}>
 
                    <div className={"my-5 text-2xl"}>
-                       Gestions des utilsateurs
+                       Gestion des utilisateurs
                    </div>
                    <div className={"w-full"}>
                        <button className={"p-1 text-white my-5"} style={{backgroundColor:"#FF7900"}}>
@@ -225,11 +226,12 @@ function Index(props) {
                                        columns={columns}
                                        pageSize={5}
                                        rowsPerPageOptions={[5]}
-                                       checkboxSelection
                                        autoHeight
                                        autoSize
                                    />
                        }
+
+                       <SnackBar success={ props.success } />
                    </div>
                </div>
            </div>

@@ -102,7 +102,12 @@ export default function NavBarSlider({images,titre}) {
                 height: '90vmin',
             }}
         >
-            <FakeNavbar />
+            {
+                /*
+                    <FakeNavbar />
+                 */
+            }
+
             <StyledOverlayContainer>
                 <div>
 
@@ -115,8 +120,9 @@ export default function NavBarSlider({images,titre}) {
             </StyledOverlayContainer>
 
             {
-                images.map(img=>(
+                images.map((img,i)=>(
                     <Slide
+                        key={i}
                         shouldRenderMask
                         navDescription={img.description}
                         background={{

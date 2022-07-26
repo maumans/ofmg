@@ -57,7 +57,7 @@ class UserController extends Controller
             $user->roles()->syncWithoutDetaching(Role::find($role["id"]));
         }
 
-        return redirect()->back();
+        return redirect()->back()->with("success", "Utilisateur créé avec succès");;
     }
 
     /**

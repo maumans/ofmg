@@ -14,20 +14,21 @@ import {useForm} from "@inertiajs/inertia-react";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import SnackBar from "@/Components/SnackBar";
 
 function Index(props) {
 
     const [niveaux,setNiveaux] = useState();
 
-    const {data,setData,post}=useForm({
+    const {data,setData,post,reset}=useForm({
         "libelle":"",
         "cycle":""
     });
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'libelle', headerName: 'NIVEAU', width: 130 },
-        { field: 'cycle', headerName: 'CYCLE', width: 130,renderCell:(r)=>r.row.cycle?.libelle },
+        { field: 'libelle', headerName: 'NIVEAU', width: 250 },
+        { field: 'cycle', headerName: 'CYCLE', width: 250,renderCell:(r)=>r.row.cycle?.libelle },
         { field: 'action', headerName: 'ACTION',width:350,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
@@ -47,7 +48,7 @@ function Index(props) {
     ];
 
     function handleDelete(id){
-        confirm("Voulez-vous supprimer cette cycle") && Inertia.delete(route("admin.niveau.destroy",[props.auth.user.id,id]),{preserveScroll:true})
+        confirm("Voulez-vous supprimer ce niveau") && Inertia.delete(route("admin.niveau.destroy",[props.auth.user.id,id]),{preserveScroll:true})
     }
 
     function handleEdit(id){
@@ -62,7 +63,7 @@ function Index(props) {
     {
         e.preventDefault();
 
-        post(route("admin.niveau.store",props.auth.user.id),data,)
+        post(route("admin.niveau.store",props.auth.user.id),{data,onSuccess: ()=>reset("libelle")})
 
     }
 
@@ -77,7 +78,7 @@ function Index(props) {
                 <div>
 
                     <div className={"my-5 text-2xl"}>
-                        Gestions des niveaux
+                        Gestion des niveaux
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 "}>
@@ -122,11 +123,11 @@ function Index(props) {
                                 columns={columns}
                                 pageSize={5}
                                 rowsPerPageOptions={[5]}
-                                checkboxSelection
                                 autoHeight
                             />
                         }
                     </div>
+                    <SnackBar success={ props.success }/>
                 </div>
             </div>
         </AdminPanel>

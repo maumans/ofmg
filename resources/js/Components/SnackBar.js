@@ -19,7 +19,7 @@ function SnackBar(props) {
                 anchorOrigin={{ vertical:"top", horizontal:"right" }}
                 color={"success"}
                 open={open}
-                autoHideDuration={4000}
+                autoHideDuration={2000}
                 onClose={()=>{
                     props.update && props.update()
                     setOpen(false);

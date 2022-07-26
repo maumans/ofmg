@@ -16,7 +16,7 @@ class RegionController extends Controller
      */
     public function index()
     {
-        $regions=Region::all();
+        $regions=Region::orderBy('created_at', 'desc')->get();
 
         return Inertia::render('Admin/Region/Index',["regions"=>$regions]);
     }
@@ -47,7 +47,7 @@ class RegionController extends Controller
             "libelle"=>"required"
         ]));
 
-        return redirect()->back();
+        return redirect()->back()->with("success", "Niveau créé avec succès");;
     }
 
     /**

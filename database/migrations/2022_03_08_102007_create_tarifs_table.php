@@ -24,7 +24,7 @@ class CreateTarifsTable extends Migration
             $table->foreignId("etablissement_id")->nullable()->constrained("etablissements")->cascadeOnDelete();
             $table->foreignId("type_paiement_id")->nullable()->constrained("type_paiements")->cascadeOnDelete();
             $table->foreignId("annee_scolaire_id")->nullable()->constrained("annee_scolaires")->cascadeOnDelete();
-            $table->unique(array("etablissement_id",'niveau_id',"type_paiement_id"));
+            $table->unique(array("etablissement_id",'classe_id',"type_paiement_id"));
             $table->timestamps();
         });
     }

@@ -23,6 +23,7 @@ class  CreatePaiementsTable extends Migration
             $table->foreignId("personnel_id")->nullable()->constrained("users")->cascadeOnDelete();
             $table->foreignId("etablissementUser_id")->nullable()->constrained("users")->cascadeOnDelete();
             $table->foreignId("tarif_id")->nullable()->constrained("tarifs")->cascadeOnDelete();
+            $table->foreignId("etablissement_id")->nullable()->constrained("etablissements");
             $table->string("transaction_status")->nullable();
             $table->string("numero_retrait")->nullable();
             $table->string("numero_depot")->nullable();

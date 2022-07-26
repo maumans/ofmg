@@ -14,18 +14,19 @@ import {useForm} from "@inertiajs/inertia-react";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import SnackBar from "@/Components/SnackBar";
 
 function Index(props) {
 
     const [departements,setDepartements] = useState();
 
-    const {data,setData,post}=useForm({
+    const {data,setData,post,reset}=useForm({
         "libelle":"",
     });
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'libelle', headerName: 'DEPARTEMENT', width: 130 },
+        { field: 'libelle', headerName: 'DEPARTEMENT', width: 250 },
         { field: 'action', headerName: 'ACTION',width:350,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
@@ -60,7 +61,7 @@ function Index(props) {
     {
         e.preventDefault();
 
-        post(route("admin.departement.store",props.auth.user.id),data,)
+        post(route("admin.departement.store",props.auth.user.id),{data,onSuccess: ()=>reset("libelle")})
 
     }
 
@@ -75,7 +76,7 @@ function Index(props) {
                 <div>
 
                     <div className={"my-5 text-2xl"}>
-                        Gestions des departements
+                        Gestion des departements
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5"}>
@@ -104,11 +105,11 @@ function Index(props) {
                                 columns={columns}
                                 pageSize={5}
                                 rowsPerPageOptions={[5]}
-                                checkboxSelection
                                 autoHeight
                             />
                         }
                     </div>
+                    <SnackBar success={ props.success }/>
                 </div>
             </div>
         </AdminPanel>

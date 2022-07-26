@@ -23,8 +23,7 @@ import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-react";
 
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Box from "@mui/material/Box";
+import CloseIcon from '@mui/icons-material/Close';
 import SnackBar from "@/Components/SnackBar";
 import formatNumber from "@/Utils/formatNumber";
 
@@ -32,6 +31,9 @@ import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import List from "@mui/material/List";
 import capitalize from "@/Utils/Capitalize";
+
+import {motion,AnimatePresence} from "framer-motion"
+import Box from "@mui/material/Box";
 
 
 const style = {
@@ -77,7 +79,6 @@ function Create(props) {
         nom: 'mans',
         email: 'mau@gmail.com',
         password: "29101997",
-        confirm_password: "29101997",
         adresse: 'kountia',
         telephone: '621993863',
         telephone2: '622345678',
@@ -100,6 +101,14 @@ function Create(props) {
 
         setChecked(newChecked);
     };
+
+    useEffect(() => {
+        data.classe && data.classe?.tarifs?.map(tarif => tarif.type_paiement.libelle==="INSCRIPTION" && setData("montant",tarif.montant))
+    },[data.classe])
+
+    useEffect(() => {
+        console.log(data.montant,data.classe)
+    },[data.montant])
 
     useEffect(() => {
         setData("tuteursSearch",checked);
@@ -156,7 +165,6 @@ function Create(props) {
                     nom: '',
                     email: '',
                     password: "",
-                    confirm_password: "",
                     adresse: '',
                     telephone: '',
                     telephone2: '',
@@ -192,7 +200,6 @@ function Create(props) {
                                 nom: a.prenom,
                                 email: a.email,
                                 password: a.password,
-                                confirm_password: a.confirm_password,
                                 adresse: a.adresse,
                                 telephone: a.telephone,
                                 telephone2: a.telephone2,
@@ -201,7 +208,7 @@ function Create(props) {
                                 titre:a.titre,
                             })
                             setChecked([])
-                            setTuteurAddSuccess("Tuteur ajouté avec succès")
+                            //setTuteurAddSuccess("Tuteur ajouté avec succès ,changer")
 
                             setData((data)=>({
                                 ...data,
@@ -266,7 +273,7 @@ function Create(props) {
     useEffect(() => {
         data.classe?.tarifs?.length >0 ?
             data.classe.tarifs.map((tarif)=>(
-                tarif.type_paiement.libelle==="INSCRIPTION" &&
+                tarif.type_paiement.libelle.toLowerCase()==="INSCRIPTION".toLowerCase() &&
                 setData("montant",tarif.montant)
             ))
             :setData("montant",null)
@@ -329,18 +336,15 @@ function Create(props) {
             <div className={"p-5"}>
                 <div>
                     <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
-                        Inscrire un {props.classes[0].etablissement.type_etablissement.libelle==="ecole"?"elève":"etudiant"}
+                        Inscrire un {props.anneeEnCours?.etablissement.type_etablissement.libelle.toLowerCase() ==="ecole"?"élève":"etudiant"}
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5"}>
 
-                        <div className={"w-full border p-5 rounded space-y-5"}>
-                            <div className={"text-xl font-bold"}>
-                                INSCRIRE UN ELEVE
-                            </div>
+                        <div className={"w-full border p-5 rounded space-y-5"} style={{maxWidth: 1000}}>
                             <div className={"space-y-5 p-2 border"}>
                                 <div className={"text-lg font-bold"}>
-                                    Infos de l'apprenant
+                                    Infos de {props.anneeEnCours?.etablissement.type_etablissement.libelle.toLowerCase() ==="ecole"?"l'élève":"l'etudiant"}
                                 </div>
                                 <div className={"grid md:grid-cols-3 grid-cols-1 items-end mb-5 gap-5"}>
                                     <div>
@@ -392,44 +396,62 @@ function Create(props) {
                                 </div>
                             </div>
 
-                            <div className={"border p-2 space-y-5"}>
+                            <div className={"border p-2"}>
                                 <div className={"text-lg font-bold"}>
                                     Tuteurs
                                 </div>
-                                {
-                                    data.tuteursAdd &&
-                                    data.tuteursAdd.length > 0 ?
+
+
                                         <List
-                                            className={"divide-y grid md:grid-cols-2 grid-cols-1"}
-                                            dense sx={{ width: '100%', maxWidth: 600, bgcolor: 'background.paper' }}>
+                                            className={"w-full grid md:grid-cols-2 grid-cols-1 gap-3 rounded"}
+                                        >
+                                            <AnimatePresence>
                                             {
-                                                data.tuteursAdd.map((t) => {
-                                                const labelId = `checkbox-list-secondary-label-${t.id}`;
-                                                return (
-                                                    <ListItem
-                                                        key={t.telephone}
-                                                        secondaryAction={
-                                                            <button  onClick={()=>deleteTuteurInTuteursAdd(t.telephone)} className={"p-2 rounded-full bg-red-600 text-white flex text-center items-center"}>
-                                                                <DeleteIcon/>
-                                                            </button>
-                                                        }
-                                                    >
-                                                        <ListItemButton>
-                                                            <ListItemText id={labelId} primary={capitalize(t.prenom)+" "+capitalize(t.nom)} secondary={" Tel: "+t.telephone+" |   Email: "+t.email}
-                                                            />
-                                                        </ListItemButton>
-                                                    </ListItem>
-                                                );
-                                            })}
+                                                data?.tuteursAdd.map((t,i) => (
+
+                                                        <motion.div
+                                                            initial={{x:-10,opacity:0}}
+                                                            animate={{x:0,opacity:1}}
+                                                            exit={{ opacity: 0,x:-10 }}
+                                                            key={i}
+
+                                                            className={"bg-white rounded"}
+                                                        >
+                                                            <ListItem
+                                                                className="flex justify-between"
+                                                            >
+                                                                <ListItemText primary={capitalize(t.prenom)+" "+capitalize(t.nom)} secondary={" Tel: "+t.telephone+" |   Email: "+t.email}
+                                                                />
+                                                                <button  onClick={()=>deleteTuteurInTuteursAdd(t.telephone)} className={"p-2 rounded-full bg-red-600 text-white flex text-center items-center"} type={"button"}>
+                                                                    <CloseIcon/>
+                                                                </button>
+                                                            </ListItem>
+                                                            <div className="text-red-600 p-2">
+                                                                {props.errors["tuteursAdd."+i+".email"]}
+                                                            </div>
+                                                            <div className="text-red-600 p-2">
+                                                                {props.errors["tuteursAdd."+i+".telephone"]}
+                                                            </div>
+                                                        </motion.div>
+
+                                                ))}
+                                            </AnimatePresence>
                                         </List>
-                                        :
-                                        <div>
+                                {
+                                    console.log(props.errors)
+                                }
+
+                                    {
+                                        !(data.tuteursAdd && data.tuteursAdd.length) > 0 &&
+                                        <div className="mb-5">
                                             Aucun tuteur
                                             <div className="text-red-600">
                                                 {props.errors?.tuteursAdd}
                                             </div>
                                         </div>
-                                }
+                                    }
+
+
                                 <div >
                                     <button onClick={()=>setOpenModal(true)} type={"button"} className={"rounded bg-green-600 p-3 text-white flex"}>
                                         Ajouter un nouveau tuteur <span className={"ml-2 rounded-full bg-white text-green-600 flex text-center items-center"}><AddIcon /></span>
@@ -456,30 +478,43 @@ function Create(props) {
                                 <div>
 
                                     <List dense sx={{ width: '100%', maxWidth: 600, bgcolor: 'background.paper' }}>
-                                        { data.tuteurs.map((t) => {
+                                        { data.tuteurs.map((t,i) => {
                                             const labelId = `checkbox-list-secondary-label-${t.id}`;
                                             return (
-                                                <ListItem
+
+                                                <motion.div
                                                     key={t.id}
-                                                    secondaryAction={
-                                                        <Checkbox
-                                                            edge="end"
-                                                            onChange={handleToggle(t.id)}
-                                                            checked={checked.indexOf(t.id) !== -1}
-                                                            inputProps={{ 'aria-labelledby': labelId }}
-                                                        />
-                                                    }
-                                                    disablePadding
+
+                                                    initial={{y:-100,opacity:0}}
+                                                    animate={{y:0,opacity:1}}
+                                                    transition={{
+                                                        duration: 0.5,
+                                                        type: "spring",
+                                                        delay: i * 0.1
+                                                    }}
                                                 >
-                                                    <ListItemButton>
-                                                        <ListItemText id={labelId} primary={capitalize(t?.prenom)+" "+capitalize(t?.nom)} secondary={" Tel: "+t.telephone+" |   Email: "+t.email}
-                                                        />
-                                                    </ListItemButton>
-                                                </ListItem>
+                                                    <ListItem
+                                                        secondaryAction={
+                                                            <Checkbox
+                                                                edge="end"
+                                                                onChange={handleToggle(t.id)}
+                                                                checked={checked.indexOf(t.id) !== -1}
+                                                                inputProps={{ 'aria-labelledby': labelId }}
+                                                            />
+                                                        }
+                                                        disablePadding
+                                                    >
+                                                        <ListItemButton>
+                                                            <ListItemText id={labelId} primary={capitalize(t?.prenom)+" "+capitalize(t?.nom)} secondary={" Tel: "+t.telephone+" |   Email: "+t.email}
+                                                            />
+                                                        </ListItemButton>
+                                                    </ListItem>
+
+                                                </motion.div>
                                             );
                                         })}
                                     </List>
-                                    <button onClick={handleAddNewTuteur} className={"p-3 rounded bg-green-600 text-white flex text-center items-center"}>
+                                    <button onClick={handleAddNewTuteur} className={"p-3 rounded bg-green-600 text-white flex text-center items-center mt-4"}>
                                         Ajouter
                                     </button>
                                 </div>
@@ -495,9 +530,9 @@ function Create(props) {
                                     <div className={"flex flex-wrap"}>
                                         {
                                             data.classe?.tarifs.map((tarif)=>(
-                                                <div hidden={tarif.type_paiement.libelle==="INSCRIPTION"} key={tarif.id} className={"mx-5"}>
-                                                    <FormControlLabel control={<Checkbox disabled={tarif.obligatoire?true:false} name={tarif.id+""} defaultChecked={tarif.obligatoire?true:false} onChange={handleChange} />} label={<div>{tarif.type_paiement.libelle} <span className={"p-1 rounded bg-orange-600 text-white"}>{formatNumber(tarif.montant)} FG/AN</span></div>} />
-                                                </div>
+                                            <div key={tarif.id} className={"mx-5"}>
+                                                <FormControlLabel control={<Checkbox disabled={tarif.obligatoire?true:false} name={tarif.id+""} defaultChecked={tarif.obligatoire?true:false} onChange={handleChange} />} label={<div>{tarif.type_paiement.libelle} <span className={"p-1 rounded bg-orange-600 text-white"}>{formatNumber(tarif.montant)} FG/AN</span></div>} />
+                                            </div>
                                             ))
                                         }
                                     </div>
@@ -630,16 +665,6 @@ function Create(props) {
                                         type={"password"}
                                         className={"w-full"}  name={"password"} label={"Mot de passe"} value={dataTuteur.password} onChange={onHandleChange}
                                         autoComplete="password"
-                                        required
-                                    />
-                                </div>
-
-                                <div className="mt-4">
-
-                                    <TextField
-                                        type={"password"}
-                                        autoComplete="new-password"
-                                        className={"w-full"}  name={"confirm_password"} label={"Confirmer mot de passe"} value={dataTuteur.confirm_password} onChange={onHandleChange}
                                         required
                                     />
                                 </div>

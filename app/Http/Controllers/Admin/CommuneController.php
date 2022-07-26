@@ -52,7 +52,7 @@ class CommuneController extends Controller
 
         $commune->ville()->associate(Ville::find($request->ville["id"]))->save();
 
-        return redirect()->back();
+        return redirect()->back()->with("success", "Commune créé avec succès");;
     }
 
     /**

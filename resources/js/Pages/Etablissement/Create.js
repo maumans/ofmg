@@ -1,12 +1,21 @@
 import React from 'react';
 import AdminPanel from "@/Layouts/AdminPanel";
 import Authenticated from "@/Layouts/Authenticated";
+import {motion} from "framer-motion";
 
 function Create({auth,error,etablissement}) {
     return (
         <AdminPanel auth={auth} error={error} active={"vue"}>
 
-            <div className={"m-5 bg-white space-y-5"}>
+            <motion.div
+                initial={{y:-100,opacity:0}}
+                animate={{y:0,opacity:1}}
+                transition={{
+                    duration:0.5,
+                    type:"spring",
+                }}
+
+                className={"m-5 bg-white space-y-5"}>
                 <div className={"p-2 flex flex-col"}>
                    <span>
                         <span className={"font-bold"}>Etablissement:</span> {etablissement.nom}
@@ -24,7 +33,7 @@ function Create({auth,error,etablissement}) {
                 <div className={"grid grid-col"}>
 
                 </div>
-            </div>
+            </motion.div>
 
         </AdminPanel>
     );

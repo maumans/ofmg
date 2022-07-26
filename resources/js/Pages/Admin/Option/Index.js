@@ -14,12 +14,13 @@ import {useForm} from "@inertiajs/inertia-react";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import SnackBar from "@/Components/SnackBar";
 
 function Index(props) {
 
     const [options,setOptions] = useState();
 
-    const {data,setData,post}=useForm({
+    const {data,setData,post,reset}=useForm({
         "libelle":"",
         "cycle":""
     });
@@ -27,14 +28,14 @@ function Index(props) {
     const columns = [
         { field: 'id', headerName: 'ID', flex: 1, minWidth: 70 },
         { field: 'libelle', headerName: 'OPTION', flex: 1, minWidth: 300 },
-        { field: 'cycle', headerName: 'CYCLE', flex: 1, minWidth: 300,renderCell:(cellValues)=>(
+        { field: 'cycle', headerName: 'CYCLE', flex: 1, minWidth: 250,renderCell:(cellValues)=>(
             cellValues.row.cycle?.libelle
             ) },
         { field: 'departement', headerName: 'DEPARTEMENT', flex: 1, minWidth: 300,renderCell:(cellValues)=>(
                 cellValues.row.departement?.libelle
             ) },
 
-        { field: 'action', headerName: 'ACTION',flex: 1, minWidth: 150,
+        { field: 'action', headerName: 'ACTION',flex: 1, minWidth: 250,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
                     <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-300 rounded hover:text-blue-300 hover:bg-white transition duration-500 "}>
@@ -68,7 +69,7 @@ function Index(props) {
     {
         e.preventDefault();
 
-        post(route("admin.option.store",props.auth.user.id),data)
+        post(route("admin.option.store",props.auth.user.id),{data,onSuccess: ()=>reset("libelle")})
 
     }
 
@@ -90,7 +91,7 @@ function Index(props) {
                 <div>
 
                     <div className={"my-5 text-2xl"}>
-                        Gestions des options
+                        Gestion des options
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 w-full"}>
@@ -154,11 +155,11 @@ function Index(props) {
                                 columns={columns}
                                 pageSize={5}
                                 rowsPerPageOptions={[5]}
-                                checkboxSelection
                                 autoHeight
                             />
                         }
                     </div>
+                    <SnackBar success={ props.success }/>
                 </div>
             </div>
         </AdminPanel>

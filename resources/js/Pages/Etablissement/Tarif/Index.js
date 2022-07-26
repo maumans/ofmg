@@ -25,6 +25,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import NumberFormat from "react-number-format";
 import SnackBar from "@/Components/SnackBar";
+import {motion} from "framer-motion";
+import formatNumber from "@/Utils/formatNumber";
 
 const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, ref) {
     const { onChange, ...other } = props;
@@ -46,6 +48,35 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
             isNumericString
             prefix={"Le "}
             suffix={" de chaque mois"}
+        />
+    );
+});
+
+const NumberFormatCustomMontant = React.forwardRef(function NumberFormatCustom(props, ref) {
+    const { onChange, ...other } = props;
+
+    return (
+        <NumberFormat
+            isAllowed={(values) => {
+                const {floatValue} = values;
+                return ((floatValue >= 0 &&  floatValue <= props.max) || floatValue === undefined);
+            }}
+            {...other}
+            getInputRef={ref}
+            onValueChange={(values) => {
+                onChange({
+                    target: {
+                        name: props.name,
+                        value: values.value,
+                    },
+                });
+            }}
+            thousandSeparator={true}
+
+            isNumericString
+            suffix={props.devise==="eur"?" €":props.devise==="usd"?" $":" FG"
+
+            }
         />
     );
 });
@@ -78,11 +109,6 @@ function Index(props) {
         success && setSuccess(null)
     }
 
-    useEffect(() => {
-        console.log(error)
-        console.log(success)
-    })
-
    function handleClose()
    {
        setOpen(false);
@@ -99,7 +125,7 @@ function Index(props) {
         "montant":"",
         "frequence":"",
         "echeance":"",
-        "classe":"",
+        "classes":"",
         "typePaiement":"",
         "AnneeScolaire":"",
         "etablissement_id":"",
@@ -110,8 +136,8 @@ function Index(props) {
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
         { field: 'typePaiement', headerName: 'TYPE FRAIS', width:130,renderCell:(cellValues)=>cellValues.row.type_paiement?.libelle },
-        { field: 'classe', headerName: 'CLASSE', width:130, renderCell:(cellValues)=>cellValues.row.classe?.libelle },
-        { field: 'montant', headerName: 'MONTANT', width:130 },
+        { field: 'classe', headerName: 'CLASSE', width:250, renderCell:(cellValues)=>cellValues.row.classe?.libelle },
+        { field: 'montant', headerName: 'MONTANT', width:130 ,renderCell:(cellValues)=>formatNumber(cellValues.row.montant)+" FG"},
         { field: 'frequence', headerName: 'FREQUENCE', width:130 },
         { field: 'echeance', headerName: 'ECHEANCE', width:130 },
         { field: 'obligatoire', headerName: 'OBLIGATOIRE', width:130, renderCell:(cellValues)=>cellValues.row.obligatoire?"oui":"non" },
@@ -164,18 +190,13 @@ function Index(props) {
         }
     },[data.typePaiement])
 
-    useEffect(() => {
-        console.log(data.obligatoire)
-    },[data.obligatoire])
-
-
     return (
         <AdminPanel auth={props.auth} error={props.error} active={"Service"}>
             <div className={"p-5"}>
                 <div>
 
                     <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
-                        Gestions des services
+                        Gestion des services
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"my-5 p-2 border rounded"}>
@@ -192,21 +213,23 @@ function Index(props) {
                                    options={props.typePaiements}
                                    getOptionLabel={option=>option.libelle}
                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                   renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Type de paiement"} label={params.libelle} required/>}
+                                   renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Type de frais"} label={params.libelle} required/>}
                                />
                                <div className={"text-red-600"}>{props.errors?.etablissement_id}</div>
                            </div>
                            <div>
                                <Autocomplete
+                                   multiple
                                    disabled={data.typePaiement?.concerne!=="APPRENANT"}
                                    id="tags-standard"
-                                   onChange={(e,val)=>setData("classe",val)}
+                                   onChange={(e,val)=>setData("classes",val)}
                                    disablePortal={true}
                                    id={"combo-box-demo"}
-                                   options={props.classes}
+                                   options={props.classes.filter((classe)=>(data.typePaiement?data.typePaiement?.tarifs.find(tarif=>tarif.classe_id===classe.id)===undefined:1))}
                                    getOptionLabel={option=>option.libelle}
-                                   isOptionEqualToValue={(option, value) => option.id === value.id}
-                                   renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Classe"} label={params.libelle} required/>}
+                                   isOptionEqualToValue={(option, value) => option.id === value.id }
+                                   required
+                                   renderInput={(params)=><TextField fullWidth {...params} placeholder={"Classes"} label={params.libelle}/>}
                                />
                                <div className={"text-red-600"}>{props.errors?.classes}</div>
                            </div>
@@ -214,8 +237,10 @@ function Index(props) {
                                 <FormControl className={"w-full"}>
                                     <InputLabel id="demo-simple-select-standard-label">Fréquence</InputLabel>
                                     <Select
+                                        className={"w-full"}
                                         disabled={data.typePaiement?.libelle==="INSCRIPTION"}
                                         labelId="demo-simple-select-label"
+                                        label={"Fréquence"}
 
                                         value={data.frequence}
                                         onChange={(e)=>setData("frequence",e.target.value)}
@@ -231,7 +256,15 @@ function Index(props) {
                             </div>
 
                             <div>
-                                <TextField className={"w-full"}  name={"montant"} label={"Montant"} value={data.libelle} onChange={(e)=>setData("montant",e.target.value)}/>
+                                <TextField className={"w-full"}  name={"montant"} label={"Montant"} value={data.libelle} onChange={(e)=>setData("montant",e.target.value)}
+                                           InputProps={{
+                                               inputComponent: NumberFormatCustomMontant,
+                                               inputProps:{
+                                                   max:100000000,
+                                                   name:"montant"
+
+                                               },
+                                           }}/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.libelle}</div>
                             </div>
 
@@ -248,11 +281,9 @@ function Index(props) {
                                     className={"w-full"}  name={"echeance"} label={"Jour limite de paiement"} value={data.echeance} onChange={(e)=>setData("echeance",e.target.value)}/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.libelle}</div>
                             </div>
-                            {
-                                <div className={"col-span-3"} >
-                                    <FormControlLabel disabled={data.typePaiement?.concerne!=="APPRENANT"} control={<Checkbox name={"obligatoire"} onChange={(e)=>setData("obligatoire",e.target.checked)} />} label={"Obligatoire"} />
-                                </div>
-                            }
+                            <div className={"md:col-span-3"} >
+                                <FormControlLabel disabled={data.typePaiement?.concerne!=="APPRENANT"} control={<Checkbox name={"obligatoire"} onChange={(e)=>setData("obligatoire",e.target.checked)} />} label={"Obligatoire"} />
+                            </div>
 
                             <SnackBar error={error} update={update} success={success}/>
 
@@ -265,7 +296,15 @@ function Index(props) {
 
                     </form>
 
-                    <div style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                    <motion.div
+                        initial={{y:-100,opacity:0}}
+                        animate={{y:0,opacity:1}}
+                        transition={{
+                            duration:0.5,
+                            type:"spring",
+                        }}
+
+                        style={{height:450, width: '100%' }} className={"flex justify-center"}>
                         {
                             tarifs &&
                             <DataGrid
@@ -281,11 +320,10 @@ function Index(props) {
                                 columns={columns}
                                 pageSize={5}
                                 rowsPerPageOptions={[5]}
-                                checkboxSelection
                                 autoHeight
                             />
                         }
-                    </div>
+                    </motion.div>
                     <SnackBar success={ props.success }/>
                 </div>
             </div>
