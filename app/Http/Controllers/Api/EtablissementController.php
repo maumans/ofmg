@@ -18,7 +18,7 @@ class EtablissementController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function validationCode($etablissementCode)
+    public function validation($etablissementCode)
     {
         return Etablissement::where('code', $etablissementCode)->first()?true:false;
     }
@@ -47,7 +47,13 @@ class EtablissementController extends Controller
             $operations=null;
         }
 
-        $données=["status"=>$apprenant?"SUCCESS":"FAILED","data"=>["code"=>$code,"matricule"=>$matricule,"operations"=>$operations]];
+        $ap=["nom"=>$apprenant->nom,"prenom"=>$apprenant->prenom,"matricule"=>$apprenant->matricule,"classe"=>$apprenant->classe->libelle];
+
+        $etablissement=Etablissement::where("code",$code)->with("typeEtablissement")->first();
+
+        $et=["code"=>$etablissement->code,"nom"=>$etablissement->nom,"type"=>$etablissement->typeEtablissement->libelle];
+
+        $données=["status"=>$apprenant?"SUCCESS":"FAILED","data"=>["etablissement"=>$et,"apprenant"=>$ap,"operations"=>$operations]];
 
         return response()->json($données,$apprenant?201:400);
     }

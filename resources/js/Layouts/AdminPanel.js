@@ -209,6 +209,12 @@ function ResponsiveDrawer(props) {
                     </ListItemButton>
                 </Link>
                 <Divider  component="li"/>
+                <Link href={route("admin.modePaiement.index",props.auth.user.id)}>
+                    <ListItemButton sx={props.active==="modePaiement" ?{backgroundColor:"#ff8831",color:"white"}:null}>
+                        <ListItemText primary="Mode de paiement"/>
+                    </ListItemButton>
+                </Link>
+                <Divider  component="li"/>
                 <Link href={route("admin.fonction.index",props.auth.user.id)}>
                     <ListItemButton sx={props.active==="fonction" ?{backgroundColor:"#ff8831",color:"white"}:null}>
                         <ListItemText primary="Fonctions"/>
