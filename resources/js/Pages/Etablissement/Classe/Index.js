@@ -343,9 +343,6 @@ function Index(props) {
                         {
                             classes &&
                             <DataGrid
-                                componentsProps={{
-                                    columnMenu:{backgroundColor:"red",background:"yellow"},
-                                }}
                                 rows={classes}
                                 columns={columns}
                                 pageSize={5}

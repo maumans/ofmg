@@ -17,7 +17,8 @@ class ModePaiementSeeder extends Seeder
     {
         DB::table('etablissements')->delete();
 
-        Mode_paiement::create(["libelle","OM"]);
+        Mode_paiement::create(["libelle","OM WEB"]);
         Mode_paiement::create(["libelle","CASH"]);
+        Mode_paiement::create(["libelle","OM USSD"]);
     }
 }

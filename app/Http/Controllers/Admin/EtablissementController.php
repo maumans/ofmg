@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Illuminate\Validation\Rules;
@@ -53,45 +54,61 @@ class EtablissementController extends Controller
      */
     public function store(Request $request)
     {
-        $code=$request->ville["libelle"][0]."".$request->commune["libelle"][0]."".$request->nomEtablissement[0]."".Etablissement::all()->last();
 
-        dd($code);
-        $request->validate([
-            "nomEtablissement"=>"required",
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => ['required', Rules\Password::defaults()],
-        ]);
+        DB::beginTransaction();
+        try {
+
+            $code=$request->ville["libelle"][0]."".$request->commune["libelle"][0]."".$request->nomEtablissement[0]."".Etablissement::all()->last();
+
+            $request->validate([
+                "nomEtablissement"=>"required",
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => ['required', Rules\Password::defaults()],
+            ]);
 
 
-        $etablissement=Etablissement::create([
-            //"code"=>Date::now()->format('YmdHis'),
-            "code"=>"1",
-            "nom"=>$request->nomEtablissement
-        ]);
 
-        $user=User::create([
-            "nom"=>$request->nom,
-            "prenom"=>$request->prenom,
-            "email"=>$request->email,
-            'password' => Hash::make($request->password),
 
-        ]);
-        $user->roles()->syncWithoutDetaching(Role::where("libelle", "etablissement")->first());
+            $user=User::create([
+                "nom"=>$request->nom,
+                "prenom"=>$request->prenom,
+                "email"=>$request->email,
+                'password' => Hash::make($request->password),
+                "telephone"=>$request->telephone,
 
-        $user->etablissementAdmin()->associate($etablissement)->save();
+            ]);
 
-        Contrat::create([
-            "dateDebut"=>Carbon::now(),
-            "user_id" =>$user->id,
-            "etablissement_id"=>$etablissement->id,
-            "role_id"=>Role::where("libelle", "etablissement")->first()->id,
-        ]);
+           $etablissement=Etablissement::create([
+               "code"=>$code,
+               "nom"=>$request->nomEtablissement,
+                "user_id"=>$user->id,
+               "telephone"=>$request->telephoneEtab,
+            ]);
 
-        $request->commune!=null && $etablissement->commune()->associate(Commune::find($request->commune["id"]))->save();
-        $etablissement->typeEtablissement()->associate(Type_etablissement::find($request->typeEtablissement["id"]))->save();
-        $request->ville!=null && $etablissement->ville()->associate(Ville::find($request->ville["id"]))->save();
+            $user->roles()->syncWithoutDetaching(Role::where("libelle", "etablissement")->first());
 
-        return redirect()->back()->with("success", "Etablissement créé avec succès");;
+            $user->etablissementAdmin()->associate($etablissement)->save();
+
+            Contrat::create([
+                "dateDebut"=>Carbon::now(),
+                "user_id" =>$user->id,
+                "etablissement_id"=>$etablissement->id,
+            ]);
+
+            $request->commune!=null && $etablissement->commune()->associate(Commune::find($request->commune["id"]))->save();
+            $etablissement->typeEtablissement()->associate(Type_etablissement::find($request->typeEtablissement["id"]))->save();
+            $request->ville!=null && $etablissement->ville()->associate(Ville::find($request->ville["id"]))->save();
+
+            DB::commit();
+            return redirect()->back()->with("success", "Etablissement créé avec succès");
+
+        }
+        catch(Exception $e){
+
+            echo($e);
+            DB::rollback();
+        }
+
     }
 
     /**

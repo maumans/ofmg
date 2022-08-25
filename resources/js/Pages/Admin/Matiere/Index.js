@@ -74,7 +74,7 @@ function Index(props) {
                 <div>
 
                     <div className={"my-5 text-2xl"}>
-                        Gestion des matieres
+                        Gestion des matières
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5"}>
@@ -100,7 +100,7 @@ function Index(props) {
                             type:"spring",
                         }}
 
-                        style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                        style={{width: '100%' }} className={"flex justify-center"}>
                         {
                             matieres &&
                             <DataGrid
@@ -109,8 +109,8 @@ function Index(props) {
                                 }}
                                 rows={matieres}
                                 columns={columns}
-                                pageSize={5}
-                                rowsPerPageOptions={[5]}
+                                pageSize={10}
+                                rowsPerPageOptions={[10]}
                                 autoHeight
                             />
                         }

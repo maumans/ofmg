@@ -48,7 +48,7 @@ class CycleController extends Controller
             "libelle"=>"required"
         ]));
 
-        return redirect()->back()->with("success", "Cycle créé avec succès");;
+        return redirect()->back()->with("success", "Cycle créé avec succès");
     }
 
     /**
@@ -78,11 +78,15 @@ class CycleController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, $id)
     {
-        //
+        $cycle=Cycle::find($request->editId);
+        $cycle->libelle=$request->libelleEdit;
+        $cycle->save();
+
+        return redirect()->back()->with("Cycle modifié avec succès");
     }
 
     /**

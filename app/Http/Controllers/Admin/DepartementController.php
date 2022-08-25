@@ -81,7 +81,12 @@ class DepartementController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        //dd($request->all());
+        $departement=Departement::find($request->editId);
+        $departement->libelle=$request->libelleEdit;
+        $departement->save();
+
+        return redirect()->back()->with("Fonction modifiée avec succès");
     }
 
     /**

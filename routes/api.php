@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,24 +16,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+
+
+Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'auth'
-], function ($router) {
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::get('/user-profile', [AuthController::class, 'userProfile']);
-    //Route::get("etablissement/apprenant/{code}/{matricule}",[\App\Http\Controllers\Api\EtablissementController::class,"verification"])->name("api.etablissement.apprenant.verification");
+Route::middleware('auth:api')->group(function () {
+    Route::get("etablissement/validation/{code}",[\App\Http\Controllers\Api\EtablissementController::class,"validation"])->name("api.etablissement.validation");
+    Route::get("etablissement/apprenant/{code}/{matricule}",[\App\Http\Controllers\Api\EtablissementController::class,"verification"])->name("api.etablissement.apprenant.verification");
+    Route::post("etablissement/apprenant/paiement/",[\App\Http\Controllers\Api\EtablissementController::class,"paiement"])->name("api.etablissement.apprenant.paiement");
 });
 
-Route::get("etablissement/{code}/validation",[\App\Http\Controllers\Api\EtablissementController::class,"validation"])->name("api.etablissement.validation");
-Route::get("etablissement/apprenant/{code}/{matricule}",[\App\Http\Controllers\Api\EtablissementController::class,"verification"])->name("api.etablissement.apprenant.verification");
+
+
+
+Route::post('login',[App\Http\Controllers\Api\AuthController::class,"login"] );
+Route::post('register',[App\Http\Controllers\Api\AuthController::class,"register"] );
 
 
 //Route::apiResource("etablissement",App\Http\Controllers\Api\EtablissementController::class)->only("show");

@@ -120,9 +120,11 @@ class AnneeScolaireController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($userId,Annee_scolaire $anneeScolaire)
     {
-        //
+        $anneeScolaire->delete();
+
+        return redirect()->back()->with("Année scolaire supprimée avec succès");
     }
 
     public function cloture()

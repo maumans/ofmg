@@ -102,8 +102,6 @@ function Index(props) {
 
     function handleCellEditCommit(params) {
 
-        console.log(params)
-
         setData(params.field,params.value);
 
         Inertia.post(route("etablissement.niveau.update",[props.auth.user.id,params.id]),{_method: "put",dataEdit})

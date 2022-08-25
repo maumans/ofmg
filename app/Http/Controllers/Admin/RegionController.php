@@ -81,7 +81,12 @@ class RegionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        //dd($request->all());
+        $region=Region::find($request->editId);
+        $region->libelle=$request->libelleEdit;
+        $region->save();
+
+        return redirect()->back()->with("Region modifiée avec succès");
     }
 
     /**

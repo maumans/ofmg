@@ -26,6 +26,7 @@ Route::middleware(['auth', 'verified',"userIsAdmin","firstConnexion","passwordCh
     Route::resource('admin.fonction',\App\Http\Controllers\Admin\FonctionController::class);
     Route::resource('admin.modePaiement',\App\Http\Controllers\Admin\ModePaiementController::class);
     Route::resource('admin.matiere',\App\Http\Controllers\Admin\MatiereController::class);
+    Route::resource('admin.codeNumero',\App\Http\Controllers\Admin\CodeNumeroController::class);
 
     Route::resource('admin.etablissement',\App\Http\Controllers\Admin\EtablissementController::class);
     Route::resource('admin.typePaiement',\App\Http\Controllers\Admin\TypePaiementController::class);
@@ -50,6 +51,8 @@ Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","pa
     Route::get("etablissement/anneeScolaire/cloture",[\App\Http\Controllers\Etablissement\AnneeScolaireController::class,"cloture"])->name("etablissement.anneeScolaire.cloture")->middleware("anneeScolaireIsDefined");
 
     Route::resource('etablissement.inscription',\App\Http\Controllers\Etablissement\InscriptionController::class)->middleware("anneeScolaireIsDefined");
+    Route::post("etablissement/{userId}/inscription/import",[\App\Http\Controllers\Etablissement\InscriptionController::class,"import"])->name("etablissement.inscription.import")->middleware("anneeScolaireIsDefined");
+
     Route::resource('etablissement.contrat',\App\Http\Controllers\Etablissement\ContratController::class)->middleware("anneeScolaireIsDefined");
     Route::resource('etablissement.personnel',\App\Http\Controllers\Etablissement\PersonnelController::class)->middleware("anneeScolaireIsDefined");
 

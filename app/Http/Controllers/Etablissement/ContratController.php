@@ -13,7 +13,6 @@ use App\Models\Fonction;
 use App\Models\Matiere;
 use App\Models\Mois;
 use App\Models\Mois_Paye;
-use App\Models\Personnel;
 use App\Models\Role;
 use App\Models\User;
 use Carbon\CarbonPeriod;
@@ -232,7 +231,7 @@ class ContratController extends Controller
 
                     $contratFonctionMois->mois()->associate(Mois::where("position",$date->month)->first())->save();
                     $contratFonctionMois->contratFonction()->associate(Contrat_fonction::where("id",$contratFonction->id)->first())->save();
-                    $contratFonctionMois->personnel()->associate(Personnel::where("id",$user->id)->first())->save();
+                    $contratFonctionMois->personnel()->associate(User::where("id",$user->id)->first())->save();
 
                 }
             }

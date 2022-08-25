@@ -3,17 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Apprenant;
+use App\Models\Code_numero;
 use App\Models\Etablissement;
 use App\Models\Mode_paiement;
+use App\Models\Mois;
+use App\Models\Mois_Paye;
 use App\Models\Paiement;
 use App\Models\Tarif;
 use App\Models\Type_paiement;
 use App\Models\User;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Throwable;
 
 class PaiementController extends Controller
 {
@@ -29,18 +34,18 @@ class PaiementController extends Controller
 
     public function search($matricule)
     {
-
+        $codeNumeros=Code_numero::all();
         $apprenant=Apprenant::where("matricule",$matricule)->first();
 
         $etablissement=$apprenant ? $apprenant->classe->etablissement:null;
 
         $anneeEnCours=$etablissement ? $etablissement->anneeEnCours:null;
 
-        $apprenant=$apprenant ? Apprenant::where("matricule",$matricule)->with(["tarifs"=>function($query){
-            $query->with("typePaiement")->get();
-        },"classe"=>function($query){
-            $query->with(["tarifs"=>function($query){
-                $query->with("typePaiement")->get();
+        $apprenant=$apprenant ? Apprenant::where("matricule",$matricule)->with(["tarifs"=>function($query) use ($anneeEnCours){
+            $query->whereRelation('anneeScolaire','id',$anneeEnCours->id)->with(["typePaiement",'apprenantTarif.moisPayes'])->get();
+        },"classe"=>function($query) use ($anneeEnCours){
+            $query->with(["tarifs"=>function($query) use ($anneeEnCours){
+                $query->whereRelation('anneeScolaire','id',$anneeEnCours->id)->with("typePaiement")->get();
             }]);
         },
            "paiements"=>function($query) use ($anneeEnCours,$apprenant){
@@ -58,6 +63,7 @@ class PaiementController extends Controller
           $tarif->resteApayer=$tarif->montant-$apprenant->paiements->where("type_paiement_id",$tarif->typePaiement->id)->sum("montant");
         });
 
+        //dd($apprenant);
 
 
         $paiements=$apprenant ? $apprenant->paiements()->with("tarif","typePaiement")->get()->unique('type_paiement_id'):null;
@@ -76,7 +82,7 @@ class PaiementController extends Controller
         }])->first();
         */
 
-        return Inertia::render("Paiement/Create",["etablissement"=>$etablissement,"apprenant"=>$apprenant,"matricule"=>$matricule,"nbrMois"=>$nbrMois,"modePaiements"=>$modePaiements,"paiements"=>$paiements]);
+        return Inertia::render("Paiement/Create",["etablissement"=>$etablissement,"apprenant"=>$apprenant,"matricule"=>$matricule,"nbrMois"=>$nbrMois,"modePaiements"=>$modePaiements,"paiements"=>$paiements,"codeNumeros"=>$codeNumeros]);
     }
 
     /**
@@ -99,7 +105,7 @@ class PaiementController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Exception|\Illuminate\Http\RedirectResponse|Throwable
      */
     public function store(Request $request)
     {
@@ -121,7 +127,7 @@ class PaiementController extends Controller
                         "montant"=>$request->montants[$info[0]."_".$info[1]],
                         "numero_retrait"=>$request->numero_retrait,
                         "type_paiement_id"=>$tarif["type_paiement_id"],
-                        "mode_paiement_id"=>Mode_paiement::where("libelle","OM")->first()->id,
+                        "mode_paiement_id"=>Mode_paiement::where("libelle","OM WEB")->first()->id,
                     ]);
 
                     //Paiement::where("id",$paiement->id)->first()->cashin();
@@ -135,14 +141,67 @@ class PaiementController extends Controller
                 }
             }
 
+            foreach($apprenant->tarifs as $tarif)
+            {
+                $payeParTarif=$apprenant->paiements->where("tarif_id",$tarif->id)->sum("montant");
+
+                $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin);
+
+                $nombreMois=$intervalle->count();
+
+                $sommeMensuelle=$tarif->montant/$nombreMois;
+
+                $repartition=$payeParTarif;
+
+                //dd($payeParTarif,$sommeMensuelle,$tarif->montant);
+
+
+                foreach($intervalle as $date)
+                {
+
+
+                    $moisId=Mois::where("position",$date->month)->first()->id;
+
+
+
+                    $moisPaye=Mois_Paye::where("apprenant_tarif_id",$tarif->pivot->id)->where("mois_id",$moisId)->first();
+
+
+                    if($repartition>=$sommeMensuelle)
+                    {
+                        $moisPaye->montant=$sommeMensuelle;
+                        $moisPaye->save();
+                        $repartition=$repartition-$sommeMensuelle;
+
+                    }
+                    else
+                    {
+                        if($repartition==0)
+                        {
+                            $moisPaye->montant=0;
+                            $moisPaye->save();
+
+
+                        }
+                        else
+                        {
+                            $moisPaye->montant=$repartition;
+                            $moisPaye->save();
+                            $repartition=0;
+                        }
+                    }
+
+                }
+
+            }
+
             DB::commit();
 
             return redirect()->route('paiement.ok',["apprenantId"=>$apprenant->id,'total'=>$request->total]);
         }
-        catch(Exception $e){
-
-            echo($e);
+        catch(Throwable $e){
             DB::rollback();
+            return $e;
         }
 
     }

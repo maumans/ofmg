@@ -52,6 +52,11 @@ class Etablissement extends Model
         return $this->hasMany(User::class);
     }
 
+    public function adminActuel()
+    {
+        return $this->hasOne(User::class);
+    }
+
     public function niveaux()
     {
         return $this->hasMany(Niveau::class);
@@ -85,7 +90,7 @@ class Etablissement extends Model
 
     public function personnels()
     {
-        return $this->hasMany(Personnel::class);
+        return $this->hasMany(User::class);
     }
 
     public function salaires()

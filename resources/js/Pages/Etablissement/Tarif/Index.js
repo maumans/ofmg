@@ -135,13 +135,13 @@ function Index(props) {
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'typePaiement', headerName: 'TYPE FRAIS', width:130,renderCell:(cellValues)=>cellValues.row.type_paiement?.libelle },
-        { field: 'classe', headerName: 'CLASSE', width:250, renderCell:(cellValues)=>cellValues.row.classe?.libelle },
-        { field: 'montant', headerName: 'MONTANT', width:130 ,renderCell:(cellValues)=>formatNumber(cellValues.row.montant)+" FG"},
-        { field: 'frequence', headerName: 'FREQUENCE', width:130 },
-        { field: 'echeance', headerName: 'ECHEANCE', width:130 },
-        { field: 'obligatoire', headerName: 'OBLIGATOIRE', width:130, renderCell:(cellValues)=>cellValues.row.obligatoire?"oui":"non" },
-        { field: 'action', headerName: 'ACTION',width:200,
+        { field: 'typePaiement', headerName: 'TYPE FRAIS', minWidth:130,renderCell:(cellValues)=>cellValues.row.type_paiement?.libelle,flex:1 },
+        { field: 'classe', headerName: 'CLASSE', minWidth:250,flex:1, renderCell:(cellValues)=>cellValues.row.classe?.libelle },
+        { field: 'montant', headerName: 'MONTANT', minWidth:130,flex:1 ,renderCell:(cellValues)=>formatNumber(cellValues.row.montant)+" FG"},
+        { field: 'frequence', headerName: 'FREQUENCE', minWidth:130,flex:1 },
+        { field: 'echeance', headerName: 'ECHEANCE', minWidth:130 },
+        { field: 'obligatoire', headerName: 'OBLIGATOIRE', minWidth:130,flex:1, renderCell:(cellValues)=>cellValues.row.obligatoire?"oui":"non" },
+        { field: 'action', headerName: 'ACTION',minWidth:200,flex:1,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
                     <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
@@ -192,140 +192,129 @@ function Index(props) {
 
     return (
         <AdminPanel auth={props.auth} error={props.error} active={"Service"}>
-            <div className={"p-5"}>
-                <div>
+            <div>
+                <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
+                    Gestion des services
+                </div>
 
-                    <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
-                        Gestion des services
+                <form action="" onSubmit={handleSubmit} className={"my-5 p-2 border rounded"}>
+                    <div className={"text-lg font-bold mb-5"}>
+                        Ajouter un service (Tarif)
+                    </div>
+                    <div className={"gap-5 grid md:grid-cols-3 grid-cols-1"}>
+                        <div>
+                            <Autocomplete
+                                id="tags-standard"
+                                onChange={(e,val)=>setData("typePaiement",val)}
+                                disablePortal={true}
+                                id={"combo-box-demo"}
+                                options={props.typePaiements}
+                                getOptionLabel={option=>option.libelle}
+                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Type de frais"} label={params.libelle} required/>}
+                            />
+                            <div className={"text-red-600"}>{props.errors?.etablissement_id}</div>
+                        </div>
+                        <div>
+                            <Autocomplete
+                                multiple
+                                disabled={data.typePaiement?.concerne!=="APPRENANT"}
+                                id="tags-standard"
+                                onChange={(e,val)=>setData("classes",val)}
+                                disablePortal={true}
+                                id={"combo-box-demo"}
+                                options={props.classes.filter((classe)=>(data.typePaiement?data.typePaiement?.tarifs.find(tarif=>tarif.classe_id===classe.id)===undefined:1))}
+                                getOptionLabel={option=>option.libelle}
+                                isOptionEqualToValue={(option, value) => option.id === value.id }
+                                required
+                                renderInput={(params)=><TextField fullWidth {...params} placeholder={"Classes"} label={params.libelle}/>}
+                            />
+                            <div className={"text-red-600"}>{props.errors?.classes}</div>
+                        </div>
+                        <div>
+                            <FormControl className={"w-full"}>
+                                <InputLabel id="demo-simple-select-standard-label">Fréquence</InputLabel>
+                                <Select
+                                    className={"w-full"}
+                                    disabled={data.typePaiement?.libelle==="INSCRIPTION"}
+                                    labelId="demo-simple-select-label"
+                                    label={"Fréquence"}
+
+                                    value={data.frequence}
+                                    onChange={(e)=>setData("frequence",e.target.value)}
+                                >
+                                    <MenuItem value={"MENSUELLE"}>MENSUELLE</MenuItem>
+                                    <MenuItem value={"TRIMESTRIELLE"}>TRIMESTRIELLE</MenuItem>
+                                    <MenuItem value={"SEMESTRIELLE"}>SEMESTRIELLE</MenuItem>
+                                    <MenuItem value={"ANNUELLE"}>ANNUELLE</MenuItem>
+
+                                </Select>
+                            </FormControl>
+                            <div className={"flex my-2 text-red-600"}>{props.errors?.situation_matrimoniale}</div>
+                        </div>
+
+                        <div>
+                            <TextField className={"w-full"}  name={"montant"} label={"Montant"} value={data.libelle} onChange={(e)=>setData("montant",e.target.value)}
+                                       InputProps={{
+                                           inputComponent: NumberFormatCustomMontant,
+                                           inputProps:{
+                                               max:100000000,
+                                               name:"montant"
+
+                                           },
+                                       }}/>
+                            <div className={"flex my-2 text-red-600"}>{props.errors?.libelle}</div>
+                        </div>
+
+                        <div>
+                            <TextField
+                                InputProps={{
+                                    inputComponent: NumberFormatCustom,
+                                    inputProps:{
+                                        min:1,
+                                        max:31
+                                    }
+                                }}
+                                disabled={data.typePaiement?.libelle==="INSCRIPTION"}
+                                className={"w-full"}  name={"echeance"} label={"Jour limite de paiement"} value={data.echeance} onChange={(e)=>setData("echeance",e.target.value)}/>
+                            <div className={"flex my-2 text-red-600"}>{props.errors?.libelle}</div>
+                        </div>
+                        <div className={"md:col-span-3"} >
+                            <FormControlLabel disabled={data.typePaiement?.concerne!=="APPRENANT"} control={<Checkbox name={"obligatoire"} onChange={(e)=>setData("obligatoire",e.target.checked)} />} label={"Obligatoire"} />
+                        </div>
+
+                        <SnackBar error={error} update={update} success={success}/>
+
+                        <div className={"flex md:col-span-3 justify-end"}>
+                            <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}}  type={"submit"}>
+                                Enregistrer
+                            </button>
+                        </div>
                     </div>
 
-                    <form action="" onSubmit={handleSubmit} className={"my-5 p-2 border rounded"}>
-                        <div className={"text-lg font-bold mb-5"}>
-                            Ajouter un service (Tarif)
-                        </div>
-                        <div className={"gap-5 grid md:grid-cols-3 grid-cols-1"}>
-                           <div>
-                               <Autocomplete
-                                   id="tags-standard"
-                                   onChange={(e,val)=>setData("typePaiement",val)}
-                                   disablePortal={true}
-                                   id={"combo-box-demo"}
-                                   options={props.typePaiements}
-                                   getOptionLabel={option=>option.libelle}
-                                   isOptionEqualToValue={(option, value) => option.id === value.id}
-                                   renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Type de frais"} label={params.libelle} required/>}
-                               />
-                               <div className={"text-red-600"}>{props.errors?.etablissement_id}</div>
-                           </div>
-                           <div>
-                               <Autocomplete
-                                   multiple
-                                   disabled={data.typePaiement?.concerne!=="APPRENANT"}
-                                   id="tags-standard"
-                                   onChange={(e,val)=>setData("classes",val)}
-                                   disablePortal={true}
-                                   id={"combo-box-demo"}
-                                   options={props.classes.filter((classe)=>(data.typePaiement?data.typePaiement?.tarifs.find(tarif=>tarif.classe_id===classe.id)===undefined:1))}
-                                   getOptionLabel={option=>option.libelle}
-                                   isOptionEqualToValue={(option, value) => option.id === value.id }
-                                   required
-                                   renderInput={(params)=><TextField fullWidth {...params} placeholder={"Classes"} label={params.libelle}/>}
-                               />
-                               <div className={"text-red-600"}>{props.errors?.classes}</div>
-                           </div>
-                            <div>
-                                <FormControl className={"w-full"}>
-                                    <InputLabel id="demo-simple-select-standard-label">Fréquence</InputLabel>
-                                    <Select
-                                        className={"w-full"}
-                                        disabled={data.typePaiement?.libelle==="INSCRIPTION"}
-                                        labelId="demo-simple-select-label"
-                                        label={"Fréquence"}
+                </form>
 
-                                        value={data.frequence}
-                                        onChange={(e)=>setData("frequence",e.target.value)}
-                                    >
-                                        <MenuItem value={"MENSUELLE"}>MENSUELLE</MenuItem>
-                                        <MenuItem value={"TRIMESTRIELLE"}>TRIMESTRIELLE</MenuItem>
-                                        <MenuItem value={"SEMESTRIELLE"}>SEMESTRIELLE</MenuItem>
-                                        <MenuItem value={"ANNUELLE"}>ANNUELLE</MenuItem>
+                <motion.div
+                    initial={{y:-100,opacity:0}}
+                    animate={{y:0,opacity:1}}
+                    transition={{
+                        duration:0.5,
+                        type:"spring",
+                    }}
 
-                                    </Select>
-                                </FormControl>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.situation_matrimoniale}</div>
-                            </div>
-
-                            <div>
-                                <TextField className={"w-full"}  name={"montant"} label={"Montant"} value={data.libelle} onChange={(e)=>setData("montant",e.target.value)}
-                                           InputProps={{
-                                               inputComponent: NumberFormatCustomMontant,
-                                               inputProps:{
-                                                   max:100000000,
-                                                   name:"montant"
-
-                                               },
-                                           }}/>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.libelle}</div>
-                            </div>
-
-                            <div>
-                                <TextField
-                                    InputProps={{
-                                        inputComponent: NumberFormatCustom,
-                                        inputProps:{
-                                            min:1,
-                                            max:31
-                                        }
-                                    }}
-                                    disabled={data.typePaiement?.libelle==="INSCRIPTION"}
-                                    className={"w-full"}  name={"echeance"} label={"Jour limite de paiement"} value={data.echeance} onChange={(e)=>setData("echeance",e.target.value)}/>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.libelle}</div>
-                            </div>
-                            <div className={"md:col-span-3"} >
-                                <FormControlLabel disabled={data.typePaiement?.concerne!=="APPRENANT"} control={<Checkbox name={"obligatoire"} onChange={(e)=>setData("obligatoire",e.target.checked)} />} label={"Obligatoire"} />
-                            </div>
-
-                            <SnackBar error={error} update={update} success={success}/>
-
-                            <div className={"flex md:col-span-3 justify-end"}>
-                                <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}}  type={"submit"}>
-                                    Enregistrer
-                                </button>
-                            </div>
-                        </div>
-
-                    </form>
-
-                    <motion.div
-                        initial={{y:-100,opacity:0}}
-                        animate={{y:0,opacity:1}}
-                        transition={{
-                            duration:0.5,
-                            type:"spring",
-                        }}
-
-                        style={{height:450, width: '100%' }} className={"flex justify-center"}>
-                        {
-                            tarifs &&
-                            <DataGrid
-
-                                components={{
-                                    Toolbar:GridToolbar,
-                                }}
-
-                                componentsProps={{
-                                    columnMenu:{backgroundColor:"red",background:"yellow"},
-                                }}
-                                rows={tarifs}
-                                columns={columns}
-                                pageSize={5}
-                                rowsPerPageOptions={[5]}
-                                autoHeight
-                            />
-                        }
-                    </motion.div>
-                    <SnackBar success={ props.success }/>
-                </div>
+                    style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                    {
+                        tarifs &&
+                        <DataGrid
+                            rows={tarifs}
+                            columns={columns}
+                            pageSize={5}
+                            rowsPerPageOptions={[5]}
+                            autoHeight
+                        />
+                    }
+                </motion.div>
+                <SnackBar success={ props.success }/>
             </div>
         </AdminPanel>
     );

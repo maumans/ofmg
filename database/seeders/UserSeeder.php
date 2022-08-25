@@ -47,19 +47,6 @@ class UserSeeder extends Seeder
 
         $user->roles()->syncWithoutDetaching(Role::where("libelle", "tuteur")->first());
 
-        $user=User::create([
-            "prenom"=>"thierno",
-            "nom"=>"diallo",
-            "email"=>"td@gmail.com",
-            "situation_matrimoniale"=>"Marié",
-            "date_naissance"=>Date::create(1993,9,2),
-            'password' => Hash::make("29101997"),
-            "telephone"=>"621993800",
-
-        ]);
-
-        $user->roles()->syncWithoutDetaching(Role::where("libelle", "etablissement")->first());
-
 
         $user=User::create([
             "prenom"=>"gando",

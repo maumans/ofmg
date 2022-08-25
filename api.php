@@ -33,6 +33,7 @@ Route::group([
 
 Route::get("etablissement/{code}/validation",[\App\Http\Controllers\Api\EtablissementController::class,"validation"])->name("api.etablissement.validation");
 Route::get("etablissement/apprenant/{code}/{matricule}",[\App\Http\Controllers\Api\EtablissementController::class,"verification"])->name("api.etablissement.apprenant.verification");
+Route::post("etablissement/apprenant/paiement/",[\App\Http\Controllers\Api\EtablissementController::class,"paiement"])->name("api.etablissement.apprenant.paiement");
 
 
 //Route::apiResource("etablissement",App\Http\Controllers\Api\EtablissementController::class)->only("show");

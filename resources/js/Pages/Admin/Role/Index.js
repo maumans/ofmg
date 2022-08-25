@@ -24,6 +24,8 @@ function Index(props) {
         "typeRole":"",
     });
 
+
+
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
         { field: 'libelle', headerName: 'LIBELLE', width: 250 },
@@ -104,7 +106,7 @@ function Index(props) {
 
                     </form>
 
-                    <div style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                    <div style={{width: '100%' }} className={"flex justify-center"}>
                         {
                             roles &&
                             <DataGrid

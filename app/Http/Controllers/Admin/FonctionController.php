@@ -76,11 +76,16 @@ class FonctionController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, $id)
     {
-        //
+        //dd($request->all());
+        $fonction=Fonction::find($request->editId);
+        $fonction->libelle=$request->libelleEdit;
+        $fonction->save();
+
+        return redirect()->back()->with("Fonction modifiée avec succès");
     }
 
     /**
@@ -93,6 +98,6 @@ class FonctionController extends Controller
     {
         $fonction->delete();
 
-        return redirect()->back()->with("error","Fonction supprimée avec succès");
+        return redirect()->back()->with("success","Fonction supprimée avec succès");
     }
 }

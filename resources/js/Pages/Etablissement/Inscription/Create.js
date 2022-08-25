@@ -107,10 +107,6 @@ function Create(props) {
     },[data.classe])
 
     useEffect(() => {
-        console.log(data.montant,data.classe)
-    },[data.montant])
-
-    useEffect(() => {
         setData("tuteursSearch",checked);
     },[checked])
 
@@ -437,9 +433,6 @@ function Create(props) {
                                                 ))}
                                             </AnimatePresence>
                                         </List>
-                                {
-                                    console.log(props.errors)
-                                }
 
                                     {
                                         !(data.tuteursAdd && data.tuteursAdd.length) > 0 &&

@@ -17,7 +17,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users=User::where('id',"!=",null)->with("roles")->get();
+        $users=User::whereRelation("roles","libelle","!=","personnel")->with("roles","etablissement")->get();
         $roles=Role::all();
 
         return Inertia::render('Admin/User/Index',["users"=>$users,"roles"=>$roles]);

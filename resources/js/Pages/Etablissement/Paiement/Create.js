@@ -136,14 +136,14 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
         axios.post(route("etablissement.paiement.search",auth?.user?.id),{matricule:matricule || null,classeId:data?.classeSearch?.id || null,tuteurNumber:data?.tuteurSearch || null},{preserveScroll:true}).then(response=>{
             setSearchResult(response.data)
+            if (!response.data.apprenant && !response.data.apprenants)
+            {
+                setAucunResultat("Aucun resultat")
+            }
         }).catch(err=>{
             console.log(err)
         })
     }
-
-    useEffect(() => {
-        console.log(searchResult)
-    })
 
     useEffect(() => {
         searchResult?.apprenants && setApprenantsSt(searchResult.apprenants)
@@ -328,7 +328,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
                             <div className={"p-5"}>
                                 {
-                                     apprenantsSt.length > 0 &&
+                                    (apprenantsSt.length > 0 && apprenantsList === null) &&
                                     <DataGrid
                                         rows={apprenantsSt}
                                         columns={columns}
@@ -347,7 +347,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
 
                             {
-                                apprenantsList?.length > 0&&
+                                apprenantsList?.length > 0 &&
                                 <div className="py-6">
                                     <div className="max-w-7xl">
                                         <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">

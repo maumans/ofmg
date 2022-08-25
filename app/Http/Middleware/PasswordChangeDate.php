@@ -24,13 +24,12 @@ class PasswordChangeDate
 
         if($date->count()>=3)
         {
-            return redirect()->route("firstConnexion.reset-password",["email" => $request->email,"mois"=>true]);
+            return redirect()->route("firstConnexion.reset-password",["email" => Auth::user()->email,"mois"=>true]);
         }
         else
         {
             return $next($request);
         }
-
 
     }
 }

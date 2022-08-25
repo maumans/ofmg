@@ -27,6 +27,8 @@ function Index(props) {
         "commune":"",
         "nom":"",
         "prenom":"",
+        "telephone":"",
+        "telephoneEtab":"",
         "email":"",
         "password":"",
         "confirmPassword":"",
@@ -74,6 +76,8 @@ function Index(props) {
         post(route("admin.etablissement.store",props.auth.user.id),{data,onSuccess: ()=>reset(
             "nomEtablissement",
                 "typeEtablissement",
+                "telephone",
+                "telephoneEtab",
                 "ville",
                 "commune",
                 "nom",
@@ -154,6 +158,10 @@ function Index(props) {
                                 </FormControl>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.region}</div>
                             </div>
+                            <div>
+                                <TextField className={"w-full"}  name={"telephoneEtab"} label={"Telephone"} value={data.telephoneEtab} onChange={(e)=>setData("telephoneEtab",e.target.value)} required/>
+                                <div className={"flex my-2 text-red-600"}>{props.errors?.telephoneEtab}</div>
+                            </div>
                             <Divider className={"md:col-span-3"} />
 
                             <div className={"md:col-span-3"}>
@@ -167,6 +175,11 @@ function Index(props) {
                             <div>
                                 <TextField className={"w-full"}  name={"prenom"} label={"Prenom"} value={data.prenom} onChange={(e)=>setData("prenom",e.target.value)} required/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.prenom}</div>
+                            </div>
+
+                            <div>
+                                <TextField className={"w-full"}  name={"telephone"} label={"Telephone"} value={data.telephone} onChange={(e)=>setData("telephone",e.target.value)} required/>
+                                <div className={"flex my-2 text-red-600"}>{props.errors?.telephone}</div>
                             </div>
 
                             <div>
@@ -191,7 +204,7 @@ function Index(props) {
 
                     </form>
 
-                    <div style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                    <div style={{width: '100%' }} className={"flex justify-center"}>
                         {
                             etablissements &&
                             <DataGrid
@@ -200,8 +213,8 @@ function Index(props) {
                                 }}
                                 rows={etablissements}
                                 columns={columns}
-                                pageSize={5}
-                                rowsPerPageOptions={[5]}
+                                pageSize={10}
+                                rowsPerPageOptions={[10]}
                                 autoHeight
                             />
                         }

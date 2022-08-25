@@ -112,7 +112,7 @@ function Index(props) {
 
                     </form>
 
-                    <div style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                    <div style={{width: '100%' }} className={"flex justify-center"}>
                         {
                             niveaux &&
                             <DataGrid
@@ -121,8 +121,8 @@ function Index(props) {
                                 }}
                                 rows={niveaux}
                                 columns={columns}
-                                pageSize={5}
-                                rowsPerPageOptions={[5]}
+                                pageSize={10}
+                                rowsPerPageOptions={[10]}
                                 autoHeight
                             />
                         }
