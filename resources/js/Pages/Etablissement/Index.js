@@ -14,7 +14,7 @@ function Index({auth,error,etablissement,nombreInscrit}) {
                         duration:0.3,
                         type:"spring",
                     }}
-                    className={"bg-orange-400 text-white p-5 rounded transform hover:bg-orange-500 transition duration-500 hover:cursor-pointer"}>
+                    className={"bg-black text-white p-5 rounded transform hover:bg-gray-800 transition duration-500 hover:cursor-pointer"}>
                     <div className={"p-2 flex flex-col"}>
                        <span>
                             <span className={"font-bold"}>ETABLISSEMENT:</span> {etablissement.nom}
@@ -25,11 +25,11 @@ function Index({auth,error,etablissement,nombreInscrit}) {
                         {
                             etablissement.annee_en_cours &&
                             <span>
-                                <span className={"font-bold"}>Annee Scolaire: </span> {etablissement.annee_en_cours.dateDebut+"/"+etablissement.annee_en_cours.dateFin}
+                                <span className={"font-bold"}>Annee Scolaire: </span> {etablissement.annee_en_cours.dateDebut.split("-")[0]+"/"+etablissement.annee_en_cours.dateFin.split("-")[0]}
                             </span>
                         }
                         <span>
-                            <span className={"font-bold"}>Nombre de classe: </span> {etablissement.niveaux_count}
+                            <span className={"font-bold"}>Nombre de classe: </span> {etablissement.classes_count}
                        </span>
                         <span>
                             <span className={"font-bold"}>Nombre d'apprenants inscrits: </span> {nombreInscrit}

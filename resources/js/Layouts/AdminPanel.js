@@ -215,6 +215,12 @@ function ResponsiveDrawer(props) {
                     </ListItemButton>
                 </Link>
                 <Divider  component="li"/>
+                <Link href={route("admin.codeNumero.index",props.auth.user.id)}>
+                    <ListItemButton sx={props.active==="codeNumero" ?{backgroundColor:"#ff8831",color:"white"}:null}>
+                        <ListItemText primary="Code numero"/>
+                    </ListItemButton>
+                </Link>
+                <Divider  component="li"/>
                 <Link href={route("admin.fonction.index",props.auth.user.id)}>
                     <ListItemButton sx={props.active==="fonction" ?{backgroundColor:"#ff8831",color:"white"}:null}>
                         <ListItemText primary="Fonctions"/>
@@ -223,7 +229,7 @@ function ResponsiveDrawer(props) {
                 <Divider  component="li"/>
                 <Link href={route("admin.matiere.index",props.auth.user.id)}>
                     <ListItemButton sx={props.active==="matiere" ?{backgroundColor:"#ff8831",color:"white"}:null}>
-                        <ListItemText primary="Matiere"/>
+                        <ListItemText primary="Matières"/>
                     </ListItemButton>
                 </Link>
                 <Divider  component="li" />
@@ -279,7 +285,7 @@ function ResponsiveDrawer(props) {
                 <Divider  component="li" />
                 <Link href={route("admin.departement.index",props.auth.user.id)}>
                     <ListItemButton sx={props.active==="departement" ?{backgroundColor:"#ff8831",color:"white"}:null}>
-                        <ListItemText primary="Departements" />
+                        <ListItemText primary="Départements" />
                     </ListItemButton>
                 </Link>
                 <Divider  component="li"/>

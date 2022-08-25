@@ -17,6 +17,8 @@ class FirstConnexion
      */
     public function handle(Request $request, Closure $next)
     {
+
+        //dd(Auth::user()->first_connexion);
         if(Auth::user()->first_connexion)
         {
             return redirect()->route("firstConnexion.reset-password",["email" => Auth::user()->email,"mois"=>false]);

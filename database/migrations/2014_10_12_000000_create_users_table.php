@@ -17,6 +17,7 @@ class CreateUsersTable extends Migration
             $table->id();
             $table->string('prenom')->nullable();
             $table->string('nom')->nullable();
+            $table->string('login')->nullable();
             $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
@@ -34,6 +35,7 @@ class CreateUsersTable extends Migration
             $table->date("password_change_date")->nullable();
             $table->integer("niveauValidation")->nullable();
 
+            $table->longText("currentToken")->nullable();
 
             $table->foreignId("commune_id")->nullable()->constrained("communes")->cascadeOnDelete();
             $table->foreignId("ville_id")->nullable()->constrained("villes")->cascadeOnDelete();

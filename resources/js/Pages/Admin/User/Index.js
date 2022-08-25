@@ -71,10 +71,17 @@ function Index(props) {
             )
         },
 
-        { field: 'role(s)', headerName: 'ROLES',flex:1,minWidth:300,
+        { field: 'role(s)', headerName: 'ROLES',flex:1,minWidth:200,
             renderCell:(user)=>(
                 <div>
                     {user.row.roles.map((role)=> role.libelle+" ")}
+                </div>
+            )
+        },
+        { field: 'Organisation', headerName: 'ORGANISATION',flex:1,minWidth:300,
+            renderCell:(user)=>(
+                <div>
+                    {user.row.roles.find((role)=> role.libelle.toLowerCase()==="admin")?"Addvalis":user.row.roles.find((role)=> role.libelle.toLowerCase()==="ofmg")?"Orange":user.row.roles.find((role)=> role.libelle.toLowerCase()==="etablissement")?user.row.etablissement?.nom:user.row.roles.find((role)=> role.libelle.toLowerCase()==="tuteur")?"Tuteur":user.row.roles.find((role)=> role.libelle.toLowerCase()==="personnel")?user.row.etablissement?.nom:""}
                 </div>
             )
         },
@@ -172,11 +179,11 @@ function Index(props) {
                                    </div>
                                    <div className={"space-x-5 flex items-end"}>
                                       <div className={"flex-1"}>
-                                          <TextField  name={"telephone"} label={"telephone"} value={data.telephone} onChange={(e)=>setData("telephone",e.target.value)}/>
+                                          <TextField  name={"telephone"} label={"téléphone"} value={data.telephone} onChange={(e)=>setData("telephone",e.target.value)}/>
                                           <div className={"flex my-2 text-red-600"}>{props.errors?.telephone}</div>
                                       </div>
                                        <div className={"flex-1"}>
-                                           <TextField  name={"password"} label={"password"} value={data.password} onChange={(e)=>setData("password",e.target.value)}/>
+                                           <TextField  name={"password"} label={"mot de passe"} value={data.password} onChange={(e)=>setData("password",e.target.value)}/>
                                            <div className={"flex my-2 text-red-600"}>{props.errors?.password}</div>
                                        </div>
                                    </div>
@@ -224,13 +231,12 @@ function Index(props) {
 
                                        rows={users}
                                        columns={columns}
-                                       pageSize={5}
-                                       rowsPerPageOptions={[5]}
+                                       pageSize={10}
+                                       rowsPerPageOptions={[10]}
                                        autoHeight
                                        autoSize
                                    />
                        }
-
                        <SnackBar success={ props.success } />
                    </div>
                </div>

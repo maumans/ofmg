@@ -19,7 +19,8 @@ class TypePaiementSeeder extends Seeder
         ]);
 
         Type_paiement::create([
-            "libelle" =>"Salaire du personnel"
+            "libelle" =>"Salaire du personnel",
+            "concerne" =>"PERSONNEL"
         ]);
 
         Type_paiement::create([

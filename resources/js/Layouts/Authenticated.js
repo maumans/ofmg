@@ -74,7 +74,7 @@ export default function Authenticated({auth, header, children}) {
                                         auth?.etablissement &&
                                         <NavLink href={route('etablissement.index', auth.user?.id)}
                                                  active={route().current().split('.')[0] === "etablissement"}>
-                                            Gestion de l'etablissement
+                                            Gestion de l'établissement
                                         </NavLink>
                                     }
                                 </div>
@@ -192,7 +192,7 @@ export default function Authenticated({auth, header, children}) {
                             auth?.etablissement &&
                             <ResponsiveNavLink href={route('etablissement.index', auth.user?.id)}
                                                active={route().current().split('.')[0] === "etablissement"} as="button">
-                                Gestion de l'etablissement
+                                Gestion de l'établissement
                             </ResponsiveNavLink>
                         }
 
@@ -208,7 +208,7 @@ export default function Authenticated({auth, header, children}) {
 
                                     <div className="mt-3 space-y-1">
                                         <ResponsiveNavLink method="post" href={route('logout')} as="button">
-                                            Deconnexion
+                                            Déconnexion
                                         </ResponsiveNavLink>
                                     </div>
                                 </div>
@@ -221,7 +221,6 @@ export default function Authenticated({auth, header, children}) {
                                         Inscription
                                     </ResponsiveNavLink>
                                 </>
-
                         }
                     </div>
                 </nav>

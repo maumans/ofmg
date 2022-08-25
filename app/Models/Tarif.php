@@ -55,4 +55,9 @@ class Tarif extends Model
     {
         return $this->belongsToMany(Apprenant::class);
     }
+
+    public function apprenantTarif()
+    {
+        return $this->hasMany(Apprenant_tarif::class);
+    }
 }

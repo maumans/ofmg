@@ -77,7 +77,12 @@ class TypePaiementController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        //dd($request->all());
+        $typePaiement=Type_paiement::find($request->editId);
+        $typePaiement->libelle=$request->libelleEdit;
+        $typePaiement->save();
+
+        return redirect()->back()->with("Type de frais modifiée avec succès");
     }
 
     /**

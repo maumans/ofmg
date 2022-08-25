@@ -16,7 +16,7 @@ class EtablissementController extends Controller
      */
     public function index()
     {
-        $etablissement=Etablissement::where("id",Auth::user()->etablissementAdmin->id)->withCount('niveaux')->with("anneeEnCours")->first();
+        $etablissement=Etablissement::where("id",Auth::user()->etablissementAdmin->id)->withCount('classes')->with("anneeEnCours")->first();
 
         $nombreInscrit=0;
         foreach ($etablissement->classes as $classe)

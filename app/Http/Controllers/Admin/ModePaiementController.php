@@ -77,7 +77,12 @@ class ModePaiementController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        //dd($request->all());
+        $modePaiement=Mode_paiement::find($request->editId);
+        $modePaiement->libelle=$request->libelleEdit;
+        $modePaiement->save();
+
+        return redirect()->back()->with("Mode de paiement modifié avec succès");
     }
 
     /**

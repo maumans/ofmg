@@ -47,10 +47,6 @@ function Historique({auth,error,salaires,success,mois}) {
 
     });
 
-    useEffect(() => {
-        console.log(success)
-    },[])
-
     const [moisSt,setMoisSt]=useState("");
 
     const columns = [

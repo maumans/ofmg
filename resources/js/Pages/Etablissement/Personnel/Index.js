@@ -24,7 +24,7 @@ function Index({auth,error,personnels,success}) {
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
                     <button onClick={()=>handleFonctions(cellValues.row.id)} className={"p-2 text-white bg-blue-400 rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
-                        Delails
+                        Details
                     </button>
                     <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
                         <EditIcon/>

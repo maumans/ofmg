@@ -13,6 +13,8 @@ import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-react";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 import SnackBar from "@/Components/SnackBar";
 import {motion} from "framer-motion";
 
@@ -22,17 +24,43 @@ function Index(props) {
 
     const {data,setData,post,reset}=useForm({
         "libelle":"",
+        "libelleEdit":"",
+        "editId":""
     });
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
         { field: 'libelle', headerName: 'LIBELLE', width: 250 },
+        { field: 'editer', headerName: 'EDITER',width:250,hide: data.editId==="",
+            renderCell:(cellValues)=>(
+                    data.editId===cellValues.row.id &&
+                        <div>
+                            <TextField variant={"standard"}  name={"libelleEdit"} label={"libelle"} value={data.libelleEdit} onChange={(e)=>setData("libelleEdit",e.target.value)}/>
+                            <div className={"flex my-2 text-red-600"}>{props.errors?.libelleEdit}</div>
+                        </div>
+            )
+        },
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
-                        <EditIcon/>
-                    </button>
+                    {
+                        data.editId !==cellValues.row.id &&
+                        <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
+                            <EditIcon/>
+                        </button>
+                    }
+
+                    {
+                        data.editId===cellValues.row.id &&
+                            <>
+                                <button onClick={()=>setData("editId","")} className={"p-2 text-white bg-red-500 rounded hover:text-red-700 hover:bg-white transition duration-500"}>
+                                    <CloseIcon/>
+                                </button>
+                                <button onClick={handleSubmitEdit} className={"p-2 text-white bg-green-500 rounded hover:text-green-700 hover:bg-white transition duration-500"}>
+                                    <CheckIcon/>
+                                </button>
+                            </>
+                    }
                     <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
                         <DeleteIcon/>
                     </button>
@@ -43,13 +71,20 @@ function Index(props) {
     ];
 
     function handleDelete(id){
-        confirm("Voulez-vous supprimer cette fonction") && Inertia.delete(route("admin.fonction.destroy",[props.auth.user.id,id]),{preserveScroll:true})
+        confirm("Voulez-vous supprimer ce mode de paiement") && Inertia.delete(route("admin.modePaiement.destroy",[props.auth.user.id,id]),{preserveScroll:true})
     }
 
     function handleEdit(id){
-        alert("EDIT"+id)
+        setData("editId",id)
     }
 
+    useEffect(() => {
+        setData("libelleEdit","")
+    },[data.editId])
+
+    function handleSubmitEdit(){
+        Inertia.put(route("admin.modePaiement.update",[props.auth.user.id,data.editId]),data,{preserveScroll:true});
+    }
     function handleShow(id){
         alert("SHOW"+id)
     }
@@ -58,7 +93,7 @@ function Index(props) {
     {
         e.preventDefault();
 
-        post(route("admin.fonction.store",props.auth.user.id),{data, onSuccess: ()=>reset("libelle")})
+        post(route("admin.modePaiement.store",props.auth.user.id),{data, onSuccess: ()=>reset("libelle")})
 
     }
 
@@ -99,7 +134,7 @@ function Index(props) {
                             type:"spring",
                         }}
 
-                        style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                        style={{width: '100%' }} className={"flex justify-center"}>
                         {
                             modePaiements &&
                             <DataGrid
@@ -108,8 +143,8 @@ function Index(props) {
                                 }}
                                 rows={modePaiements}
                                 columns={columns}
-                                pageSize={5}
-                                rowsPerPageOptions={[5]}
+                                pageSize={10}
+                                rowsPerPageOptions={[10]}
                                 autoHeight
                             />
                         }

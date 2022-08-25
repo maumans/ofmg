@@ -71,9 +71,12 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
     );
 });
 
-function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,success,montantTotal,paiements,errors,tuteur,}) {
+function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,success,montantTotal,paiements,errors,tuteur,codeNumeros}) {
+
+
 
     const [successSt, setSuccessSt]=useState();
+    const [codeNumerosSt, setCodeNumerosSt]=useState();
 
     const [montants,setMontants]=useState({})
 
@@ -93,6 +96,15 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         "numero_retrait":"",
         "matricule":""
     });
+
+    useEffect(() => {
+        if(codeNumeros)
+        {
+            let st=""
+            codeNumeros.map((c,i)=>st=st+(i? "|":"")+c.libelle)
+            setCodeNumerosSt(st)
+        }
+    },[])
 
     function handleClose()
     {
@@ -240,253 +252,195 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
             errors={errors}
         >
             <Head title="Accueil" />
+            <div className="py-12">
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <h1 className="p-6 bg-white border-b border-gray-200 text-xl p-2 text-white bg-orange-400">PAIEMENT</h1>
 
-            <Box sx={{ width: '100%',marginTop:10 }}>
-                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" centered>
-                        <Tab label="PAIEMENT" {...a11yProps(0)} />
-                        <Tab label="HISTORIQUE DE PAIEMENT" {...a11yProps(1)} />
-                    </Tabs>
-                </Box>
-                <TabPanel value={value} index={0}>
-                    <div className="py-12">
-                        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                            <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                                <h1 className="p-6 bg-white border-b border-gray-200 text-xl p-2 text-white bg-orange-400">PAIEMENT</h1>
+                        <div>
+                            <div className="flex space-x-5 p-5 mt-20 w-full">
+                                <TextField
+                                    className={"w-full"}  name={"matricule"} label={"Entrez le matricule de l'apprenant"} value={data.matricule} onChange={(e)=>setData("matricule",e.target.value)}/>
+                                <button onClick={handleSearchMat} className={"p-2 bg-green-400 text-white hover:bg-green-600 rounded"}>Rechercher</button>
+                                <div className={"flex my-2 text-red-600"}>{errors?.matricule}</div>
+                            </div>
 
-                                <div>
-                                    <div className="flex space-x-5 p-5 mt-20 w-full">
-                                        <TextField
-                                            className={"w-full"}  name={"matricule"} label={"Entrez le matricule de l'apprenant"} value={data.matricule} onChange={(e)=>setData("matricule",e.target.value)}/>
-                                        <button onClick={handleSearchMat} className={"p-2 bg-green-400 text-white hover:bg-green-600 rounded"}>Rechercher</button>
-                                        <div className={"flex my-2 text-red-600"}>{errors?.matricule}</div>
-                                    </div>
+                            {
+                                (matricule && !apprenant) &&
+                                <div className={"m-5 p-2 mt-4 bg-gray-100 rounded font-bold text-red-500"}>
+                                    L'apprenant de matricule {matricule} n'existe pas
+                                </div>
+                            }
 
-                                    {
-                                        (matricule && !apprenant) &&
-                                            <div className={"m-5 p-2 mt-4 bg-gray-100 rounded font-bold text-red-500"}>
-                                                L'apprenant de matricule {matricule} n'existe pas
+                            <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 "}>
+
+                                <div className={"w-full p-5"}>
+                                    <div className={"gap-5 space-y-10 grid md:grid-cols-3 grid-cols-1 items-end mb-5"}>
+                                        {
+                                            apprenant &&
+                                            <div className={"col-span-3 grid grid-cols-2 gap-5"}>
+                                                <div>
+                                                    <span className={"font-bold text-xl"}>Matricule:</span> <span>{apprenant?.matricule}</span>
+                                                </div>
+                                                <div>
+                                                    <span className={"font-bold text-xl"}>Nom complet:</span> <span>{apprenant?.prenom} {apprenant?.nom}</span>
+                                                </div>
+                                                <div>
+                                                    <span className={"font-bold text-xl"}>Etablissement:</span> <span>{etablissement?.nom}</span>
+                                                </div>
+                                                <div>
+                                                    <span className={"font-bold text-xl"}>Niveau:</span> <span>{apprenant?.classe?.libelle}</span>
+                                                </div>
                                             </div>
-                                    }
+                                        }
+                                        <div className={"grid md:grid-cols-2 sm:grid-cols-2 grid-cols-1 col-span-3 gap-4"}>
+                                            <div hidden={!apprenant?.tarifs} className={"md:col-span-2 sm:col-span-2 text-lg"}>
+                                                Veuillez cocher les frais à regler
+                                            </div>
+                                            {
+                                                (apprenant?.tarifs) && apprenant?.tarifs.map((t) =>(
 
-                                    <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 "}>
-
-                                        <div className={"w-full p-5"}>
-                                            <div className={"gap-5 space-y-10 grid md:grid-cols-3 grid-cols-1 items-end mb-5"}>
-                                                {
-                                                    apprenant &&
-                                                    <div className={"col-span-3 grid grid-cols-2 gap-5"}>
-                                                        <div>
-                                                            <span className={"font-bold text-xl"}>Matricule:</span> <span>{apprenant?.matricule}</span>
-                                                        </div>
-                                                        <div>
-                                                            <span className={"font-bold text-xl"}>Nom complet:</span> <span>{apprenant?.prenom} {apprenant?.nom}</span>
-                                                        </div>
-                                                        <div>
-                                                            <span className={"font-bold text-xl"}>Etablissement:</span> <span>{etablissement?.nom}</span>
-                                                        </div>
-                                                        <div>
-                                                            <span className={"font-bold text-xl"}>Niveau:</span> <span>{apprenant?.classe?.libelle}</span>
-                                                        </div>
-                                                    </div>
-                                                }
-                                                <div className={"grid md:grid-cols-2 sm:grid-cols-2 grid-cols-1 col-span-3 gap-4"}>
-                                                        <div hidden={!apprenant?.tarifs} className={"md:col-span-2 sm:col-span-2 text-lg"}>
-                                                            Veuillez cocher les frais à regler
-                                                        </div>
+                                                    <div key={t.id} className={"relative shadow-lg"}>
                                                         {
-                                                        (apprenant?.tarifs) && apprenant?.tarifs.map((t) =>(
+                                                            t.pivot.resteApayer===0 ?
+                                                                <div className={"absolute -right-2 -top-3 rounded p-3 bg-green-400 text-white"}>
+                                                                    Payé
+                                                                </div>
+                                                                :
+                                                                <div className={"absolute -right-2 -top-3 rounded p-3 bg-red-400 text-white"}>
+                                                                    Reste à payer
+                                                                </div>
+                                                        }
+                                                        <div key={t.id} className={`grid grid-cols-1 gap-2 p-5 rounded h-full ${t.pivot.resteApayer===0 ? "border-2 border-green-400":"border-2 border-red-400"}`} style={{backgroundColor:"#f8f1eb"}}>
+                                                            {
+                                                                <div className={"flex items-center p-2 rounded text-orange-400 bg-white"} style={{height:50}}>
+                                                                    <div key={t.id} className={"text-xl"}>
+                                                                        <FormControlLabel  control={<Checkbox defaultChecked={t.pivot.resteApayer===0} disabled={t.pivot.resteApayer===0} name={apprenant.id+"_"+t.id} onChange={handleChangeCheckbox} />} label={t.type_paiement.libelle} />
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                            {
+                                                                t?.montant &&
+                                                                <div>
+                                                                    <span className={"font-bold"}>Total à payer: </span> <span>{formatNumber(t.montant)} FG</span>
+                                                                </div>
+                                                            }
+                                                            {
+                                                                t?.montant &&
+                                                                <div>
+                                                                    <span className={"font-bold"}>Somme <span className="lowercase">{t.frequence} à payer: </span> </span> <span> {formatNumber(t.montant/(t.frequence==="MENSUELLE"?t.pivot.nombreMois:t.frequence==="SEMESTRIELLE"?nbrMois/2:t.frequence==="TRIMESTRIELLE"?nbrMois/3:t.frequence==="ANNUELLE"? 1:1))} FG</span>
+                                                                </div>
+                                                            }
+                                                            {
+                                                                t?.montant &&
+                                                                <div>
+                                                                    <span className={"font-bold"}>Reste à payer: </span> <span>{formatNumber(t.pivot.resteApayer)} FG</span>
+                                                                </div>
+                                                            }
 
-                                                            <div key={t.id} className={"relative shadow-lg"}>
-                                                                {
-                                                                    t.pivot.resteApayer===0 ?
-                                                                        <div className={"absolute -right-2 -top-3 rounded p-3 bg-green-400 text-white"}>
-                                                                            Payé
-                                                                        </div>
-                                                                        :
-                                                                        <div className={"absolute -right-2 -top-3 rounded p-3 bg-red-400 text-white"}>
-                                                                            Reste à payer
-                                                                        </div>
-                                                                }
-                                                                <div key={t.id} className={`grid grid-cols-1 gap-2 p-5 rounded h-full ${t.pivot.resteApayer===0 ? "border-2 border-green-400":"border-2 border-red-400"}`} style={{backgroundColor:"#f8f1eb"}}>
-                                                                    {
-                                                                        <div className={"flex items-center p-2 rounded text-orange-400 bg-white"} style={{height:50}}>
-                                                                            <div key={t.id} className={"text-xl"}>
-                                                                                <FormControlLabel  control={<Checkbox defaultChecked={t.pivot.resteApayer===0} disabled={t.pivot.resteApayer===0} name={apprenant.id+"_"+t.id} onChange={handleChangeCheckbox} />} label={t.type_paiement.libelle} />
-                                                                            </div>
-                                                                        </div>
-                                                                    }
-                                                                    {
-                                                                        t?.montant &&
-                                                                        <div>
-                                                                            <span className={"font-bold"}>Total à payer: </span> <span>{formatNumber(t.montant)} FG</span>
-                                                                        </div>
-                                                                    }
-                                                                    {
-                                                                        t?.montant &&
-                                                                        <div>
-                                                                            <span className={"font-bold"}>Somme <span className="lowercase">{t.frequence} à payer: </span> </span> <span> {formatNumber(t.montant/(t.frequence==="MENSUELLE"?t.pivot.nombreMois:t.frequence==="SEMESTRIELLE"?nbrMois/2:t.frequence==="TRIMESTRIELLE"?nbrMois/3:t.frequence==="ANNUELLE"? 1:1))} FG</span>
-                                                                        </div>
-                                                                    }
-                                                                    {
-                                                                        t?.montant &&
-                                                                        <div>
-                                                                            <span className={"font-bold"}>Reste à payer: </span> <span>{formatNumber(t.pivot.resteApayer)} FG</span>
-                                                                        </div>
-                                                                    }
-
-                                                                    {
-                                                                        t?.montant &&
-                                                                        <div>
-                                                                            <span className={"font-bold"}>Payé: </span> <span>{formatNumber(t.montant-t.pivot.resteApayer)} FG</span>
-                                                                        </div>
-                                                                    }
-                                                                    {
-                                                                        t?.frequence &&
-                                                                        <div>
-                                                                            <span className={"font-bold text-lg"}>Frequence de paiement: </span> <span> {t.frequence} </span>
-                                                                        </div>
-                                                                    }
-                                                                    {
-                                                                        t?.echeance &&
-                                                                        <div>
-                                                                            <span className={"font-bold"}>Echeance: </span> <span>Le {t.echeance} de chaque mois</span>
-                                                                        </div>
-                                                                    }
+                                                            {
+                                                                t?.montant &&
+                                                                <div>
+                                                                    <span className={"font-bold"}>Payé: </span> <span>{formatNumber(t.montant-t.pivot.resteApayer)} FG</span>
+                                                                </div>
+                                                            }
+                                                            {
+                                                                t?.frequence &&
+                                                                <div>
+                                                                    <span className={"font-bold text-lg"}>Frequence de paiement: </span> <span> {t.frequence} </span>
+                                                                </div>
+                                                            }
+                                                            {
+                                                                t?.echeance &&
+                                                                <div>
+                                                                    <span className={"font-bold"}>Echeance: </span> <span>Le {t.echeance} de chaque mois</span>
+                                                                </div>
+                                                            }
 
 
-                                                                    {
-                                                                        (tarifs && t.pivot.resteApayer!==0) &&
-                                                                        <div  className={"grid gap-3 grid-cols-1"}>
-                                                                            <div>
-                                                                                <TextField
-                                                                                    disabled={!tarifs[apprenant.id+"_"+t.id]}
-                                                                                    alt="Veuillez cocher le champs"
-                                                                                    className={"w-full"}  name={apprenant.id+"_"+t.id} label={"Montant"} value={montants[apprenant.id+"_"+t.id]} onChange={(e)=>setMontants(montants=>({
-                                                                                    ...montants,
-                                                                                    [apprenant.id+"_"+t.id]:e.target.value
-                                                                                }))}
-                                                                                    InputProps={{
-                                                                                        inputComponent: NumberFormatCustom,
-                                                                                        inputProps:{
-                                                                                            max:t.pivot.resteApayer,
-                                                                                            name:apprenant.id+"_"+t.id
+                                                            {
+                                                                (tarifs && t.pivot.resteApayer!==0) &&
+                                                                <div  className={"grid gap-3 grid-cols-1"}>
+                                                                    <div>
+                                                                        <TextField
+                                                                            disabled={!tarifs[apprenant.id+"_"+t.id]}
+                                                                            alt="Veuillez cocher le champs"
+                                                                            className={"w-full"}  name={apprenant.id+"_"+t.id} label={"Montant"} value={montants[apprenant.id+"_"+t.id]} onChange={(e)=>setMontants(montants=>({
+                                                                            ...montants,
+                                                                            [apprenant.id+"_"+t.id]:e.target.value
+                                                                        }))}
+                                                                            InputProps={{
+                                                                                inputComponent: NumberFormatCustom,
+                                                                                inputProps:{
+                                                                                    max:t.pivot.resteApayer,
+                                                                                    name:apprenant.id+"_"+t.id
 
-                                                                                        },
-                                                                                    }}
-                                                                                    required
-                                                                                />
-                                                                                <div className={"flex my-2 text-red-600"}>{errors["montants."+apprenant.id+"_"+t.id] && errors["montants."+apprenant.id+"_"+t.id]}</div>
-                                                                            </div>
-
-                                                                        </div>
-                                                                    }
-
+                                                                                },
+                                                                            }}
+                                                                            required
+                                                                        />
+                                                                        <div className={"flex my-2 text-red-600"}>{errors["montants."+apprenant.id+"_"+t.id] && errors["montants."+apprenant.id+"_"+t.id]}</div>
+                                                                    </div>
 
                                                                 </div>
-
-                                                            </div>
-
+                                                            }
 
 
-                                                        ))
-                                                        }
+                                                        </div>
+
                                                     </div>
 
-                                            </div>
 
 
-                                            {
-                                                tarifs && Object.values(tarifs).find(value=>value===true) &&
-                                                <div className={"p-2 bg-orange-400 mt-5 text-white w-max-c text-lg"} style={{width:"fit-content"}}>
-                                                    <span className={"font-bold"}>Montant total:</span> <span>{formatNumber(data.total)} FG</span>
-                                                </div>
+                                                ))
                                             }
-
-                                            {
-                                                tarifs && Object.values(tarifs).find(value=>value===true) &&
-                                                <div className={"my-5"}>
-                                                    <TextField
-                                                        className={"w-6/12"}  name={"numero_retrait"} label={"Entrez votre numero OM"} onChange={(e)=>setData("numero_retrait",e.target.value)}
-                                                        required
-                                                    />
-                                                </div>
-                                            }
-
-                                            {
-                                                tarifs && Object.values(tarifs).find(value=>value===true) &&
-                                                <div className={"flex col-span-3"}>
-                                                    <button className={"p-2 text-white bg-green-400 font-bold rounded"}  type={"submit"}>
-                                                        Valider
-                                                    </button>
-                                                </div>
-                                            }
-
-                                            <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
-                                                <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-                                                    {success}
-                                                </Alert>
-                                            </Snackbar>
                                         </div>
-                                    </form>
 
+                                    </div>
+
+
+                                    {
+                                        tarifs && Object.values(tarifs).find(value=>value===true) &&
+                                        <div className={"p-2 bg-orange-400 mt-5 text-white w-max-c text-lg"} style={{width:"fit-content"}}>
+                                            <span className={"font-bold"}>Montant total:</span> <span>{formatNumber(data.total)} FG</span>
+                                        </div>
+                                    }
+
+                                    {
+                                        tarifs && Object.values(tarifs).find(value=>value===true) && codeNumerosSt!=="" &&
+                                        <div className={"my-5"}>
+                                            <TextField
+                                                inputProps={{
+
+                                                    pattern:"(^"+codeNumerosSt+")[0-9]{6}"
+                                                }}
+                                                className={"w-6/12"}  name={"numero_retrait"} label={"Entrez votre numero OM"} onChange={(e)=>setData("numero_retrait",e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                    }
+
+                                    {
+                                        tarifs && Object.values(tarifs).find(value=>value===true) &&
+                                        <div className={"flex col-span-3"}>
+                                            <button className={"p-2 text-white bg-green-400 font-bold rounded"}  type={"submit"}>
+                                                Valider
+                                            </button>
+                                        </div>
+                                    }
+
+                                    <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
+                                        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+                                            {success}
+                                        </Alert>
+                                    </Snackbar>
                                 </div>
-                            </div>
+                            </form>
+
                         </div>
                     </div>
-
-
-                </TabPanel>
-                {
-                    /*
-                    <TabPanel value={value} index={1}>
-                    <div hidden={true}>
-                        {
-                            paiements &&
-                            <Save
-                               apprenant={apprenant}
-                               paiements={paiements}
-                               etablissement={etablissement}
-                               nbrMois={nbrMois}
-                               total={data.total}
-                        />
-                        }
-                    </div>
-
-                    <div className={"flex justify-center"}>
-                        {
-                            tuteur &&
-                            <div style={{width:1200,minWidth:400}}>
-                                <DataGrid
-                                    componentsProps={{
-                                        columnMenu:{backgroundColor:"red",background:"yellow"},
-                                    }}
-
-                                    components={{
-                                        Toolbar:GridToolbar,
-                                    }}
-                                    rows={tuteur.paiements_tuteur}
-                                    columns={columns}
-                                    pageSize={5}
-                                    rowsPerPageOptions={[5]}
-                                    checkboxSelection
-                                    autoHeight
-
-                                    sx={{
-                                        borderColor: 'primary.light',
-                                        '& .header': {
-                                           fontWeight:900,
-                                        }
-                                    }}
-
-                                />
-                            </div>
-                        }
-                    </div>
-                </TabPanel>
-                     */
-                }
-            </Box>
+                </div>
+            </div>
 
 
         </Authenticated>

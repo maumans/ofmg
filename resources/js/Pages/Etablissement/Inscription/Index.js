@@ -24,13 +24,16 @@ import {useForm} from "@inertiajs/inertia-react";
 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 import Box from "@mui/material/Box";
 import SnackBar from "@/Components/SnackBar";
 import SearchIcon from "@mui/icons-material/Search";
+import SchoolIcon from "@mui/icons-material/School";
 import formatNumber from "@/Utils/formatNumber";
 import List from "@mui/material/List";
 import capitalize from "@/Utils/Capitalize";
 import {motion} from "framer-motion";
+import {submit} from "dom7";
 
 
 const style = {
@@ -87,6 +90,7 @@ function Index(props) {
         tuteurs:"",
         tuteursSearch:[],
         tuteursAdd:[],
+        "inscriptions":null
     });
 
     const {data:dataTuteur,setData:setDataTuteur} = useForm({
@@ -119,6 +123,13 @@ function Index(props) {
         setChecked(newChecked);
     };
 
+    function handleExport(e)
+    {
+        e.preventDefault();
+        post(route("etablissement.inscription.import",props.auth.user.id),data.inscriptions, {preserveState: false})
+        //console.log(data.inscriptions)
+    }
+
     useEffect(() => {
       setData("tuteursSearch",checked);
     },[checked])
@@ -146,6 +157,8 @@ function Index(props) {
     });
 
     const [open, setOpen] = React.useState(false);
+    const [openDetails, setOpenDetails] = React.useState(false);
+
     const handleOpen = (inscription) => {
         setDataEdit((dataEdit) => ({
             "id":inscription.id,
@@ -166,14 +179,19 @@ function Index(props) {
 
         setOpen(true);
     }
-    const handleClose = () => setOpen(false);
+    const handleClose = () => {
+        setOpen(false)
+        setOpenDetails(false)
+    };
 
     const [openModal, setOpenModal] = useState(false);
+    const [inscription, setInscription] = useState(null);
 
-    const handleOpenModal = () => {
-        setOpenModal(true);
+    const handleDetails = (i) => {
+        setInscription(i)
+        setOpenDetails(true);
     }
-    const handleCloseModal = () => setOpenModal(false);
+
     const [tuteurAddError, setTuteurAddError]=useState(null)
     const [tuteurAddSuccess, setTuteurAddSuccess]=useState(null)
 
@@ -274,18 +292,21 @@ function Index(props) {
 
 
     const columns = [
-        { field: 'id', headerName: 'ID', width:100 },
+        //{ field: 'id', headerName: 'ID', width:100 },
         { field: 'prenom', headerName: 'PRENOM', width:150,renderCell:(cellValues)=>cellValues.row.apprenant?.prenom},
         { field: 'nom', headerName: 'NOM', width:150,renderCell:(cellValues)=>cellValues.row.apprenant?.nom},
         { field: 'matricule', headerName: 'MATRICULE', width:150,renderCell:(cellValues)=>cellValues.row.apprenant?.matricule},
-        { field: 'dateNaissance', headerName: 'DATE DE NAISSANCE', width:150,renderCell:(cellValues)=>cellValues.row.apprenant?.date_naissance},
-        { field: 'lieuNaissance', headerName: 'LIEU DE NAISSANCE', width:170,renderCell:(cellValues)=>cellValues.row.apprenant?.lieu_naissance},
-        { field: 'classe', headerName: 'CLASSE', width:150, renderCell:(cellValues)=>cellValues.row.classe?.libelle },
-        { field: 'AnneeScolaire', headerName: 'ANNEE SCOLAIRE', width:170, renderCell:(cellValues)=>cellValues.row.annee_scolaire?.dateDebut+"/"+cellValues.row.annee_scolaire?.dateFin },
-        { field: 'montant', headerName: "FRAIS D'INSCRIPTION", width:170,renderCell:(cellValues)=>formatNumber(cellValues.row.montant)+" FG"},
+        //{ field: 'dateNaissance', headerName: 'DATE DE NAISSANCE', width:150,renderCell:(cellValues)=>cellValues.row.apprenant?.date_naissance},
+        //{ field: 'lieuNaissance', headerName: 'LIEU DE NAISSANCE', width:170,renderCell:(cellValues)=>cellValues.row.apprenant?.lieu_naissance},
+        { field: 'classe', headerName: 'CLASSE', width:200, renderCell:(cellValues)=>cellValues.row.classe?.libelle },
+        //{ field: 'AnneeScolaire', headerName: 'ANNEE SCOLAIRE', width:170, renderCell:(cellValues)=>cellValues.row.annee_scolaire?.dateDebut+"/"+cellValues.row.annee_scolaire?.dateFin },
+        //{ field: 'montant', headerName: "FRAIS D'INSCRIPTION", width:170,renderCell:(cellValues)=>formatNumber(cellValues.row.montant)+" FG"},
         { field: 'action', headerName: 'ACTION',width:150,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
+                    <button onClick={()=>handleDetails(cellValues.row)} className={"p-2 text-white bg-blue-400 rounded hover:text-blue-500 hover:bg-white transition duration-500"}>
+                        <ListAltIcon/>
+                    </button>
                     <button onClick={()=>handleOpen(cellValues.row)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
                         <EditIcon/>
                     </button>
@@ -462,93 +483,147 @@ function Index(props) {
                     }
                     <Modal
                         keepMounted
-                        open={open}
+                        open={open || openDetails}
                         onClose={handleClose}
                         aria-labelledby="keep-mounted-modal-title"
                         aria-describedby="keep-mounted-modal-description"
                     >
                         <Box sx={style}>
-                            <form action="" onSubmit={handleEdit} className={"space-y-5 my-5 p-2 border rounded"}>
-                                <div className={"w-full border p-5 rounded space-y-5"}>
-                                    <div className={"text-xl font-bold"}>
-                                        Modifier une inscription
-                                    </div>
-                                    <div className={"space-y-5 p-2 border"}>
-                                        <div className={"text-lg font-bold"}>
-                                            Infos de l'apprenant
+                            {
+                                open &&
+                                <form action="" onSubmit={handleEdit} className={"space-y-5 my-5 p-2 border rounded"}>
+                                    <div className={"w-full border p-5 rounded space-y-5"}>
+                                        <div className={"text-xl font-bold"}>
+                                            Modifier une inscription
                                         </div>
-                                        <div className={"gap-5 grid md:grid-cols-3 grid-cols-1 items-end mb-5"}>
-                                            <div>
-                                                <TextField className={"w-full"}  name={"prenom"} label={"Prenom"} value={dataEdit.prenom} onChange={(e)=>setDataEdit("prenom",e.target.value)}/>
-                                                <div className={"flex my-2 text-red-600"}>{props.errors?.prenom}</div>
-                                            </div>
-                                            <div>
-                                                <TextField className={"w-full"}  name={"nom"} label={"Nom"} value={dataEdit.nom} onChange={(e)=>setDataEdit("nom",e.target.value)}/>
-                                                <div className={"flex my-2 text-red-600"}>{props.errors?.nom}</div>
-                                            </div>
-                                            <div>
-                                                <TextField className={"w-full"}  name={"matricule"} label={"Matricule"} value={dataEdit.matricule} onChange={(e)=>setDataEdit("matricule",e.target.value)}/>
-                                                <div className={"flex my-2 text-red-600"}>{props.errors?.matricule}</div>
-                                            </div>
-                                            <div>
-                                                <div className={"font-bold"}>Date de naissance</div>
-                                                <TextField className={"w-full"}  name={"dateNaissance"} type={"date"} value={dataEdit.dateNaissance} onChange={(e)=>setDataEdit("dateNaissance",e.target.value)}/>
-                                                <div className={"flex my-2 text-red-600"}>{props.errors?.dateNaissance}</div>
-                                            </div>
-                                            <div>
-                                                <TextField className={"w-full"}  name={"lieuNaissance"} label={"Lieu de naissance"} value={dataEdit.lieuNaissance} onChange={(e)=>setDataEdit("lieuNaissance",e.target.value)}/>
-                                                <div className={"flex my-2 text-red-600"}>{props.errors?.lieuNaissance}</div>
-                                            </div>
-
-                                            {
-                                                dataEdit.classe &&
-                                                <div>
-                                                    <FormControl  className={"w-full"}>
-                                                        <Autocomplete
-                                                            onChange={(e,val)=>{
-                                                                setDataEdit("classe",val)
-                                                            }}
-                                                            disablePortal={true}
-                                                            options={props.classes}
-                                                            getOptionLabel={(option)=>option.libelle}
-                                                            renderInput={(params)=><TextField  fullWidth {...params} placeholder={"classe"} label={params.libelle}/>}
-                                                        />
-                                                    </FormControl>
-                                                    <div className={"flex my-2 text-red-600"}>{props.errors?.classe}</div>
-                                                </div>
-                                            }
-                                        </div>
-                                    </div>
-
-                                    {
-                                        dataEdit?.classe &&
-                                        <div className={"border p-5 space-y-5"}>
+                                        <div className={"space-y-5 p-2 border"}>
                                             <div className={"text-lg font-bold"}>
-                                                Les type de frais
+                                                Infos de l'apprenant
                                             </div>
-                                            <div className={"flex flex-wrap"}>
+                                            <div className={"gap-5 grid md:grid-cols-3 grid-cols-1 items-end mb-5"}>
+                                                <div>
+                                                    <TextField className={"w-full"}  name={"prenom"} label={"Prenom"} value={dataEdit.prenom} onChange={(e)=>setDataEdit("prenom",e.target.value)}/>
+                                                    <div className={"flex my-2 text-red-600"}>{props.errors?.prenom}</div>
+                                                </div>
+                                                <div>
+                                                    <TextField className={"w-full"}  name={"nom"} label={"Nom"} value={dataEdit.nom} onChange={(e)=>setDataEdit("nom",e.target.value)}/>
+                                                    <div className={"flex my-2 text-red-600"}>{props.errors?.nom}</div>
+                                                </div>
+                                                <div>
+                                                    <TextField className={"w-full"}  name={"matricule"} label={"Matricule"} value={dataEdit.matricule} onChange={(e)=>setDataEdit("matricule",e.target.value)}/>
+                                                    <div className={"flex my-2 text-red-600"}>{props.errors?.matricule}</div>
+                                                </div>
+                                                <div>
+                                                    <div className={"font-bold"}>Date de naissance</div>
+                                                    <TextField className={"w-full"}  name={"dateNaissance"} type={"date"} value={dataEdit.dateNaissance} onChange={(e)=>setDataEdit("dateNaissance",e.target.value)}/>
+                                                    <div className={"flex my-2 text-red-600"}>{props.errors?.dateNaissance}</div>
+                                                </div>
+                                                <div>
+                                                    <TextField className={"w-full"}  name={"lieuNaissance"} label={"Lieu de naissance"} value={dataEdit.lieuNaissance} onChange={(e)=>setDataEdit("lieuNaissance",e.target.value)}/>
+                                                    <div className={"flex my-2 text-red-600"}>{props.errors?.lieuNaissance}</div>
+                                                </div>
+
                                                 {
-                                                    dataEdit.classe?.tarifs.map((tarif)=>(
-                                                        <div key={tarif.id} className={"mx-5"}>
-                                                            <FormControlLabel control={<Checkbox defaultChecked={dataEdit.inscription.apprenant.tarifs.find((t)=>t.id===tarif.id)?true:false} name={tarif.id+""} onChange={handleChangeEdit} />} label={tarif.type_paiement.libelle} />
-                                                        </div>
-                                                    ))
+                                                    dataEdit.classe &&
+                                                    <div>
+                                                        <FormControl  className={"w-full"}>
+                                                            <Autocomplete
+                                                                onChange={(e,val)=>{
+                                                                    setDataEdit("classe",val)
+                                                                }}
+                                                                disablePortal={true}
+                                                                options={props.classes}
+                                                                getOptionLabel={(option)=>option.libelle}
+                                                                renderInput={(params)=><TextField  fullWidth {...params} placeholder={"classe"} label={params.libelle}/>}
+                                                            />
+                                                        </FormControl>
+                                                        <div className={"flex my-2 text-red-600"}>{props.errors?.classe}</div>
+                                                    </div>
                                                 }
                                             </div>
                                         </div>
-                                    }
 
-                                    <div className={"flex col-span-3 justify-end"}>
-                                        <button className={"p-3 text-white bg-green-600 rounded"}  type={"submit"}>
-                                            Enregistrer
-                                        </button>
+                                        {
+                                            dataEdit?.classe &&
+                                            <div className={"border p-5 space-y-5"}>
+                                                <div className={"text-lg font-bold"}>
+                                                    Les type de frais
+                                                </div>
+                                                <div className={"flex flex-wrap"}>
+                                                    {
+                                                        dataEdit.classe?.tarifs.map((tarif)=>(
+                                                            <div key={tarif.id} className={"mx-5"}>
+                                                                <FormControlLabel control={<Checkbox defaultChecked={dataEdit.inscription.apprenant.tarifs.find((t)=>t.id===tarif.id)?true:false} name={tarif.id+""} onChange={handleChangeEdit} />} label={tarif.type_paiement.libelle} />
+                                                            </div>
+                                                        ))
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+
+                                        <div className={"flex col-span-3 justify-end"}>
+                                            <button className={"p-3 text-white bg-green-600 rounded"}  type={"submit"}>
+                                                Enregistrer
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
 
 
-                            </form>
+                                </form>
+                            }
+                            {
+                                openDetails &&
+                                    <div className={"w-full h-full border border-orange-500 p-5 rounded space-y-8 items-between"}>
+                                        <div className={"text-3xl font-bold p-2 border text-white bg-orange-500 rounded"}>
+                                            Details de l'inscription
+                                        </div>
+                                        <div className={"flex space-x-5 items-center"}>
+                                            <SchoolIcon className="text-orange-500" sx={{fontSize:50}} />
+                                            <div className="text-3xl uppercase">
+                                                {props.auth.user.etablissement_admin.nom}
+                                            </div>
+                                        </div>
+                                        <div className={"relative"}>
+                                            <div className="absolute -top-3 left-2 bg-orange-500 text-white rounded p-2">
+                                                Infos apprenant
+                                            </div>
+                                            <div className={"md:flex flex-wrap md:gap-5 capitalize text-xl border rounded px-5 py-10 border-orange-500"}>
+                                                <div><span className={"font-bold"}>Prenom: </span>{inscription?.apprenant?.prenom}</div>
+                                                <div><span className={"font-bold"}>Nom: </span>{inscription?.apprenant?.nom}</div>
+                                                <div><span className={"font-bold"}>Date de naissance: </span>{inscription?.apprenant?.date_naissance}</div>
+                                                <div><span className={"font-bold"}>Lieu de naissance: </span>{inscription?.apprenant?.lieu_naissance}</div>
+                                            </div>
+                                        </div>
+                                        <div className={"relative"}>
+                                            <div className="absolute -top-3 left-2 bg-orange-500 text-white rounded p-2">
+                                                Infos inscription
+                                            </div>
+                                            <div className="md:flex flex-wrap md:gap-5 capitalize text-xl border rounded px-5 py-10 border-orange-500">
+                                                <div><span className={"font-bold"}>Classe: </span>{inscription?.classe?.libelle}</div>
+                                                <div><span className={"font-bold"}>Matricule: </span>{inscription?.apprenant?.matricule}</div>
+                                                <div><span className={"font-bold"}>Année Scolaire: </span>{inscription?.annee_scolaire?.dateDebut.split("-")[0]+"/"+inscription?.annee_scolaire?.dateFin.split("-")[0]}</div>
+
+                                                <div><span className={"font-bold"}>Montant de l'inscription: </span>{formatNumber(inscription?.montant)} FG</div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                            }
                         </Box>
                     </Modal>
+
+                    <form onSubmit={handleExport} className="p-2 space-y-4 border my-4">
+                        <div>
+                            Importer des inscriptions
+                        </div>
+                        <div>
+                            <TextField type="file" name="inscriptions" onChange={(e)=>setData('inscriptions',e.target.files[0])}/>
+                        </div>
+                        <button type={'submit'} className={"p-2 my-4 text-white bg-green-500 hover:bg-green-600 rounded"}>
+                            Importer
+                        </button>
+
+                    </form>
 
                     <motion.div
                         initial={{y:-100,opacity:0}}

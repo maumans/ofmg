@@ -19,9 +19,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Illuminate\Validation\Rules;
+use Rap2hpoutre\FastExcel\Facades\FastExcel;
 
 class InscriptionController extends Controller
 {
@@ -388,8 +390,6 @@ class InscriptionController extends Controller
 
         }
 
-
-
         return redirect()->back()->with("success","Inscription modifiée avec success");
     }
 
@@ -416,6 +416,110 @@ class InscriptionController extends Controller
             echo($e);
             DB::rollback();
         }
+
+    }
+
+
+
+    public function import(Request $request)
+    {
+        DB::beginTransaction();
+
+        try{
+            $nom=$request->file("inscriptions")->store("importInscription","public");
+            $path=public_path()."\\storage\\".str_replace("/","\\",$nom);
+
+            if (!empty($path) && is_file($path)) {
+                FastExcel::import($path, function ($data)  {
+
+                    dd(strtolower($data["prenomTuteur"])."".uniqid()."@gmail.com");
+
+                    if ($data){
+                        $apprenant = Apprenant::create([
+                            "nom" => $data["nom"],
+                            "prenom" => $data["prenom"],
+                            "matricule" => $data["matricule"],
+                            "lieu_naissance" => $data["lieuNaissance"],
+                            "date_naissance" => $data["dateNaissance"],
+                        ]);
+
+                        $classe=Classe::where("libelle",$data["classe"])->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with(["tarifs.typePaiement"=>function($query){
+                            $query->where("libelle","Inscription")->orWhere("libelle","Scolarité")->get();
+                        }])->first();
+
+                        $tarifInscription=$classe->tarifs->where("typePaiement.libelle","Inscription")->first();
+
+                        $inscription=Inscription::create([
+                            "montant" =>$tarifInscription->montant,
+                            "typePaiement.libelle"=>["required",Rule::unique("tarifs")->where(function($query) use($tarifInscription,$classe) {
+                                return $query->where("etablissement_id",Auth::user()->etablissementAdmin->id)->where("typePaiement_id",$tarifInscription->typePaiement->id)->where("classe_id",$classe->id);
+                            })],
+                        ]);
+
+                        $inscription->classe()->associate($classe)->save();
+                        $inscription->apprenant()->associate($apprenant)->save();
+                        $inscription->anneeScolaire()->associate(Auth::user()->etablissementAdmin->anneeEnCours)->save();
+
+                        foreach($classe->tarifs as $tarif){
+                            if($tarif)
+                            {
+                                $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin);
+
+                                $anneeScolaire=$tarif->anneeScolaire;
+
+                                $apprenant->tarifs()->syncWithoutDetaching([$tarif->id=>["resteApayer"=>$tarif->montant,"nombreMois"=>$intervalle->count(),"annee_scolaire_id"=>$anneeScolaire->id]]);
+
+                                foreach($intervalle as $date)
+                                {
+                                    $moisPaye=Mois_Paye::create([
+                                        "montant"=>0
+                                    ]);
+
+                                    $moisPaye->mois()->associate(Mois::where("position",$date->month)->first())->save();
+                                    $moisPaye->apprenantTarif()->associate(Apprenant_tarif::where("tarif_id",$tarif->id)->where("apprenant_id",$apprenant->id)->first())->save();
+
+                                }
+                            }
+
+                        }
+                    }
+
+                    if($data["nomTuteur"])
+                    {
+                        $request->validate([
+                            "tuteursAdd.*.email"=>"required|unique:users",
+                            "tuteursAdd.*.telephone"=>"required|unique:users"
+                        ],
+                            [
+                                "tuteursAdd.*.email.unique"=>"La valeur du champ email est déjà utilisée",
+                                "tuteursAdd.*.telephone.unique"=>"La valeur du champ telephone est déjà utilisée"
+                            ]);
+
+                        $tuteur=User::create([
+                            "nom"=>$data["nomTuteur"],
+                            "prenom"=>$data["prenomTuteur"],
+                            "telephone"=>$data["telephoneTuteur"],
+                            "email"=>strtolower($data["prenomTuteur"])."".uniqid()."@gmail.com",
+                            "password"=>Hash::make($data["telephoneTuteur"]),
+                        ]);
+
+                        $tuteur->roles()->syncWithoutDetaching(Role::where("libelle","tuteur")->first());
+                    }
+
+                    $apprenant->tuteurs()->syncWithoutDetaching(User::find($tuteur["id"]));
+                });
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with("success","Import effectué avec success");
+
+        }
+            catch(Exception $e){
+            echo($e);
+            DB::rollback();
+        }
+
 
     }
 }

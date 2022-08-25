@@ -34,4 +34,9 @@ class Apprenant extends Model
     {
         return $this->belongsToMany(User::class,"apprenant_tuteur","apprenant_id","tuteur_id");
     }
+
+    public function apprenantTarif()
+    {
+        return $this->hasMany(Apprenant_tarif::class);
+    }
 }

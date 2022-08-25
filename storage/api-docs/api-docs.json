@@ -1,0 +1,306 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Orange Api",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/etablissement/validation/{code}": {
+            "get": {
+                "tags": [
+                    "Api Validation du code de l'etablissement"
+                ],
+                "summary": "Api Validation du code de l'etablissement",
+                "description": "Verifie l'existance d'un etablissement sur E-school",
+                "operationId": "rechercheEtablissementApi",
+                "parameters": [
+                    {
+                        "name": "code",
+                        "in": "path",
+                        "description": "Code de l'etablissement",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Succès de l'operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "examples": {
+                                    "EtablissementSuccess": {
+                                        "$ref": "#/components/examples/EtablissementSuccess"
+                                    },
+                                    "EtablissementFailed": {
+                                        "$ref": "#/components/examples/EtablissementFailed"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "403": {
+                        "description": "Interdit"
+                    },
+                    "400": {
+                        "description": "Mauvaise requete"
+                    },
+                    "404": {
+                        "description": "Non trouvé"
+                    }
+                }
+            }
+        },
+        "/api/etablissement/apprenant/{code}/{matricule}": {
+            "get": {
+                "tags": [
+                    "Api Validation du matricule et chargement des operations"
+                ],
+                "summary": "Recherche de l'apprenant",
+                "description": "Verifie l'existance d'un apprenant au sein d'un etablissement sur E-school",
+                "operationId": "RechercheApprenantApi",
+                "responses": {
+                    "200": {
+                        "description": "Succes de l'operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "examples": {
+                                    "ApprenantSuccess": {
+                                        "$ref": "#/components/examples/ApprenantSuccess"
+                                    },
+                                    "ApprenantFailed": {
+                                        "$ref": "#/components/examples/ApprenantFailed"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/etablissement/apprenant/paiement": {
+            "post": {
+                "tags": [
+                    "Api Récuperation des informations du paiement"
+                ],
+                "summary": "Paiement de l'operation",
+                "description": "Paiement de l'operation pour un apprenant",
+                "operationId": "paiementApi",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "montant",
+                                    "numero_retrait",
+                                    "status",
+                                    "code",
+                                    "matricule",
+                                    "operation"
+                                ],
+                                "properties": {
+                                    "montant": {
+                                        "type": "number"
+                                    },
+                                    "numero_retrait": {
+                                        "type": "text"
+                                    },
+                                    "status": {
+                                        "type": "text"
+                                    },
+                                    "code": {
+                                        "type": "text"
+                                    },
+                                    "matricule": {
+                                        "type": "text"
+                                    },
+                                    "operation": {
+                                        "type": "text"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Succes de l'operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Succes de l'operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "examples": {
+                                    "PaiementSuccess": {
+                                        "$ref": "#/components/examples/PaiementSuccess"
+                                    },
+                                    "PaiementFailed": {
+                                        "$ref": "#/components/examples/PaiementFailed"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Entité non traitable",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Mauvaise requete"
+                    },
+                    "404": {
+                        "description": "Ressource introuvable"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "responses": {
+            "401": {
+                "description": "Non authentifié"
+            },
+            "403": {
+                "description": "Interdit"
+            },
+            "400": {
+                "description": "Mauvaise requete"
+            },
+            "404": {
+                "description": "Non trouvé"
+            }
+        },
+        "parameters": {
+            "code": {
+                "name": "code",
+                "in": "path",
+                "description": "Code de l'etablissement",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "matricule": {
+                "name": "matricule",
+                "in": "path",
+                "description": "Matricule de l'apprenant",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            }
+        },
+        "examples": {
+            "EtablissementSuccess": {
+                "summary": "Etablissement trouvé",
+                "value": {
+                    "status": "SUCCESS",
+                    "data": {
+                        "etablissement": {
+                            "code": "20220705091618",
+                            "nom": "Koffi Annan",
+                            "type": "Université"
+                        }
+                    }
+                }
+            },
+            "EtablissementFailed": {
+                "summary": "Etablissement non trouvé",
+                "value": {
+                    "status": "FAILED",
+                    "data": {
+                        "etablissement": null
+                    }
+                }
+            },
+            "ApprenantSuccess": {
+                "summary": "Apprenant trouvé",
+                "value": {
+                    "status": "SUCCESS",
+                    "data": {
+                        "etablissement": {
+                            "code": "20220705091618",
+                            "nom": "Koffi Annan",
+                            "type": "Université"
+                        },
+                        "apprenant": {
+                            "nom": "Diallo",
+                            "prenom": "Alpha",
+                            "matricule": "29M",
+                            "classe": "Licence 1 Genie logiciel 1"
+                        },
+                        "operations": [
+                            {
+                                "operation": "Scolarité",
+                                "MontantGlobal": 200000,
+                                "resteApayer": 0
+                            },
+                            {
+                                "operation": "Inscription",
+                                "MontantGlobal": 150000,
+                                "resteApayer": 0
+                            }
+                        ]
+                    }
+                }
+            },
+            "ApprenantFailed": {
+                "summary": "Apprenant non trouvé",
+                "value": {
+                    "status": "FAILED",
+                    "data": {
+                        "etablissement": null,
+                        "apprenant": null,
+                        "operations": null
+                    }
+                }
+            },
+            "PaiementSuccess": {
+                "summary": "Paiement enregistré",
+                "value": "SUCCESS"
+            },
+            "PaiementFailed": {
+                "summary": "Paiement non enregistré",
+                "value": "FAILED"
+            }
+        }
+    },
+    "security": [
+        {
+            "passport": {
+                "type": "oauth2",
+                "description": "Laravel passport oauth2 security.",
+                "in": "header",
+                "scheme": "https",
+                "flows": {
+                    "password": {
+                        "authorizationUrl": "http://localhost/oauth/authorize",
+                        "tokenUrl": "http://localhost/oauth/token",
+                        "refreshUrl": "http://localhost/token/refresh",
+                        "scopes": []
+                    }
+                }
+            }
+        }
+    ]
+}

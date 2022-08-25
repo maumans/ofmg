@@ -18,10 +18,12 @@ class CreateEtablissementsTable extends Migration
             $table->id();
             $table->string("code")->unique()->nullable();
             $table->string("nom")->nullable();
+            $table->string("telephone")->unique()->nullable();
 
             $table->foreignId("type_etablissement_id")->nullable()->constrained("type_etablissements")->cascadeOnDelete();
             $table->foreignId("commune_id")->nullable()->constrained("communes")->cascadeOnDelete();
             $table->foreignId("ville_id")->nullable()->constrained("villes")->cascadeOnDelete();
+            $table->foreignId("user_id")->nullable()->constrained("users")->cascadeOnDelete();
             $table->timestamps();
         });
 

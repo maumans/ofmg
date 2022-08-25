@@ -145,9 +145,6 @@ class PaiementController extends Controller
         ]);
 
 
-
-
-
         DB::beginTransaction();
 
         try{
