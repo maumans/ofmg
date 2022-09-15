@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -15,12 +16,14 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Welcome');
-})->name("welcome");
+Route::get('/', [\App\Http\Controllers\WelcomeController::class,'home'])->name("welcome");
+
+Route::get('/portofolio', function () {
+    return Inertia::render('Portofolio');
+})->name("portofolio");
 
 
-Route::middleware(['auth', 'verified',"userIsAdmin","firstConnexion","passwordChangeDate"])->group(function (){
+Route::middleware(['auth', 'verified',"userIsAdminOrOfmg","firstConnexion","passwordChangeDate"])->group(function (){
     Route::resource('admin.user',\App\Http\Controllers\Admin\UserController::class);
     Route::resource('admin.role',\App\Http\Controllers\Admin\RoleController::class);
     Route::resource('admin.fonction',\App\Http\Controllers\Admin\FonctionController::class);
@@ -38,6 +41,7 @@ Route::middleware(['auth', 'verified',"userIsAdmin","firstConnexion","passwordCh
     Route::resource('admin.ville',\App\Http\Controllers\Admin\VilleController::class);
     Route::resource('admin.commune',\App\Http\Controllers\Admin\CommuneController::class);
 });
+
 
 Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","passwordChangeDate"])->group(function (){
     Route::resource('etablissement',\App\Http\Controllers\EtablissementController::class);
@@ -68,7 +72,7 @@ Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","pa
     Route::get("etablissement/{userId}/personnel/paiement/historique/{ok?}",[\App\Http\Controllers\Etablissement\PersonnelController::class,"historique"])->name("etablissement.personnel.paiement.historique")->middleware("anneeScolaireIsDefined");
     Route::post("etablissement/{userId}/personnel/paiement/salaire/{moisId}",[\App\Http\Controllers\Etablissement\PersonnelController::class,"salaireStore"])->name("etablissement.personnel.paiement.salaire.store")->middleware("anneeScolaireIsDefined");
     Route::post("etablissement/{userId}/personnel/paiement/validationSalaire",[\App\Http\Controllers\Etablissement\PersonnelController::class,"validationStore"])->name("etablissement.personnel.paiement.validationSalaire.store")->middleware("anneeScolaireIsDefined");
-    Route::post("etablissement/{userId}/personnel/paiement/validationCancel/",[\App\Http\Controllers\Etablissement\PersonnelController::class,"validationCancel"])->name("etablissement.personnel.paiement.validationCancel")->middleware("anneeScolaireIsDefined");
+    Route::post("etablissement/{userId}/personnel/paiement/validationCancel",[\App\Http\Controllers\Etablissement\PersonnelController::class,"validationCancel"])->name("etablissement.personnel.paiement.validationCancel")->middleware("anneeScolaireIsDefined");
 
     Route::get("etablissement/{userId}/inscription/search/tuteur/{search}",[\App\Http\Controllers\Etablissement\InscriptionController::class,"search"])->name("etablissement.inscription.tuteur.search")->middleware("anneeScolaireIsDefined");
     Route::get("etablissement/{userId}/contrat/search/personnels/{search}",[\App\Http\Controllers\Etablissement\ContratController::class,"search"])->name("etablissement.contrat.personnel.search")->middleware("anneeScolaireIsDefined");
@@ -84,7 +88,7 @@ Route::middleware(['auth', 'verified',"userIsTuteur","firstConnexion"])->group(f
 });
 
 Route::resource('paiement',\App\Http\Controllers\PaiementController::class);
-Route::get("paiement/search/{matricule?}",[\App\Http\Controllers\PaiementController::class,"search"])->name("paiement.search");
+Route::get("paiement/search/{code?}/{matricule?}",[\App\Http\Controllers\PaiementController::class,"search"])->name("paiement.search");
 Route::get("paiement/ok/{apprenantId}/{total}",[\App\Http\Controllers\PaiementController::class,"ok"])->name("paiement.ok");
 
 

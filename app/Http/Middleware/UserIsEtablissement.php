@@ -17,7 +17,7 @@ class UserIsEtablissement
      */
     public function handle(Request $request, Closure $next)
     {
-        if($request->user() && !$request->user()->isEtablissement())
+        if($request->user() && !$request->user()->isEtablissement() && !$request->user()->isComptable() && !$request->user()->isDirecteur())
         {
             return Redirect::route("welcome");
         }

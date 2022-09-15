@@ -21,7 +21,7 @@ class FirstConnexion
         //dd(Auth::user()->first_connexion);
         if(Auth::user()->first_connexion)
         {
-            return redirect()->route("firstConnexion.reset-password",["email" => Auth::user()->email,"mois"=>false]);
+            return redirect()->route("firstConnexion.reset-password",["login" => Auth::user()->login,"mois"=>false]);
         }
         else
         {

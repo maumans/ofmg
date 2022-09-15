@@ -21,16 +21,15 @@ class FirstConnexionController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function resetPassword($email,$mois=null)
+    public function resetPassword($login,$mois=null)
     {
-        return Inertia::render('Auth/FirstConnexion',["email"=>$email,"mois"=>$mois]);
+        return Inertia::render('Auth/FirstConnexion',["login"=>$login,"mois"=>$mois]);
     }
 
     public function reset(Request $request)
     {
-        //dd($request->all());
         $request->validate([
-            'email' => 'required|email',
+            'login' => 'required',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -39,7 +38,7 @@ class FirstConnexionController extends Controller
         // database. Otherwise we will parse the error and return the response.
 
 
-        User::where("email",$request->email)->first()->forceFill([
+        User::where("login",$request->login)->first()->forceFill([
             'password' => Hash::make($request->password),
             "first_connexion"=>false,
             "password_change_date"=>Carbon::now()

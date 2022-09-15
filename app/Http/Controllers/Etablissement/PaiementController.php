@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Etablissement;
 
 use App\Http\Controllers\Controller;
 use App\Models\Apprenant;
+use App\Models\Code_numero;
 use App\Models\Mode_paiement;
 use App\Models\Mois;
 use App\Models\Mois_Paye;
@@ -39,7 +40,6 @@ class PaiementController extends Controller
      */
     public function search(Request $request,$userId)
     {
-
         $matricule=$request->matricule;
         $tuteurNumber=$request->tuteurNumber;
 
@@ -116,12 +116,14 @@ class PaiementController extends Controller
      */
     public function create()
     {
+        $codeNumeros=Code_numero::all();
+
         $classes=Classe::where('etablissement_id',Auth::user()->etablissementAdmin->id)->with("apprenants")->get();
 
         $apprenants=Apprenant::whereRelation("classe.etablissement","id",Auth::user()->etablissementAdmin->id)->with("classe")->orderByDesc('created_at')->get();
 
 
-        return Inertia::render("Etablissement/Paiement/Create",["classes"=>$classes,"apprenants"=>$apprenants]);
+        return Inertia::render("Etablissement/Paiement/Create",["classes"=>$classes,"apprenants"=>$apprenants,"codeNumeros"=>$codeNumeros]);
     }
 
     /**

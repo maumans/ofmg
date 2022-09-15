@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tuteur;
 
 use App\Http\Controllers\Controller;
 use App\Models\Apprenant;
+use App\Models\Code_numero;
 use App\Models\Mode_paiement;
 use App\Models\Paiement;
 use App\Models\Tarif;
@@ -29,6 +30,8 @@ class PaiementController extends Controller
      */
     public function index()
     {
+        $codeNumeros=Code_numero::all();
+
         $totalAll=0;
         $resteApayerAll=0;
         $payerAll=0;
@@ -70,12 +73,13 @@ class PaiementController extends Controller
                 $donneesParFrais->push(["libelle"=>$typePaiement->libelle,"montant"=>$montant,"resteApayer"=>$resteApayer,"payer"=>$montant-$resteApayer]);
             }
         }
-        return Inertia::render("Tuteur/Paiement/Index",["tuteur"=>$tuteur,"resteApayerAll"=>$resteApayerAll,"totalAll"=>$totalAll,"payerAll"=>$payerAll,"donneesParFrais"=>$donneesParFrais]);
+        return Inertia::render("Tuteur/Paiement/Index",["tuteur"=>$tuteur,"resteApayerAll"=>$resteApayerAll,"totalAll"=>$totalAll,"payerAll"=>$payerAll,"donneesParFrais"=>$donneesParFrais,"codeNumeros"=>$codeNumeros]);
     }
 
     public function search($userId,$matricule)
     {
 
+        $codeNumeros=Code_numero::all();
 
         $apprenant=Apprenant::where("matricule",$matricule)->first();
 
@@ -120,7 +124,7 @@ class PaiementController extends Controller
 
         $modePaiements=Mode_paiement::where("libelle","!=","OM WEB");
 
-        return Inertia::render("Tuteur/Paiement/Create",["etablissement"=>$etablissement,"apprenant"=>$apprenant,"matricule"=>$matricule,"nbrMois"=>$nbrMois,"modePaiements"=>$modePaiements,"paiements"=>$paiements,"tuteur"=>$tuteur]);
+        return Inertia::render("Tuteur/Paiement/Create",["etablissement"=>$etablissement,"apprenant"=>$apprenant,"matricule"=>$matricule,"nbrMois"=>$nbrMois,"modePaiements"=>$modePaiements,"paiements"=>$paiements,"tuteur"=>$tuteur,"codeNumeros"=>$codeNumeros]);
     }
 
     /**

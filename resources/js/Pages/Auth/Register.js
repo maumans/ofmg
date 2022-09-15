@@ -13,6 +13,7 @@ export default function Register({auth}) {
         prenom: '',
         nom: '',
         email: '',
+        login: '',
         password: '',
         password_confirmation: '',
         adresse: '',
@@ -111,7 +112,7 @@ export default function Register({auth}) {
                             name="email"
                             value={data.email}
                             className="mt-1 block w-full"
-                            autoComplete="username"
+                            autoComplete="email"
                             handleChange={onHandleChange}
                             required
                         />
@@ -135,6 +136,20 @@ export default function Register({auth}) {
                                 </Select>
                             </FormControl>
                             <div className={"flex my-2 text-red-600"}>{errors?.situation_matrimoniale}</div>
+                        </div>
+
+                        <div>
+                            <Label forInput="login" value="Login" />
+
+                            <Input
+                                type="text"
+                                name="login"
+                                value={data.telephone}
+                                className="mt-1 block w-full"
+                                autoComplete="login"
+                                handleChange={onHandleChange}
+                                required
+                            />
                         </div>
 
                         <div className={"mt-4"}>

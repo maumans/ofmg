@@ -10,7 +10,7 @@ import Authenticated from "@/Layouts/Authenticated";
 
 export default function Login({ status, canResetPassword,auth }) {
     const { data, setData, post, processing, errors, reset } = useForm({
-        email: '',
+        login: '',
         password: '',
         remember: '',
     });
@@ -45,14 +45,14 @@ export default function Login({ status, canResetPassword,auth }) {
 
                 <form onSubmit={submit}>
                     <div>
-                        <Label forInput="email" value="Email" />
+                        <Label forInput="login" value="Login" />
 
                         <Input
                             type="text"
-                            name="email"
-                            value={data.email}
+                            name="login"
+                            value={data.login}
                             className="mt-1 block w-full"
-                            autoComplete="username"
+                            autoComplete="login"
                             isFocused={true}
                             handleChange={onHandleChange}
                         />

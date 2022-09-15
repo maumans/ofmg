@@ -127,7 +127,6 @@ function Index(props) {
     {
         e.preventDefault();
         post(route("etablissement.inscription.import",props.auth.user.id),data.inscriptions, {preserveState: false})
-        //console.log(data.inscriptions)
     }
 
     useEffect(() => {
@@ -292,15 +291,10 @@ function Index(props) {
 
 
     const columns = [
-        //{ field: 'id', headerName: 'ID', width:100 },
         { field: 'prenom', headerName: 'PRENOM', width:150,renderCell:(cellValues)=>cellValues.row.apprenant?.prenom},
         { field: 'nom', headerName: 'NOM', width:150,renderCell:(cellValues)=>cellValues.row.apprenant?.nom},
         { field: 'matricule', headerName: 'MATRICULE', width:150,renderCell:(cellValues)=>cellValues.row.apprenant?.matricule},
-        //{ field: 'dateNaissance', headerName: 'DATE DE NAISSANCE', width:150,renderCell:(cellValues)=>cellValues.row.apprenant?.date_naissance},
-        //{ field: 'lieuNaissance', headerName: 'LIEU DE NAISSANCE', width:170,renderCell:(cellValues)=>cellValues.row.apprenant?.lieu_naissance},
-        { field: 'classe', headerName: 'CLASSE', width:200, renderCell:(cellValues)=>cellValues.row.classe?.libelle },
-        //{ field: 'AnneeScolaire', headerName: 'ANNEE SCOLAIRE', width:170, renderCell:(cellValues)=>cellValues.row.annee_scolaire?.dateDebut+"/"+cellValues.row.annee_scolaire?.dateFin },
-        //{ field: 'montant', headerName: "FRAIS D'INSCRIPTION", width:170,renderCell:(cellValues)=>formatNumber(cellValues.row.montant)+" FG"},
+        { field: 'classe', headerName: 'CLASSE', width:300, renderCell:(cellValues)=>cellValues.row.classe?.libelle },
         { field: 'action', headerName: 'ACTION',width:150,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
@@ -598,10 +592,10 @@ function Index(props) {
                                             <div className="absolute -top-3 left-2 bg-orange-500 text-white rounded p-2">
                                                 Infos inscription
                                             </div>
-                                            <div className="md:flex flex-wrap md:gap-5 capitalize text-xl border rounded px-5 py-10 border-orange-500">
+                                            <div className="md:flex flex-wrap md:gap-5 text-xl border rounded px-5 py-10 border-orange-500">
                                                 <div><span className={"font-bold"}>Classe: </span>{inscription?.classe?.libelle}</div>
                                                 <div><span className={"font-bold"}>Matricule: </span>{inscription?.apprenant?.matricule}</div>
-                                                <div><span className={"font-bold"}>Année Scolaire: </span>{inscription?.annee_scolaire?.dateDebut.split("-")[0]+"/"+inscription?.annee_scolaire?.dateFin.split("-")[0]}</div>
+                                                <div><span className={"font-bold"}>Année scolaire: </span>{inscription?.annee_scolaire?.dateDebut.split("-")[0]+"/"+inscription?.annee_scolaire?.dateFin.split("-")[0]}</div>
 
                                                 <div><span className={"font-bold"}>Montant de l'inscription: </span>{formatNumber(inscription?.montant)} FG</div>
                                             </div>

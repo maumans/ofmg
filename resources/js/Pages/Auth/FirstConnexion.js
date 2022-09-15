@@ -7,9 +7,9 @@ import ValidationErrors from '@/Components/ValidationErrors';
 import { Head, useForm } from '@inertiajs/inertia-react';
 import Authenticated from "@/Layouts/Authenticated";
 
-export default function firstConnexion({email,auth,mois }) {
+export default function firstConnexion({login,auth,mois }) {
     const { data, setData, post, processing, errors, reset } = useForm({
-        email: email,
+        login: login,
         password: '',
         password_confirmation: '',
     });
@@ -49,14 +49,14 @@ export default function firstConnexion({email,auth,mois }) {
 
                 <form onSubmit={submit}>
                     <div>
-                        <Label forInput="email" value="Email" />
+                        <Label forInput="login" value="Login" />
 
                         <Input
-                            type="email"
-                            name="email"
-                            value={data.email}
+                            type="text"
+                            name="login"
+                            value={data.login}
                             className="mt-1 block w-full"
-                            autoComplete="username"
+                            autoComplete="login"
                             handleChange={onHandleChange}
                             required
                         />

@@ -40,8 +40,11 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' =>$user,
                 'admin'=>$request->user() && $request->user()->isAdmin(),
+                'ofmg' =>$request->user() && $request->user()->isOfmg(),
                 'etablissement'=>$request->user() && $request->user()->isEtablissement(),
                 'tuteur'=>$request->user() && $request->user()->isTuteur(),
+                'comptable'=>$request->user() && $request->user()->isComptable(),
+                'directeur'=>$request->user() && $request->user()->isDirecteur(),
             ],
             "success"=>session("success"),
             "error"=>session("error"),

@@ -24,6 +24,7 @@ class User extends Authenticatable // implements MustVerifyEmail
     protected $fillable = [
         'nom',
         'prenom',
+        'login',
         'email',
         'password',
         'titre',
@@ -121,6 +122,29 @@ class User extends Authenticatable // implements MustVerifyEmail
     public function isAdmin()
     {
         if($this->roles()->where("libelle","admin")->first())
+            return true;
+        else return false;
+
+    }
+
+    public function isOfmg()
+    {
+        if($this->roles()->where("libelle","ofmg")->first())
+            return true;
+        else return false;
+
+    }
+
+    public function isComptable()
+    {
+        if($this->contrats()->whereRelation("contratFonctions.fonction","libelle","comptable")->first())
+            return true;
+        else return false;
+
+    }
+    public function isDirecteur()
+    {
+        if($this->contrats()->whereRelation("contratFonctions.fonction","libelle","directeur")->first())
             return true;
         else return false;
 

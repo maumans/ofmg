@@ -75,16 +75,17 @@ function Create(props) {
 
     const {data:dataTuteur,setData:setDataTuteur} = useForm({
         id:"",
-        prenom: 'mau',
-        nom: 'mans',
-        email: 'mau@gmail.com',
-        password: "29101997",
-        adresse: 'kountia',
-        telephone: '621993863',
-        telephone2: '622345678',
-        telephone3: '622549087',
-        situation_matrimoniale:"Marié",
-        titre:"M",
+        prenom: '',
+        nom: '',
+        login: '',
+        email: '',
+        password: "",
+        adresse: '',
+        telephone: '',
+        telephone2: '',
+        telephone3: '',
+        situation_matrimoniale:"",
+        titre:"",
     })
 
     const [checked, setChecked] = useState([]);
@@ -159,6 +160,7 @@ function Create(props) {
                     id:"",
                     prenom: '',
                     nom: '',
+                    login: '',
                     email: '',
                     password: "",
                     adresse: '',
@@ -174,8 +176,8 @@ function Create(props) {
                     tuteursAdd:tab,
                     tuteurs:null,
                     search:null
-
                 }))
+
                 setData("tuteursAdd",tab)
                 setTuteurAddSuccess("Tuteur ajouté avec succès")
             }
@@ -194,6 +196,7 @@ function Create(props) {
                                 id:a.id,
                                 prenom: a.nom,
                                 nom: a.prenom,
+                                login: a.login,
                                 email: a.email,
                                 password: a.password,
                                 adresse: a.adresse,
@@ -244,6 +247,7 @@ function Create(props) {
         { field: 'telephone', headerName: 'Tel', width:150},
         { field: 'telephone2', headerName: 'Tel 2', width:150},
         { field: 'telephone3', headerName: 'Tel 3', width:150},
+        { field: 'login', headerName: 'LOGIN', width:150},
         { field: 'email', headerName: 'EMAIL', width:150},
         { field: 'telephone', headerName: 'TELEPHONE', width:150},
         { field: 'password', headerName: 'MOT DE PASSE', width:150},
@@ -360,10 +364,12 @@ function Create(props) {
 
                                         <div className={"flex text-red-600"}>{props.errors?.matricule}</div>
                                     </div>
+
                                     <div>
                                         <div className={"font-bold"}>Date de naissance</div>
                                         <TextField required className={"w-full"}  name={"dateNaissance"} type={"date"} value={data.dateNaissance} onChange={(e)=>setData("dateNaissance",e.target.value)}/>
                                     </div>
+
                                     <div>
                                         <TextField className={"w-full"}  name={"lieuNaissance"} label={"Lieu de naissance"} value={data.lieuNaissance} onChange={(e)=>setData("lieuNaissance",e.target.value)}/>
                                     </div>
@@ -383,9 +389,9 @@ function Create(props) {
                                         </FormControl>
                                     </div>
                                     <div className={"md:col-span-3 grid md:grid-cols-3 gap-5"}>
-                                        <div className={"flex text-red-600"}>{props.errors?.dateNaissance}</div>
-
                                         <div className={"flex text-red-600"}>{props.errors?.lieuNaissance}</div>
+
+                                        <div className={"flex text-red-600"}>{props.errors?.dateNaissance}</div>
 
                                         <div className={"flex text-red-600"}>{props.errors?.classe}</div>
                                     </div>
@@ -416,15 +422,20 @@ function Create(props) {
                                                             <ListItem
                                                                 className="flex justify-between"
                                                             >
-                                                                <ListItemText primary={capitalize(t.prenom)+" "+capitalize(t.nom)} secondary={" Tel: "+t.telephone+" |   Email: "+t.email}
+                                                                <ListItemText primary={capitalize(t?.prenom)+" "+capitalize(t?.nom)} secondary={" Tel: "+t.telephone+" |   Login: "+t.login+(t.login && (" |   Email: "+t.email))}
                                                                 />
                                                                 <button  onClick={()=>deleteTuteurInTuteursAdd(t.telephone)} className={"p-2 rounded-full bg-red-600 text-white flex text-center items-center"} type={"button"}>
                                                                     <CloseIcon/>
                                                                 </button>
                                                             </ListItem>
                                                             <div className="text-red-600 p-2">
-                                                                {props.errors["tuteursAdd."+i+".email"]}
+                                                                {props.errors["tuteursAdd."+i+".login"]}
                                                             </div>
+                                                            {
+                                                                <div className="text-red-600 p-2">
+                                                                    {props.errors["tuteursAdd."+i+".email"]}
+                                                                </div>
+                                                            }
                                                             <div className="text-red-600 p-2">
                                                                 {props.errors["tuteursAdd."+i+".telephone"]}
                                                             </div>
@@ -457,7 +468,7 @@ function Create(props) {
                                     className={"w-full"}
                                     variant={"standard"}
                                     onChange={(e) => setData("search", e.target.value)}
-                                    label={"Entrez l'identifiant ou l'email du tuteur"}
+                                    label={"Entrez l'identifiant,le numero ou l'email du tuteur"}
 
                                 />
                                 <button type="button" onClick={handleSearchButton} className={"rounded bg-gray-600 p-3 text-white flex"}>
@@ -498,7 +509,7 @@ function Create(props) {
                                                         disablePadding
                                                     >
                                                         <ListItemButton>
-                                                            <ListItemText id={labelId} primary={capitalize(t?.prenom)+" "+capitalize(t?.nom)} secondary={" Tel: "+t.telephone+" |   Email: "+t.email}
+                                                            <ListItemText id={labelId} primary={capitalize(t?.prenom)+" "+capitalize(t?.nom)} secondary={" Tel: "+t.telephone+" |   Login: "+t.login+(t.login && (" |   Email: "+t.email))}
                                                             />
                                                         </ListItemButton>
                                                     </ListItem>
@@ -590,11 +601,20 @@ function Create(props) {
 
                                 <div>
                                     <div>
+                                        <TextField type="login" className={"w-full"}  name={"login"} label={"Login"} value={dataTuteur.login} onChange={onHandleChange}
+                                                   autoComplete="login"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div>
                                         <TextField type="email" className={"w-full"}  name={"email"} label={"Email"} value={dataTuteur.email} onChange={onHandleChange}
                                                    autoComplete="email"
                                         />
                                     </div>
                                 </div>
+
                                 <div>
                                     <div>
                                         <TextField className={"w-full"}  name={"telephone"} label={"Telephone"} value={dataTuteur.telephone} onChange={onHandleChange}

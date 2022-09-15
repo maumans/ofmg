@@ -22,6 +22,7 @@ function Index(props) {
 
     const {data,setData,post,reset}=useForm({
         "nomEtablissement":"",
+        "codeEtablissement":"",
         "typeEtablissement":"",
         "ville":"",
         "commune":"",
@@ -29,6 +30,7 @@ function Index(props) {
         "prenom":"",
         "telephone":"",
         "telephoneEtab":"",
+        "login":"",
         "email":"",
         "password":"",
         "confirmPassword":"",
@@ -38,6 +40,7 @@ function Index(props) {
         { field: 'id', headerName: 'ID', width: 70 },
         { field: 'code', headerName: 'CODE', width: 200 },
         { field: 'nom', headerName: 'NOM', width: 250 },
+        { field: 'login', headerName: 'LOGIN', width: 250},
         { field: 'type', headerName: 'TYPE', width: 250,renderCell:(r)=>r.row.type_etablissement?.libelle },
         { field: 'ville', headerName: 'VILLE', width: 250,renderCell:(r)=>r.row.ville?.libelle },
         { field: 'commune', headerName: 'COMMUNE', width: 250,renderCell:(r)=>r.row.commune?.libelle },
@@ -75,6 +78,7 @@ function Index(props) {
 
         post(route("admin.etablissement.store",props.auth.user.id),{data,onSuccess: ()=>reset(
             "nomEtablissement",
+                "codeEtablissement",
                 "typeEtablissement",
                 "telephone",
                 "telephoneEtab",
@@ -82,6 +86,7 @@ function Index(props) {
                 "commune",
                 "nom",
                 "prenom",
+                "login",
                 "email",
                 "password",
                 "confirmPassword",
@@ -111,9 +116,14 @@ function Index(props) {
                         <div>
                             Infos de l'etablissement
                         </div>
-                        <div className={"gap-4 grid md:grid-cols-3 grid-cols-1"}>
-                            <div className={"md:col-span-3 w-full"}>
+                        <div className={"gap-4 grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1"}>
+                            <div className={"w-full"}>
                                 <TextField  className={"w-full"} name={"nomEtablissement"} label={"Nom de l'etablissement"} value={data.nomEtablissement} onChange={(e)=>setData("nomEtablissement",e.target.value)} required/>
+                                <div className={"flex my-2 text-red-600"}>{props.errors?.nomEtablissement}</div>
+                            </div>
+
+                            <div className={"w-full"}>
+                                <TextField  className={"w-full"} name={"codeEtablissement"} label={"Code de l'etablissement"} value={data.codeEtablissement} onChange={(e)=>setData("codeEtablissement",e.target.value)} required/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.nomEtablissement}</div>
                             </div>
 
@@ -180,6 +190,11 @@ function Index(props) {
                             <div>
                                 <TextField className={"w-full"}  name={"telephone"} label={"Telephone"} value={data.telephone} onChange={(e)=>setData("telephone",e.target.value)} required/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.telephone}</div>
+                            </div>
+
+                            <div className={"w-full"}>
+                                <TextField className={"w-full"} name={"login"} label={"login"} value={data.login} onChange={(e)=>setData("login",e.target.value)}/>
+                                <div className={"flex my-2 text-red-600"}>{props.errors?.login}</div>
                             </div>
 
                             <div>

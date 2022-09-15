@@ -46,9 +46,9 @@ function Index({auth,error,paiements,success}) {
         <AdminPanel auth={auth} error={error} active={"paiement"}>
            <div className={"p-5"}>
                <div className="text-xl my-5 font-bold">
-                   Historique des paiements
+                   Liste des paiements
                </div>
-               <div className={"flex justify-center"}>
+               <div>
                    {
                        <motion.div
                            initial={{y:-10,opacity:0}}
@@ -56,15 +56,8 @@ function Index({auth,error,paiements,success}) {
                            transition={{
                                duration:0.5,
                            }}
-                           style={{width:1200,minWidth:400}}>
+                           style={{height:450, width: '100%' }}>
                            <DataGrid
-                               componentsProps={{
-                                   columnMenu:{backgroundColor:"red",background:"yellow"},
-                               }}
-
-                               components={{
-                                   Toolbar:GridToolbar,
-                               }}
                                rows={paiements}
                                columns={columns}
                                pageSize={5}

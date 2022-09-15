@@ -70,11 +70,13 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
     );
 });
 
-function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,success,montantTotal,paiements,errors,error,classes,apprenants}) {
+function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,success,montantTotal,paiements,errors,error,classes,apprenants,codeNumeros}) {
 
     const [apprenantsList,setApprenantsList]=useState([]);
 
     const [successSt, setSuccessSt]=useState();
+
+    const [codeNumerosSt, setCodeNumerosSt]=useState();
 
     const [montants,setMontants]=useState({})
 
@@ -236,6 +238,8 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
 
 
+
+
     const columns = [
         { field: 'id', headerName: 'ID',flex:1,minWidth: 70 },
         { field: 'prenom', headerName: 'PRENOM' ,flex:1,minWidth: 130 },
@@ -277,6 +281,15 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         setChecked(newChecked);
     };
 
+    useEffect(() => {
+        if(codeNumeros)
+        {
+            let st=""
+            codeNumeros.map((c,i)=>st=st+(i? "|":"")+c.libelle)
+            setCodeNumerosSt(st)
+        }
+    },[])
+
 
     //////TAB 2 CODES
 
@@ -285,7 +298,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
     }
 
     return (
-        <AdminPanel auth={auth} error={error} active={"paiement"}>
+        <AdminPanel auth={auth} error={error} active={"fraisScolaires"} sousActive={"paiementFraisScolaires"}>
 
             <div className="py-12">
                 <div className="mx-auto sm:px-6 lg:px-8">
@@ -556,9 +569,13 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                     }
 
                                                     {
-                                                        tarifs && Object.values(tarifs).find(value=>value===true) &&
+                                                        tarifs && Object.values(tarifs).find(value=>value===true) && codeNumerosSt!=="" &&
                                                         <div className={"ml-5"}>
                                                             <TextField
+                                                                inputProps={{
+
+                                                                    pattern:"(^"+codeNumerosSt+")[0-9]{6}"
+                                                                }}
                                                                 className={"w-6/12"}  name={"numero_retrait"} label={"Entrez votre numero OM"} onChange={(e)=>setData("numero_retrait",e.target.value)}
                                                                 required
                                                             />

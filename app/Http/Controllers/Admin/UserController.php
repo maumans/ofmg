@@ -5,8 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\User;
+use http\Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use Throwable;
 
 class UserController extends Controller
 {
@@ -17,8 +21,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users=User::whereRelation("roles","libelle","!=","personnel")->with("roles","etablissement")->get();
-        $roles=Role::all();
+        $users=User::whereRelation("roles","libelle","!=","personnel")->orderByDesc("created_at")->with("roles","etablissement")->get();
+        $roles=Role::where("libelle","<>","etablissement")->where("libelle","<>","tuteur")->where("libelle","<>","personnel")->get();
 
         return Inertia::render('Admin/User/Index',["users"=>$users,"roles"=>$roles]);
 
@@ -42,22 +46,40 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-
-        $user=User::create($request->validate([
+        $request->validate([
             "nom" =>"required|min:1",
             "prenom" =>"required|min:1",
-            "email" =>"required|min:1|email|unique:users",
-            "telephone" =>"required",
-            "situation_matrimoniale" =>"required",
+            "login" =>"required|min:1|unique:users",
+            "email" =>"min:5|email|unique:users",
+            "telephone" =>"required|unique:users",
+            //"situation_matrimoniale" =>"required",
             "password" =>"required",
-        ]));
+        ]);
 
-        foreach ($request->roles as $role)
+        DB::beginTransaction();
+
+        try {
+            $user=User::create([
+                "nom" =>$request->nom,
+                "prenom" =>$request->prenom,
+                "login" =>$request->login,
+                "email" =>$request->email,
+                "telephone" =>$request->telephone,
+                "situation_matrimoniale" =>$request->situation_matrimoniale,
+                "password" =>Hash::make($request->password),
+            ]);
+
+            $user->roles()->syncWithoutDetaching(Role::find($request->role["id"]));
+
+            DB::commit();
+
+            return redirect()->back()->with("success", "Utilisateur créé avec succès");;
+        }
+        catch (\Exception $e)
         {
-            $user->roles()->syncWithoutDetaching(Role::find($role["id"]));
+            dd($e->getMessage());
         }
 
-        return redirect()->back()->with("success", "Utilisateur créé avec succès");;
     }
 
     /**

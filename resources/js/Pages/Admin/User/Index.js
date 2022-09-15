@@ -46,12 +46,13 @@ function Index(props) {
     const {data,setData,post,reset}=useForm({
         "nom":"",
         "prenom":"",
+        "login":"",
         "email":"",
         "situation_matrimoniale":"",
         "telephone":"",
         "password":"",
         "date_naissance":"",
-        "roles":[],
+        "role":null,
     });
 
     useEffect(() => {
@@ -59,9 +60,9 @@ function Index(props) {
     },[props.users])
 
     const columns = [
-        { field: 'id', headerName: 'ID',flex:1,minWidth:100},
         { field: 'nom', headerName: 'PRENOM',flex:1,minWidth:150},
         { field: 'prenom', headerName: 'NOM',flex:1,minWidth:150 },
+        { field: 'login', headerName: 'LOGIN',flex:1,minWidth:150 },
         { field: 'email', headerName: 'EMAIL',flex:1,minWidth:150},
         { field: 'situation_matrimoniale', headerName: 'SITUATION MATRIMONIALE',flex:1,minWidth:150 },
         { field: 'telephone', headerName: 'TELEPHONE',flex:1,minWidth:150 },
@@ -123,7 +124,7 @@ function Index(props) {
     {
         e.preventDefault();
 
-        post(route("admin.user.store",props.auth.user.id),{data,onSuccess: ()=>reset("libelle")})
+        post(route("admin.user.store",props.auth.user.id),{data,onSuccess: ()=>reset("nom","prenom","login","email","situation_matrimoniale","telephone","password","role")})
 
     }
 
@@ -136,85 +137,76 @@ function Index(props) {
                        Gestion des utilisateurs
                    </div>
                    <div className={"w-full"}>
-                       <button className={"p-1 text-white my-5"} style={{backgroundColor:"#FF7900"}}>
-                           Ajouter un nouvel utilisateur
-                       </button>
                        <div className={"my-10 w-full"}>
-                           <div className={"w-96"}>
-                               <form action="" onSubmit={handleSubmit} className={"space-y-5"}>
-                                   <div className={"space-x-5 flex"}>
-                                       <div>
-                                           <TextField  name={"nom"} label={"nom"} value={data.nom} onChange={(e)=>setData("nom",e.target.value)}/>
-                                           <div className={"flex my-2 text-red-600"}>{props.errors?.nom}</div>
-                                       </div>
-                                       <div>
-                                           <TextField  name={"prenom"} label={"prenom"} value={data.prenom} onChange={(e)=>setData("prenom",e.target.value)}/>
-                                           <div className={"flex my-2 text-red-600"}>{props.errors?.prenom}</div>
-                                       </div>
-                                   </div>
-                                   <div className={"space-x-5 flex items-end"}>
-                                       <div className={"flex-1"}>
-                                           <TextField  name={"email"} label={"email"} value={data.email} onChange={(e)=>setData("email",e.target.value)}/>
-                                           <div className={"flex my-2 text-red-600"}>{props.errors?.email}</div>
-                                       </div>
-                                       <div className={"flex-1"}>
-                                           <FormControl  className={"w-full"}>
-                                               <InputLabel id="demo-simple-select-standard-label">situation matrimoniale</InputLabel>
-                                               <Select
-                                                   labelId="demo-simple-select-label"
-                                                   id="demo-simple-select"
-                                                   value={data.situation_matrimoniale}
-                                                   onChange={(e)=>setData("situation_matrimoniale",e.target.value)}
-                                               >
-                                                   <MenuItem value={"Celibataire"}>Celibataire</MenuItem>
-                                                   <MenuItem value={"Marié"}>Marié(e)</MenuItem>
-                                                   <MenuItem value={"Divorcé"}>Divorcé(e)</MenuItem>
-                                                   <MenuItem value={"Concubin"}>Concubin(e)</MenuItem>
-                                                   <MenuItem value={"Veuf"}>Veuf(ve)</MenuItem>
-                                               </Select>
-                                           </FormControl>
-                                           <div className={"flex my-2 text-red-600"}>{props.errors?.situation_matrimoniale}</div>
-                                       </div>
+                           <form action="" onSubmit={handleSubmit} className={"grid md:grid-cols-3 gap-4"}>
+                               <div className={"w-full"}>
+                                   <TextField className={"w-full"} name={"nom"} label={"Nom"} value={data.nom} onChange={(e)=>setData("nom",e.target.value)}/>
+                                   <div className={"flex my-2 text-red-600"}>{props.errors?.nom}</div>
+                               </div>
+                               <div className={"w-full"}>
+                                   <TextField className={"w-full"} name={"prenom"} label={"Prenom"} value={data.prenom} onChange={(e)=>setData("prenom",e.target.value)}/>
+                                   <div className={"flex my-2 text-red-600"}>{props.errors?.prenom}</div>
+                               </div>
+                               <div className={"w-full"}>
+                                   <TextField className={"w-full"} name={"login"} label={"Login"} value={data.login} onChange={(e)=>setData("login",e.target.value)}/>
+                                   <div className={"flex my-2 text-red-600"}>{props.errors?.login}</div>
+                               </div>
+                               <div className={"w-full"}>
+                                   <TextField className={"w-full"} name={"email"} label={"Email"} value={data.email} onChange={(e)=>setData("email",e.target.value)}/>
+                                   <div className={"flex my-2 text-red-600"}>{props.errors?.email}</div>
+                               </div>
+                               <div className={"w-full"}>
+                                   <FormControl  className={"w-full"}>
+                                       <InputLabel id="demo-simple-select-standard-label">Situation matrimoniale</InputLabel>
+                                       <Select
+                                           labelId="demo-simple-select-label"
+                                           id="demo-simple-select"
+                                           value={data.situation_matrimoniale}
+                                           onChange={(e)=>setData("situation_matrimoniale",e.target.value)}
+                                       >
+                                           <MenuItem value={"Celibataire"}>Celibataire</MenuItem>
+                                           <MenuItem value={"Marié"}>Marié(e)</MenuItem>
+                                           <MenuItem value={"Divorcé"}>Divorcé(e)</MenuItem>
+                                           <MenuItem value={"Concubin"}>Concubin(e)</MenuItem>
+                                           <MenuItem value={"Veuf"}>Veuf(ve)</MenuItem>
+                                       </Select>
+                                   </FormControl>
+                                   <div className={"flex my-2 text-red-600"}>{props.errors?.situation_matrimoniale}</div>
+                               </div>
+                               <div className={"w-full"}>
+                                   <TextField className={"w-full"} name={"telephone"} label={"Téléphone"} value={data.telephone} onChange={(e)=>setData("telephone",e.target.value)}/>
+                                   <div className={"flex my-2 text-red-600"}>{props.errors?.telephone}</div>
+                               </div>
+                               <div className={"w-full"}>
+                                   <TextField className={"w-full"}  name={"password"} label={"Mot de passe"} value={data.password} onChange={(e)=>setData("password",e.target.value)}/>
+                                   <div className={"flex my-2 text-red-600"}>{props.errors?.password}</div>
+                               </div>
 
-                                   </div>
-                                   <div className={"space-x-5 flex items-end"}>
-                                      <div className={"flex-1"}>
-                                          <TextField  name={"telephone"} label={"téléphone"} value={data.telephone} onChange={(e)=>setData("telephone",e.target.value)}/>
-                                          <div className={"flex my-2 text-red-600"}>{props.errors?.telephone}</div>
-                                      </div>
-                                       <div className={"flex-1"}>
-                                           <TextField  name={"password"} label={"mot de passe"} value={data.password} onChange={(e)=>setData("password",e.target.value)}/>
-                                           <div className={"flex my-2 text-red-600"}>{props.errors?.password}</div>
-                                       </div>
-                                   </div>
-                                   <div className={"space-x-5 flex items-end"}>
-                                       <div className={"flex-1"}>
-                                           <Autocomplete
-                                               multiple
-                                               id="tags-standard"
-                                               onChange={(e,val)=>setData("roles",val)}
-                                               disablePortal={true}
-                                               id={"combo-box-demo"}
-                                               options={props.roles}
-                                               getOptionLabel={option=>option.libelle}
-                                               isOptionEqualToValue={(option, value) => option.id === value.id}
-                                               renderInput={(params)=><TextField  fullWidth {...params} placeholder={"roles"} label={params.libelle}/>}
-                                           />
-                                           <div className={"text-red-600"}>{props.errors?.roles}</div>
-                                       </div>
-                                   </div>
-                                   <div className={"space-x-5 my-5"}>
-                                       <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white transition duration-500 border border-green-600"} style={{height: 56}} type={"submit"}>
-                                           Valider
-                                       </button>
-                                       <button className={"p-2 text-white bg-red-600 rounded hover:text-red-600 hover:bg-white transition duration-500 border border-red-500"} style={{height: 56}} type={"reset"}>
-                                           Annuler
-                                       </button>
-                                   </div>
+                               <div className={"w-full"}>
+                                   <Autocomplete
+                                       className={"w-full"}
+                                       id="tags-standard"
+                                       onChange={(e,val)=>setData("role",val)}
+                                       disablePortal={true}
+                                       id={"combo-box-demo"}
+                                       options={props.roles}
+                                       getOptionLabel={option=>option.libelle}
+                                       isOptionEqualToValue={(option, value) => option.id === value.id}
+                                       renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Role"} label={params.libelle}/>}
+                                   />
+                                   <div className={"text-red-600"}>{props.errors?.role}</div>
+                               </div>
+                               <div className={"space-x-5 my-5 md:col-span-3"}>
+                                   <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white transition duration-500 border border-green-600"} style={{height: 56}} type={"submit"}>
+                                       Valider
+                                   </button>
+                                   <button className={"p-2 text-white bg-red-600 rounded hover:text-red-600 hover:bg-white transition duration-500 border border-red-500"} style={{height: 56}} type={"reset"}>
+                                       Annuler
+                                   </button>
+                               </div>
 
-                               </form>
+                           </form>
 
-                           </div>
                        </div>
                    </div>
 
