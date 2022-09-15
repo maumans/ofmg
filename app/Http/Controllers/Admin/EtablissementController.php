@@ -28,7 +28,7 @@ class EtablissementController extends Controller
      */
     public function index()
     {
-        $etablissements=Etablissement::where("id",">",0)->with("ville","commune","typeEtablissement","admins")->orderByDesc('created_at')->get();
+        $etablissements=Etablissement::where("id",">",0)->with("ville","commune","typeEtablissement","adminActuel")->orderByDesc('created_at')->get();
         $communes=Commune::all();
         $villes=Ville::where("id",">",0)->with("communes")->get();
         $typeEtablissements=Type_etablissement::all();
@@ -54,24 +54,23 @@ class EtablissementController extends Controller
      */
     public function store(Request $request)
     {
+        //$code=$request->ville["libelle"][0]."".$request->commune["libelle"][0]."".$request->nomEtablissement[0]."".Etablissement::all()->last();
+
+        $request->validate([
+            "nomEtablissement"=>"required",
+            "codeEtablissement"=>"required|string|unique:etablissements",
+            'login' => 'required|string|unique:users',
+            'telephone' => 'required|string|unique:users',
+            'email' => 'string|email|max:255|unique:users',
+            'password' => ['required', Rules\Password::defaults()],
+        ]);
 
         DB::beginTransaction();
         try {
-
-            $code=$request->ville["libelle"][0]."".$request->commune["libelle"][0]."".$request->nomEtablissement[0]."".Etablissement::all()->last();
-
-            $request->validate([
-                "nomEtablissement"=>"required",
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => ['required', Rules\Password::defaults()],
-            ]);
-
-
-
-
             $user=User::create([
                 "nom"=>$request->nom,
                 "prenom"=>$request->prenom,
+                "login"=>$request->login,
                 "email"=>$request->email,
                 'password' => Hash::make($request->password),
                 "telephone"=>$request->telephone,
@@ -79,9 +78,9 @@ class EtablissementController extends Controller
             ]);
 
            $etablissement=Etablissement::create([
-               "code"=>$code,
+               "code"=>$request->codeEtablissement,
                "nom"=>$request->nomEtablissement,
-                "user_id"=>$user->id,
+               "user_id"=>$user->id,
                "telephone"=>$request->telephoneEtab,
             ]);
 

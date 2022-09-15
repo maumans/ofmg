@@ -75,9 +75,10 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
     );
 });
 
-function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalAll,payerAll,resteApayerAll,donneesParFrais}) {
+function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalAll,payerAll,resteApayerAll,donneesParFrais,codeNumeros}) {
 
     const [successSt, setSuccessSt]=useState();
+    const [codeNumerosSt, setCodeNumerosSt]=useState();
 
     const [montants,setMontants]=useState({})
 
@@ -196,6 +197,15 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
     useEffect(() => {
         montantTotal && handleOpenModal()
     },[montantTotal])
+
+    useEffect(() => {
+        if(codeNumeros)
+        {
+            let st=""
+            codeNumeros.map((c,i)=>st=st+(i? "|":"")+c.libelle)
+            setCodeNumerosSt(st)
+        }
+    },[])
 
 
 
@@ -511,9 +521,13 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                         }
 
                                         {
-                                            tarifs && Object.values(tarifs).find(value=>value===true) &&
+                                            tarifs && Object.values(tarifs).find(value=>value===true)  && codeNumerosSt!=="" &&
                                             <div className={"ml-5"}>
                                                 <TextField
+                                                    inputProps={{
+
+                                                        pattern:"(^"+codeNumerosSt+")[0-9]{6}"
+                                                    }}
                                                     className={"w-6/12"}  name={"numero_retrait"} label={"Entrez votre numero OM"} onChange={(e)=>setData("numero_retrait",e.target.value)}
                                                     required
                                                 />

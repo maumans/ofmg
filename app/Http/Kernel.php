@@ -6,7 +6,9 @@ use App\Http\Middleware\AnneeScolaireIsDefined;
 use App\Http\Middleware\FirstConnexion;
 use App\Http\Middleware\PasswordChangeDate;
 use App\Http\Middleware\UserIsAdmin;
+use App\Http\Middleware\UserIsAdminOrOfmg;
 use App\Http\Middleware\UserIsEtablissement;
+use App\Http\Middleware\UserIsOfmg;
 use App\Http\Middleware\UserIsTuteur;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -73,6 +75,8 @@ class Kernel extends HttpKernel
         "userIsAdmin" => UserIsAdmin::class,
         "userIsTuteur"=> UserIsTuteur::class,
         "userIsEtablissement"=>UserIsEtablissement::class,
+        "userIsOfmg"=>UserIsOfmg::class,
+        "userIsAdminOrOfmg"=>UserIsAdminOrOfmg::class,
         "anneeScolaireIsDefined"=>AnneeScolaireIsDefined::class,
         "firstConnexion"=>FirstConnexion::class,
         "passwordChangeDate"=>PasswordChangeDate::class,

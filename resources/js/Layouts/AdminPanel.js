@@ -52,142 +52,179 @@ function ResponsiveDrawer(props) {
             </Link>
 
             <Divider component="li" />
-
-            <ListItemButton sx={props.active==="contrat" ?{backgroundColor:"#ff8831",color:"white"}:null} onClick={()=>handleClick("poste")}>
-                <ListItemText primary="Contrats"/>
-                {(open==="contrat" || props.active==="contrat") ? <ExpandLess /> : <ExpandMore />}
-            </ListItemButton>
-
-            <Collapse in={open==="poste"}>
-                <List component="div" disablePadding>
-                    <Link href={route("etablissement.contrat.index",props.auth.user.id)}>
-                        <ListItemButton sx={props.sousActive==="listeContrat"?{color:"#e1c9bd",pl:4}:{pl:4}}>
-                            <ListItemText primary="Liste" />
+            {
+                (props.auth.etablissement || props.auth.directeur)
+                    &&
+                    <>
+                        <ListItemButton sx={props.active==="contrat" ?{backgroundColor:"#ff8831",color:"white"}:null} onClick={()=>handleClick("poste")}>
+                            <ListItemText primary="Contrats"/>
+                            {(open==="contrat" || props.active==="contrat") ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
-                    </Link>
 
-                    <Divider component="li"/>
+                        <Collapse in={open==="poste"}>
+                            <List component="div" disablePadding>
+                                <Link href={route("etablissement.contrat.index",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="listeContrat"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Liste" />
+                                    </ListItemButton>
+                                </Link>
 
-                    <Link href={route("etablissement.contrat.create",props.auth.user.id)}>
-                        <ListItemButton sx={props.sousActive==="creerContrat"?{color:"#e1c9bd",pl:4}:{pl:4}}>
-                            <ListItemText primary="Créer" />
+                                <Divider component="li"/>
+
+                                <Link href={route("etablissement.contrat.create",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="creerContrat"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Créer" />
+                                    </ListItemButton>
+                                </Link>
+                            </List>
+                        </Collapse>
+
+                        <Divider component="li" />
+                        <Link href={route("etablissement.anneeScolaire.index",props.auth.user.id)}>
+                            <ListItemButton sx={props.active==="anneeScolaire"?{backgroundColor:"#ff8831",color:"white"}:null}>
+                                <ListItemText primary="Annees Scolaires" />
+                            </ListItemButton>
+                        </Link>
+
+                        <Divider component="li" />
+                        <Link href={route("etablissement.classe.index",props.auth.user.id)}>
+                            <ListItemButton sx={props.active==="classe"?{backgroundColor:"#ff8831",color:"white"}:null}>
+                                <ListItemText primary="Classes"/>
+                            </ListItemButton>
+                        </Link>
+
+                        <Divider component="li" />
+                        <Link href={route("etablissement.tarif.index",props.auth.user.id)}>
+                            <ListItemButton sx={props.active==="Service" ?{backgroundColor:"#ff8831",color:"white"}:null}>
+                                <ListItemText primary="Services"/>
+                            </ListItemButton>
+                        </Link>
+
+                        <Divider component="li" />
+                    </>
+            }
+
+            {
+                (props.auth.etablissement || props.auth.comptable)
+                &&
+                    <>
+                        <ListItemButton sx={props.active==="fraisScolaires" ?{backgroundColor:"#ff8831",color:"white"}:null} onClick={()=>handleClick("fraisScolaires")}>
+                            <ListItemText primary="Frais scolaires"/>
+                            {(open==="fraisScolaires" || props.active==="fraisScolaires") ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
-                    </Link>
-                </List>
-            </Collapse>
 
-            <Divider component="li" />
-            <Link href={route("etablissement.anneeScolaire.index",props.auth.user.id)}>
-                <ListItemButton sx={props.active==="anneeScolaire"?{backgroundColor:"#ff8831",color:"white"}:null}>
-                    <ListItemText primary="Annees Scolaires" />
-                </ListItemButton>
-            </Link>
+                        <Collapse in={open==="fraisScolaires"}>
+                            <List component="div" disablePadding>
+                                <Link href={route("etablissement.paiement.create",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="paiementFraisScolaires"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Paiement des frais scolaires" />
+                                    </ListItemButton>
+                                </Link>
 
-            <Divider component="li" />
-            <Link href={route("etablissement.classe.index",props.auth.user.id)}>
-                <ListItemButton sx={props.active==="classe"?{backgroundColor:"#ff8831",color:"white"}:null}>
-                    <ListItemText primary="Classes"/>
-                </ListItemButton>
-            </Link>
+                                <Divider component="li"/>
 
-            <Divider component="li" />
-            <Link href={route("etablissement.tarif.index",props.auth.user.id)}>
-                <ListItemButton sx={props.active==="Service" ?{backgroundColor:"#ff8831",color:"white"}:null}>
-                    <ListItemText primary="Services"/>
-                </ListItemButton>
-            </Link>
-            <Divider component="li" />
-            <Link href={route("etablissement.paiement.create",props.auth.user.id)}>
-                <ListItemButton sx={props.active==="paiement" ?{backgroundColor:"#ff8831",color:"white"}:null}>
-                    <ListItemText primary="Paiements frais scolaires" />
-                </ListItemButton>
-            </Link>
+                                <Link href={route("etablissement.paiement.index",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="listePaiementFraisScolaires"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Liste" />
+                                    </ListItemButton>
+                                </Link>
+                            </List>
+                        </Collapse>
 
-            <Divider component="li" />
+                        <Divider component="li" />
 
-            <ListItemButton sx={props.active==="inscription" ?{backgroundColor:"#ff8831",color:"white"}:null} onClick={()=>handleClick("inscription")}>
-                <ListItemText primary="Inscriptions"/>
-                {(open==="inscription" || props.active==="inscription") ? <ExpandLess /> : <ExpandMore />}
-            </ListItemButton>
-
-            <Collapse in={open==="inscription"}>
-                <List component="div" disablePadding>
-                    <Link href={route("etablissement.inscription.index",props.auth.user.id)}>
-                        <ListItemButton sx={props.sousActive==="listeInscripton"?{color:"#e1c9bd",pl:4}:{pl:4}}>
-                            <ListItemText primary="Liste" />
+                        <ListItemButton sx={props.active==="inscription" ?{backgroundColor:"#ff8831",color:"white"}:null} onClick={()=>handleClick("inscription")}>
+                            <ListItemText primary="Inscriptions"/>
+                            {(open==="inscription" || props.active==="inscription") ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
-                    </Link>
 
-                    <Divider component="li"/>
+                        <Collapse in={open==="inscription"}>
+                            <List component="div" disablePadding>
+                                <Link href={route("etablissement.inscription.index",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="listeInscripton"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Liste" />
+                                    </ListItemButton>
+                                </Link>
 
-                    <Link href={route("etablissement.inscription.create",props.auth.user.id)}>
-                        <ListItemButton sx={props.sousActive==="inscrire"?{color:"#e1c9bd",pl:4}:{pl:4}}>
-                            <ListItemText primary="Inscrire" />
+                                <Divider component="li"/>
+
+                                <Link href={route("etablissement.inscription.create",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="inscrire"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Inscrire" />
+                                    </ListItemButton>
+                                </Link>
+                            </List>
+                        </Collapse>
+
+                        <Divider component="li"/>
+
+                        <ListItemButton sx={props.active==="personnel" ?{backgroundColor:"#ff8831",color:"white"}:null} onClick={()=>handleClick("personnel")}>
+                            <ListItemText primary="Personnel"/>
+                            {(open==="personnel" || props.active==="personnel") ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
-                    </Link>
-                </List>
-            </Collapse>
 
-            <Divider component="li"/>
+                        <Collapse in={open==="personnel"}>
+                            <List component="div" disablePadding>
 
-            <ListItemButton sx={props.active==="personnel" ?{backgroundColor:"#ff8831",color:"white"}:null} onClick={()=>handleClick("personnel")}>
-                <ListItemText primary="Personnel"/>
-                {(open==="personnel" || props.active==="personnel") ? <ExpandLess /> : <ExpandMore />}
-            </ListItemButton>
+                                <Link href={route("etablissement.personnel.index",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="listePersonnel"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Liste" />
+                                    </ListItemButton>
+                                </Link>
+                            </List>
 
-            <Collapse in={open==="personnel"}>
-                <List component="div" disablePadding>
+                            <List component="div" disablePadding>
 
-                    <Link href={route("etablissement.personnel.index",props.auth.user.id)}>
-                        <ListItemButton sx={props.sousActive==="listePersonnel"?{color:"#e1c9bd",pl:4}:{pl:4}}>
-                            <ListItemText primary="Liste" />
+                                <Link href={route("etablissement.personnel.horaire.index",[props.auth.user.id])}>
+                                    <ListItemButton sx={props.sousActive==="gestionHoraire"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Gestion horaire" />
+                                    </ListItemButton>
+                                </Link>
+                            </List>
+                        </Collapse>
+
+
+                        <Divider component="li"/>
+
+                        <ListItemButton sx={props.active==="salaire" ?{backgroundColor:"#ff8831",color:"white"}:null} onClick={()=>handleClick("salaire")}>
+                            <ListItemText primary="Salaires"/>
+                            {(open==="salaire" || props.active==="salaire") ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
-                    </Link>
-                </List>
 
-                <List component="div" disablePadding>
+                        <Collapse in={open==="salaire"}>
+                            <List component="div" disablePadding>
+                                <Link href={route("etablissement.personnel.paiement.salaire",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="paiementSalaire"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Paiement des salaires" />
+                                    </ListItemButton>
+                                </Link>
 
-                    <Link href={route("etablissement.personnel.horaire.index",[props.auth.user.id])}>
-                        <ListItemButton sx={props.sousActive==="gestionHoraire"?{color:"#e1c9bd",pl:4}:{pl:4}}>
-                            <ListItemText primary="Gestion horaire" />
-                        </ListItemButton>
-                    </Link>
-                </List>
-            </Collapse>
+                                <Divider component="li"/>
+
+                                {
+                                    props.auth.niveauValidation !==1
+                                        &&
+                                    <>
+                                        <Link href={route("etablissement.personnel.paiement.validationSalaire",props.auth.user.id)}>
+                                            <ListItemButton sx={props.sousActive==="validationSalaire"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                                <ListItemText primary="Validation des salaires" />
+                                            </ListItemButton>
+                                        </Link>
+                                        <Divider component="li"/>
+                                    </>
+                                }
+
+                                <Link href={route("etablissement.personnel.paiement.historique",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="paiementHistorique"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Historique des paiements" />
+                                    </ListItemButton>
+                                </Link>
+                            </List>
+                        </Collapse>
+                    </>
+            }
 
 
-            <Divider component="li"/>
-
-            <ListItemButton sx={props.active==="salaire" ?{backgroundColor:"#ff8831",color:"white"}:null} onClick={()=>handleClick("salaire")}>
-                <ListItemText primary="Salaires"/>
-                {(open==="salaire" || props.active==="salaire") ? <ExpandLess /> : <ExpandMore />}
-            </ListItemButton>
-
-            <Collapse in={open==="salaire"}>
-                <List component="div" disablePadding>
-                    <Link href={route("etablissement.personnel.paiement.salaire",props.auth.user.id)}>
-                        <ListItemButton sx={props.sousActive==="paiementSalaire"?{color:"#e1c9bd",pl:4}:{pl:4}}>
-                            <ListItemText primary="Paiement des salaires" />
-                        </ListItemButton>
-                    </Link>
-
-                    <Divider component="li"/>
-
-                    <Link href={route("etablissement.personnel.paiement.validationSalaire",props.auth.user.id)}>
-                        <ListItemButton sx={props.sousActive==="validationSalaire"?{color:"#e1c9bd",pl:4}:{pl:4}}>
-                            <ListItemText primary="Validation des salaires" />
-                        </ListItemButton>
-                    </Link>
-
-                    <Divider component="li"/>
-
-                    <Link href={route("etablissement.personnel.paiement.historique",props.auth.user.id)}>
-                        <ListItemButton sx={props.sousActive==="paiementHistorique"?{color:"#e1c9bd",pl:4}:{pl:4}}>
-                            <ListItemText primary="Historique des paiements" />
-                        </ListItemButton>
-                    </Link>
-                </List>
-            </Collapse>
         </List>
     )
 
@@ -299,11 +336,11 @@ function ResponsiveDrawer(props) {
 
     function currentDrawer()
     {
-        if(props.auth.admin)
+        if(props.auth.admin || props.auth.ofmg)
         {
             return drawer
         }
-        else if(props.auth.etablissement)
+        else if(props.auth.etablissement || props.auth.comptable || props.auth.directeur)
         {
             return drawerEtablissementUser
         }

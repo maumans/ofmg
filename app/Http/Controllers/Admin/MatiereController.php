@@ -78,7 +78,12 @@ class MatiereController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        //dd($request->all());
+        $matiere=Matiere::find($request->editId);
+        $matiere->libelle=$request->libelleEdit;
+        $matiere->save();
+
+        return redirect()->back()->with("Matière modifiée avec succès");
     }
 
     /**

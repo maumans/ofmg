@@ -63,17 +63,17 @@ export default function Authenticated({auth, header, children}) {
 
                                     {
 
-                                        auth?.admin &&
+                                        (auth?.admin || auth?.ofmg) &&
                                         <NavLink href={route('admin.user.index', auth.user?.id)}
-                                                 active={route().current().split('.')[0] === "admin"}>
+                                                 active={route().current()?.split('.')[0] === "admin"}>
                                             Administration
                                         </NavLink>
                                     }
                                     {
 
-                                        auth?.etablissement &&
+                                        (auth?.etablissement || auth?.comptable) &&
                                         <NavLink href={route('etablissement.index', auth.user?.id)}
-                                                 active={route().current().split('.')[0] === "etablissement"}>
+                                                 active={route().current()?.split('.')[0] === "etablissement"}>
                                             Gestion de l'établissement
                                         </NavLink>
                                     }
@@ -129,9 +129,6 @@ export default function Authenticated({auth, header, children}) {
                                                     Connexion
                                                 </Link>
 
-                                                <Link href={route('register')} className="ml-4 text-sm">
-                                                    Inscription
-                                                </Link>
                                             </>
                                     }
                                 </div>
@@ -181,9 +178,9 @@ export default function Authenticated({auth, header, children}) {
 
                         {
 
-                            auth?.admin &&
+                            (auth?.admin || auth?.ofmg) &&
                             <ResponsiveNavLink href={route('admin.user.index', auth.user?.id)}
-                                               active={route().current().split('.')[0] === "admin"} as="button">
+                                               active={route().current()?.split('.')[0] === "admin"} as="button">
                                 Administration
                             </ResponsiveNavLink>
                         }
@@ -191,7 +188,7 @@ export default function Authenticated({auth, header, children}) {
 
                             auth?.etablissement &&
                             <ResponsiveNavLink href={route('etablissement.index', auth.user?.id)}
-                                               active={route().current().split('.')[0] === "etablissement"} as="button">
+                                               active={route().current()?.split('.')[0] === "etablissement"} as="button">
                                 Gestion de l'établissement
                             </ResponsiveNavLink>
                         }
@@ -216,9 +213,6 @@ export default function Authenticated({auth, header, children}) {
                                 <>
                                     <ResponsiveNavLink active={route().current() === "login"} method="get" href={route('login')} as="button">
                                         Connexion
-                                    </ResponsiveNavLink>
-                                    <ResponsiveNavLink method="get" active={route().current() === "register"} href={route('register')} as="button">
-                                        Inscription
                                     </ResponsiveNavLink>
                                 </>
                         }

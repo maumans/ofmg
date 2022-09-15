@@ -56,7 +56,7 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');
 
-    Route::get('firstConnexion/reset-password/{email}/{mois?}', [FirstConnexionController::class,"resetPassword"])->name("firstConnexion.reset-password");
+    Route::get('firstConnexion/reset-password/{login}/{mois?}', [FirstConnexionController::class,"resetPassword"])->name("firstConnexion.reset-password");
 
     Route::post('firstConnexion/reset', [FirstConnexionController::class,"reset"])->name("firstConnexion.reset");
 });

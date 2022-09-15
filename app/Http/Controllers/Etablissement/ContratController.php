@@ -76,34 +76,38 @@ class ContratController extends Controller
      */
     public function store(Request $request)
     {
+
+        if (!$request->personnel)
+        {
+            if(strtolower($request->fonction["libelle"])=="directeur" || strtolower($request->fonction["libelle"])=="comptable")
+            {
+                $request->validate([
+                    "nom" =>"required|min:1",
+                    "prenom" =>"required|min:1",
+                    "telephone" =>"required|min:1",
+                    "adresse" =>"required",
+                    "email" =>"min:1|email|unique:users",
+                    "password" =>"required",
+                    "niveauValidation"=>strtolower($request->fonction["libelle"])=="comptable" ?"required":""
+                ]);
+            }
+            else
+            {
+                $request->validate([
+                    "nom" =>"required|min:1",
+                    "prenom" =>"required|min:1",
+                    "telephone" =>"required|min:1",
+                    "adresse" =>"required",
+                ]);
+            }
+        }
+
         DB::beginTransaction();
 
         try{
 
             if (!$request->personnel)
             {
-                if(strtolower($request->fonction["libelle"])=="directeur" || strtolower($request->fonction["libelle"])=="comptable")
-                {
-                    $request->validate([
-                        "nom" =>"required|min:1",
-                        "prenom" =>"required|min:1",
-                        "telephone" =>"required|min:1",
-                        "adresse" =>"required",
-                        "email" =>"required|min:1|email|unique:users",
-                        "password" =>"required",
-                        "niveauValidation"=>strtolower($request->fonction["libelle"])=="comptable" ?"required":""
-                    ]);
-                }
-                else
-                {
-                    $request->validate([
-                        "nom" =>"required|min:1",
-                        "prenom" =>"required|min:1",
-                        "telephone" =>"required|min:1",
-                        "adresse" =>"required",
-                    ]);
-                }
-
                 $user=User::create([
                     "nom" =>$request->nom,
                     "prenom" =>$request->prenom,
@@ -204,6 +208,7 @@ class ContratController extends Controller
 
                         $contratFonctionMois->mois()->associate(Mois::where("position",$date->month)->first())->save();
                         $contratFonctionMois->contratFonction()->associate(Contrat_fonction::where("id",$contratFonction->id)->first())->save();
+                        $contratFonctionMois->personnel()->associate(User::where("id",$user->id)->first())->save();
 
                     }
                 }

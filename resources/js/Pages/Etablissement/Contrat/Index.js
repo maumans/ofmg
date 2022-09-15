@@ -20,8 +20,12 @@ function Index({auth,error,users,success}) {
 
     }
 
+    function handleFin(user) {
+        confirm("Voulez-vous mettre à cette fonction") && alert("Retirer")
+
+    }
+
     const columns = [
-        { field: 'id', headerName: 'ID', minWidth: 70,flex:1 },
         { field: 'Nom_complet', headerName: "NOM COMPLET",headerClassName:"header", flex: 1, minWidth: 300, fontWeight:"bold", renderCell:(cellValues)=>(
                 cellValues.row.prenom+" "+cellValues.row.nom
             ) },
@@ -76,7 +80,7 @@ function Index({auth,error,users,success}) {
             { field: 'action', headerName: 'ACTION',minWidth:200,flex:1,
                 renderCell:(cellValues)=>(
                     <div className={"space-x-2"}>
-                        <button onClick={()=>handleShow(cellValues.row)} className={"p-2 text-white bg-red-400 bg-red-400 rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
+                        <button onClick={()=>handleFin(cellValues.row)} className={"p-2 text-white bg-red-400 bg-red-400 rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
                             Fin de la fonction
                         </button>
                     </div>
@@ -116,7 +120,7 @@ function Index({auth,error,users,success}) {
                                     className={"mt-5"}
                                 >
                                     {
-                                        userContrat.contrats.map(contrat=>(
+                                        userContrat?.contrats?.map(contrat=>(
                                             <div className={"my-5"} key={contrat.id}>
                                                 <div className="my-5 font-bold">
                                                     Contrat N° {contrat.id}

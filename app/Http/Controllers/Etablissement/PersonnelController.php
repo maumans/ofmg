@@ -123,7 +123,6 @@ class PersonnelController extends Controller
 
     public function salaire()
     {
-
         $anneeEnCours=Auth::user()->etablissementAdmin->anneeEnCours;
 
         $intervalle=CarbonPeriod::create($anneeEnCours->dateDebut,"1 month",$anneeEnCours->dateFin);
@@ -147,13 +146,13 @@ class PersonnelController extends Controller
                 $mensuelle=Contrat_fonction::where("user_id",$personnel->id)->where("frequence","MENSUELLE")->whereRelation("anneeScolaire","id",Auth::user()->etablissementAdmin->anneeEnCours->id)->get()->sum("montant");
 
                 $salairesCl->push(["mois"=>$ms, "salaire"=>$horaire+$mensuelle]);
+
             }
 
             $personnel->salairesAp=$salairesCl;
         }
 
-        $salaires=Salaire::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->where("niveauValidation",1)->with("personnel","mois","anneeScolaire")->where("niveauValidation",1)->orderByDesc('id')->get();
-
+        $salaires=Salaire::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->whereRelation("anneeScolaire","id",Auth::user()->etablissementAdmin->anneeEnCours->id)->where("status","<>","ANNULE")->where("niveauValidation",1)->with("personnel","mois","anneeScolaire")->where("niveauValidation",1)->orderByDesc('id')->get();
 
         return Inertia::render('Etablissement/Personnel/Salaire',["personnels"=>$personnels,"mois"=>$mois,"anneeEnCours"=>$anneeEnCours,"salaires"=>$salaires]);
     }
@@ -183,7 +182,12 @@ class PersonnelController extends Controller
             }
             DB::commit();
 
-            return redirect()->route('etablissement.personnel.paiement.historique',["userId"=>Auth::user()->id,"ok"=>true])->with('success',"Salaire payés avec succés");
+            $salaires=Salaire::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->where("niveauValidation",1)->with("personnel","mois","anneeScolaire")->where("niveauValidation",1)->orderByDesc('id')->get();
+
+            //return Inertia::render('Etablissement/Personnel/Validation',["salaires"=>$salaires]);
+
+            return redirect()->back()->with("success","Paiements de salaires mis en attente de validation ");
+
         }
         catch(Exception $e){
 
@@ -201,7 +205,7 @@ class PersonnelController extends Controller
 
     public function validationSalaire()
     {
-        $salaires=Salaire::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->where("niveauValidation",1)->with("personnel","mois","anneeScolaire")->where("niveauValidation",1)->orderByDesc('id')->get();
+        $salaires=Salaire::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->where("niveauValidation",1)->with("personnel","mois","anneeScolaire")->where("status","<>","ANNULE")->orderByDesc('id')->get();
 
         return Inertia::render('Etablissement/Personnel/Validation',["salaires"=>$salaires]);
     }

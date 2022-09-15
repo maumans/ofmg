@@ -74,7 +74,7 @@ function Show({auth,error,personnel,success,mois}) {
         { field: 'nombreHeureActuel', headerName: "NOMBRE D'HEURES ACTUELS", minWidth: 70, flex: 1,renderCell:cellValues =>(
                 data.mois && cellValues.row.contrat_fonction_mois.find(cfm=>cfm.mois.id===data.mois?.id)?.nombreHeures
             )},
-        { field: 'Salaire', headerName: "SALAIRE MENSUEL", minWidth: 70, flex: 1,renderCell:cellValues =>(
+        { field: 'Salaire', headerName: "SALAIRE MENSUEL", minWidth: 100, flex: 1,renderCell:cellValues =>(
                 data.mois && formatNumber(cellValues.row.contrat_fonction_mois.find(cfm=>cfm.mois.id===data.mois?.id)?.salaire)+" FG"
             )},
         { field: 'nouveau', headerName: "NOUVEAU NOMBRE D'HEURE", minWidth: 70, flex: 1,renderCell:cellValues =>(

@@ -29,7 +29,7 @@ class AuthController extends Controller
      *               required={"prenom","nom","email", "password"},
      *               @OA\Property(property="prenom", type="text"),
      *               @OA\Property(property="nom", type="text"),
-     *               @OA\Property(property="email", type="text"),
+     *               @OA\Property(property="login", type="text"),
      *               @OA\Property(property="password", type="password"),
      *
      *            ),
@@ -59,7 +59,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'nom' => 'required',
             'prenom' => 'required',
-            'email' => 'required|email|unique:users',
+            'login' => 'required|unique:users',
             'password' => 'required',
         ]);
 
@@ -130,7 +130,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validator = $request->validate([
-            'email' => 'email|required',
+            'login' => 'required',
             'password' => 'required'
         ]);
 

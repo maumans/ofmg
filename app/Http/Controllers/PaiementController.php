@@ -32,7 +32,7 @@ class PaiementController extends Controller
         return Inertia::render("Paiement/Index");
     }
 
-    public function search($matricule)
+    public function search($code,$matricule)
     {
         $codeNumeros=Code_numero::all();
         $apprenant=Apprenant::where("matricule",$matricule)->first();
@@ -41,7 +41,7 @@ class PaiementController extends Controller
 
         $anneeEnCours=$etablissement ? $etablissement->anneeEnCours:null;
 
-        $apprenant=$apprenant ? Apprenant::where("matricule",$matricule)->with(["tarifs"=>function($query) use ($anneeEnCours){
+        $apprenant=$apprenant ? Apprenant::where("matricule",$matricule)->whereRelation("classe.etablissement","code",$code)->with(["tarifs"=>function($query) use ($anneeEnCours){
             $query->whereRelation('anneeScolaire','id',$anneeEnCours->id)->with(["typePaiement",'apprenantTarif.moisPayes'])->get();
         },"classe"=>function($query) use ($anneeEnCours){
             $query->with(["tarifs"=>function($query) use ($anneeEnCours){

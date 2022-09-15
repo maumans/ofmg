@@ -23,6 +23,6 @@ class Contrat_fonction_mois extends Model
 
     public function personnel()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,"user_id");
     }
 }

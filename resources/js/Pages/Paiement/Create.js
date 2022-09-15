@@ -94,6 +94,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         "montants":[],
         "total":montantTotal?montantTotal:0,
         "numero_retrait":"",
+        "code":"",
         "matricule":""
     });
 
@@ -133,9 +134,11 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
     }
 
-    function handleSearchMat()
+    function handleSearchMat(e)
     {
-        data.matricule && Inertia.get(route("paiement.search",[data.matricule]),{preserveScroll:true})
+        e.preventDefault()
+
+        data.matricule && data.code && Inertia.get(route("paiement.search",[data.code,data.matricule]),{preserveScroll:true})
     }
 
 
@@ -258,12 +261,20 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                         <h1 className="p-6 bg-white border-b border-gray-200 text-xl p-2 text-white bg-orange-400">PAIEMENT</h1>
 
                         <div>
-                            <div className="flex space-x-5 p-5 mt-20 w-full">
-                                <TextField
-                                    className={"w-full"}  name={"matricule"} label={"Entrez le matricule de l'apprenant"} value={data.matricule} onChange={(e)=>setData("matricule",e.target.value)}/>
-                                <button onClick={handleSearchMat} className={"p-2 bg-green-400 text-white hover:bg-green-600 rounded"}>Rechercher</button>
-                                <div className={"flex my-2 text-red-600"}>{errors?.matricule}</div>
-                            </div>
+
+                            <form onSubmit={handleSearchMat} className="md:flex gap-5 p-5 mt-20 w-full">
+                                <div className={"w-full"}>
+                                    <TextField className={"w-full"}  name={"code"} label={"Entrez le code de l'etablissement"} value={data.code} onChange={(e)=>setData("code",e.target.value)} required/>
+                                    <div className={"flex my-2 text-red-600"}>{errors?.code}</div>
+                                </div>
+                                <div className={"w-full"}>
+                                    <TextField className={"w-full"}  name={"matricule"} label={"Entrez le matricule de l'apprenant"} value={data.matricule} onChange={(e)=>setData("matricule",e.target.value)} required/>
+                                    <div className={"flex my-2 text-red-600"}>{errors?.matricule}</div>
+                                </div>
+                                <div>
+                                    <button type="submit" style={{height: 56}} className={"p-2 bg-green-400 text-white hover:bg-green-600 rounded"}>Rechercher</button>
+                                </div>
+                            </form>
 
                             {
                                 (matricule && !apprenant) &&
@@ -298,7 +309,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                 Veuillez cocher les frais à regler
                                             </div>
                                             {
-                                                (apprenant?.tarifs) && apprenant?.tarifs.map((t) =>(
+                                               apprenant?.tarifs.map((t) =>(
 
                                                     <div key={t.id} className={"relative shadow-lg"}>
                                                         {

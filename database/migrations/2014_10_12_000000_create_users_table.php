@@ -17,7 +17,7 @@ class CreateUsersTable extends Migration
             $table->id();
             $table->string('prenom')->nullable();
             $table->string('nom')->nullable();
-            $table->string('login')->nullable();
+            $table->string('login')->unique()->nullable();
             $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
@@ -26,7 +26,7 @@ class CreateUsersTable extends Migration
             $table->enum('titre',["Celibataire", "Mme","Mlle","M"])->nullable();
             $table->enum('situation_matrimoniale',["Celibataire", "Marié","Divorcé","veuf","Concubin"])->nullable();
             $table->date("date_naissance")->nullable();
-            $table->string("telephone")->unique()->nullable();
+            $table->string("telephone")->nullable();
             $table->string("telephone2")->nullable();
             $table->string("telephone3")->nullable();
             $table->enum("status",["Actif",["Inactif"]])->default("Actif");

@@ -63,6 +63,12 @@ const style = {
 
 function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires}) {
 
+    const [successSt,setSuccessSt]=useState(null)
+
+    useEffect(() => {
+        setSuccessSt(success)
+    },[success])
+
     const [personnelsSt,setPersonnelsSt]=useState([])
 
     useEffect(() => {
@@ -82,7 +88,7 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires}) {
         { field: 'adresse', headerName: 'ADRESSE', width: 130 },
         { field: 'telephone', headerName: 'TELEPHONE', width: 130 },
         { field: 'salaire', headerName: 'SALAIRE', width: 130,renderCell:(cellValues)=> (
-            moisSt && formatNumber(cellValues.row.salairesAp?.filter(salaire => salaire.mois.id === moisSt?.id)[0]?.salaire)
+            moisSt && formatNumber(cellValues.row.salairesAp?.filter(salaire => salaire.mois.id === moisSt?.id)[0]?.salaire)+ " FG"
             )},
        { field: 'montant', headerName: 'MONTANT',width:200, hide:moisSt===null,
             renderCell:(cellValues)=> {
@@ -166,7 +172,7 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires}) {
                     rowsPerPageOptions={[10]}
                     autoHeight
                 />
-                <button onClick={handleSubmit} className={"my-4 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500"}>
+                <button  onClick={handleSubmit} className={"my-4 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500"}>
                    Mettre en attente de validation
                 </button>
             </>
@@ -312,6 +318,8 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires}) {
                         />
                     </TabPanel>
                 </Box>
+
+                <SnackBar success={successSt}/>
             </div>
 
         </AdminPanel>
