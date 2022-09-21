@@ -64,10 +64,6 @@ function Index(props) {
                     <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
                         <DeleteIcon/>
                     </button>
-
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-300 rounded hover:text-blue-300 hover:bg-white transition duration-500"}>
-                        <VisibilityIcon/> niveaux
-                    </button>
                 </div>
             )
         },

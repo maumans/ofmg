@@ -42,11 +42,11 @@ function ResponsiveDrawer(props) {
     const drawerEtablissementUser = (
         <List
             className={"bg-orange-500"}
-            sx={{width: '100%',color:"white",bgColor:"#ff7900",paddingTop:8 }}
+            sx={{width: '100%',height:"100%",color:"white",bgColor:"#ff7900",paddingTop:8 }}
             component="nav"
         >
             <Link href={route("etablissement.index",props.auth.user.id)}>
-                <ListItemButton sx={props.active==="vue"?{backgroundColor:"#ff8831",color:"white"}:null}>
+                <ListItemButton sx={props.active==="vue"?{backgroundColor:"#bc5610",color:"white"}:null}>
                     <ListItemText primary="Vue d'ensemble" />
                 </ListItemButton>
             </Link>
@@ -56,12 +56,12 @@ function ResponsiveDrawer(props) {
                 (props.auth.etablissement || props.auth.directeur)
                     &&
                     <>
-                        <ListItemButton sx={props.active==="contrat" ?{backgroundColor:"#ff8831",color:"white"}:null} onClick={()=>handleClick("poste")}>
+                        <ListItemButton sx={props.active==="contrat" ?{backgroundColor:"#bc5610",color:"white"}:null} onClick={()=>handleClick("contrat")}>
                             <ListItemText primary="Contrats"/>
                             {(open==="contrat" || props.active==="contrat") ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
 
-                        <Collapse in={open==="poste"}>
+                        <Collapse in={open==="contrat"}>
                             <List component="div" disablePadding>
                                 <Link href={route("etablissement.contrat.index",props.auth.user.id)}>
                                     <ListItemButton sx={props.sousActive==="listeContrat"?{color:"#e1c9bd",pl:4}:{pl:4}}>
@@ -81,21 +81,21 @@ function ResponsiveDrawer(props) {
 
                         <Divider component="li" />
                         <Link href={route("etablissement.anneeScolaire.index",props.auth.user.id)}>
-                            <ListItemButton sx={props.active==="anneeScolaire"?{backgroundColor:"#ff8831",color:"white"}:null}>
+                            <ListItemButton sx={props.active==="anneeScolaire"?{backgroundColor:"#bc5610",color:"white"}:null}>
                                 <ListItemText primary="Annees Scolaires" />
                             </ListItemButton>
                         </Link>
 
                         <Divider component="li" />
                         <Link href={route("etablissement.classe.index",props.auth.user.id)}>
-                            <ListItemButton sx={props.active==="classe"?{backgroundColor:"#ff8831",color:"white"}:null}>
+                            <ListItemButton sx={props.active==="classe"?{backgroundColor:"#bc5610",color:"white"}:null}>
                                 <ListItemText primary="Classes"/>
                             </ListItemButton>
                         </Link>
 
                         <Divider component="li" />
                         <Link href={route("etablissement.tarif.index",props.auth.user.id)}>
-                            <ListItemButton sx={props.active==="Service" ?{backgroundColor:"#ff8831",color:"white"}:null}>
+                            <ListItemButton sx={props.active==="Service" ?{backgroundColor:"#bc5610",color:"white"}:null}>
                                 <ListItemText primary="Services"/>
                             </ListItemButton>
                         </Link>
@@ -108,7 +108,7 @@ function ResponsiveDrawer(props) {
                 (props.auth.etablissement || props.auth.comptable)
                 &&
                     <>
-                        <ListItemButton sx={props.active==="fraisScolaires" ?{backgroundColor:"#ff8831",color:"white"}:null} onClick={()=>handleClick("fraisScolaires")}>
+                        <ListItemButton sx={props.active==="fraisScolaires" ?{backgroundColor:"#bc5610",color:"white"}:null} onClick={()=>handleClick("fraisScolaires")}>
                             <ListItemText primary="Frais scolaires"/>
                             {(open==="fraisScolaires" || props.active==="fraisScolaires") ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
@@ -133,7 +133,7 @@ function ResponsiveDrawer(props) {
 
                         <Divider component="li" />
 
-                        <ListItemButton sx={props.active==="inscription" ?{backgroundColor:"#ff8831",color:"white"}:null} onClick={()=>handleClick("inscription")}>
+                        <ListItemButton sx={props.active==="inscription" ?{backgroundColor:"#bc5610",color:"white"}:null} onClick={()=>handleClick("inscription")}>
                             <ListItemText primary="Inscriptions"/>
                             {(open==="inscription" || props.active==="inscription") ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
@@ -158,7 +158,7 @@ function ResponsiveDrawer(props) {
 
                         <Divider component="li"/>
 
-                        <ListItemButton sx={props.active==="personnel" ?{backgroundColor:"#ff8831",color:"white"}:null} onClick={()=>handleClick("personnel")}>
+                        <ListItemButton sx={props.active==="personnel" ?{backgroundColor:"#bc5610",color:"white"}:null} onClick={()=>handleClick("personnel")}>
                             <ListItemText primary="Personnel"/>
                             {(open==="personnel" || props.active==="personnel") ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
@@ -186,7 +186,7 @@ function ResponsiveDrawer(props) {
 
                         <Divider component="li"/>
 
-                        <ListItemButton sx={props.active==="salaire" ?{backgroundColor:"#ff8831",color:"white"}:null} onClick={()=>handleClick("salaire")}>
+                        <ListItemButton sx={props.active==="salaire" ?{backgroundColor:"#bc5610",color:"white"}:null} onClick={()=>handleClick("salaire")}>
                             <ListItemText primary="Salaires"/>
                             {(open==="salaire" || props.active==="salaire") ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
@@ -207,7 +207,7 @@ function ResponsiveDrawer(props) {
                                     <>
                                         <Link href={route("etablissement.personnel.paiement.validationSalaire",props.auth.user.id)}>
                                             <ListItemButton sx={props.sousActive==="validationSalaire"?{color:"#e1c9bd",pl:4}:{pl:4}}>
-                                                <ListItemText primary="Validation des salaires" />
+                                                <ListItemText primary="Validation des paiements" />
                                             </ListItemButton>
                                         </Link>
                                         <Divider component="li"/>
@@ -235,54 +235,54 @@ function ResponsiveDrawer(props) {
                 component="nav"
             >
                 <Link href={route("admin.user.index",props.auth.user.id)}>
-                    <ListItemButton sx={props.active==="utilisateur" ?{backgroundColor:"#ff8831",color:"white"}:null}>
+                    <ListItemButton sx={props.active==="utilisateur" ?{backgroundColor:"#bc5610",color:"white"}:null}>
                         <ListItemText primary="Utilisateurs" />
                     </ListItemButton>
                 </Link>
                 <Divider  component="li" />
                 <Link href={route("admin.role.index",props.auth.user.id)}>
-                    <ListItemButton sx={props.active==="role" ?{backgroundColor:"#ff8831",color:"white"}:null}>
+                    <ListItemButton sx={props.active==="role" ?{backgroundColor:"#bc5610",color:"white"}:null}>
                         <ListItemText primary="Roles" />
                     </ListItemButton>
                 </Link>
                 <Divider  component="li"/>
                 <Link href={route("admin.modePaiement.index",props.auth.user.id)}>
-                    <ListItemButton sx={props.active==="modePaiement" ?{backgroundColor:"#ff8831",color:"white"}:null}>
+                    <ListItemButton sx={props.active==="modePaiement" ?{backgroundColor:"#bc5610",color:"white"}:null}>
                         <ListItemText primary="Mode de paiement"/>
                     </ListItemButton>
                 </Link>
                 <Divider  component="li"/>
                 <Link href={route("admin.codeNumero.index",props.auth.user.id)}>
-                    <ListItemButton sx={props.active==="codeNumero" ?{backgroundColor:"#ff8831",color:"white"}:null}>
+                    <ListItemButton sx={props.active==="codeNumero" ?{backgroundColor:"#bc5610",color:"white"}:null}>
                         <ListItemText primary="Code numero"/>
                     </ListItemButton>
                 </Link>
                 <Divider  component="li"/>
                 <Link href={route("admin.fonction.index",props.auth.user.id)}>
-                    <ListItemButton sx={props.active==="fonction" ?{backgroundColor:"#ff8831",color:"white"}:null}>
+                    <ListItemButton sx={props.active==="fonction" ?{backgroundColor:"#bc5610",color:"white"}:null}>
                         <ListItemText primary="Fonctions"/>
                     </ListItemButton>
                 </Link>
                 <Divider  component="li"/>
                 <Link href={route("admin.matiere.index",props.auth.user.id)}>
-                    <ListItemButton sx={props.active==="matiere" ?{backgroundColor:"#ff8831",color:"white"}:null}>
+                    <ListItemButton sx={props.active==="matiere" ?{backgroundColor:"#bc5610",color:"white"}:null}>
                         <ListItemText primary="Matières"/>
                     </ListItemButton>
                 </Link>
                 <Divider  component="li" />
                 <Link href={route("admin.etablissement.index",props.auth.user.id)}>
-                    <ListItemButton sx={props.active==="etablissement" ?{backgroundColor:"#ff8831",color:"white"}:null}>
+                    <ListItemButton sx={props.active==="etablissement" ?{backgroundColor:"#bc5610",color:"white"}:null}>
                         <ListItemText primary="Etablissements" />
                     </ListItemButton>
                 </Link>
                 <Divider  component="li" />
                 <Link href={route("admin.typePaiement.index",props.auth.user.id)}>
-                    <ListItemButton sx={props.active==="typePaiement" ?{backgroundColor:"#ff8831",color:"white"}:null}>
+                    <ListItemButton sx={props.active==="typePaiement" ?{backgroundColor:"#bc5610",color:"white"}:null}>
                         <ListItemText primary="Type de frais" />
                     </ListItemButton>
                 </Link>
                 <Divider component="li" />
-                <ListItemButton sx={props.active==="adresse" ?{backgroundColor:"#ff8831",color:"white"}:null} onClick={()=>handleClick("adresse")}>
+                <ListItemButton sx={props.active==="adresse" ?{backgroundColor:"#bc5610",color:"white"}:null} onClick={()=>handleClick("adresse")}>
                     <ListItemText primary="Adresses" />
                     {open=== "adresse" ? <ExpandLess /> : <ExpandMore />}
                 </ListItemButton>
@@ -309,25 +309,25 @@ function ResponsiveDrawer(props) {
                 </Collapse>
                 <Divider component="li" />
                 <Link href={route("admin.cycle.index",props.auth.user.id)}>
-                    <ListItemButton sx={props.active==="cycle" ?{backgroundColor:"#ff8831",color:"white"}:null}>
+                    <ListItemButton sx={props.active==="cycle" ?{backgroundColor:"#bc5610",color:"white"}:null}>
                         <ListItemText primary="Cycles" />
                     </ListItemButton>
                 </Link>
                 <Divider  component="li" />
                 <Link href={route("admin.niveau.index",props.auth.user.id)}>
-                    <ListItemButton sx={props.active==="niveau" ?{backgroundColor:"#ff8831",color:"white"}:null}>
+                    <ListItemButton sx={props.active==="niveau" ?{backgroundColor:"#bc5610",color:"white"}:null}>
                         <ListItemText primary="Niveaux" />
                     </ListItemButton>
                 </Link>
                 <Divider  component="li" />
                 <Link href={route("admin.departement.index",props.auth.user.id)}>
-                    <ListItemButton sx={props.active==="departement" ?{backgroundColor:"#ff8831",color:"white"}:null}>
+                    <ListItemButton sx={props.active==="departement" ?{backgroundColor:"#bc5610",color:"white"}:null}>
                         <ListItemText primary="Départements" />
                     </ListItemButton>
                 </Link>
                 <Divider  component="li"/>
                 <Link href={route("admin.option.index",props.auth.user.id)}>
-                    <ListItemButton sx={props.active==="option" ?{backgroundColor:"#ff8831",color:"white"}:null}>
+                    <ListItemButton sx={props.active==="option" ?{backgroundColor:"#bc5610",color:"white"}:null}>
                         <ListItemText primary="Options"/>
                     </ListItemButton>
                 </Link>

@@ -28,6 +28,7 @@ function Index(props) {
         "editId":""
     });
 
+
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
         { field: 'libelle', headerName: 'LIBELLE', width: 250 },
@@ -65,7 +66,7 @@ function Index(props) {
                         <DeleteIcon/>
                     </button>
 
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-300 rounded hover:text-blue-300 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white bg-blue-300 rounded hover:text-blue-300 hover:bg-white transition duration-500"}>
                         <VisibilityIcon/> niveaux
                     </button>
                 </div>
@@ -76,6 +77,10 @@ function Index(props) {
 
     function handleDelete(id){
         confirm("Voulez-vous supprimer ce cycle") && Inertia.delete(route("admin.cycle.destroy",[props.auth.user.id,id]),{preserveScroll:true})
+    }
+
+    function handleShow(id){
+        Inertia.get(route("admin.cycle.show",[props.auth.user.id,id]))
     }
 
     function handleEdit(id){

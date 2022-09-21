@@ -32,9 +32,6 @@ function Index(props) {
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
-                        <EditIcon/>
-                    </button>
                     <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
                         <DeleteIcon/>
                     </button>
@@ -85,18 +82,6 @@ function Index(props) {
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.libelle}</div>
                             </div>
 
-                            <div>
-                                <Autocomplete
-                                    onChange={(e,val)=>setData("typeRole",val)}
-                                    disablePortal={true}
-                                    id={"combo-box-demo"}
-                                    options={props.typeRoles}
-                                    getOptionLabel={option=>option.libelle}
-                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Type de role"} label={params.libelle}/>}
-                                />
-                                <div className={"text-red-600"}>{props.errors?.roles}</div>
-                            </div>
                             <div>
                                 <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"} style={{height:56}}>
                                     Valider

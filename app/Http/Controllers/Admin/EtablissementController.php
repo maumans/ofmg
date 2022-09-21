@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Code_numero;
 use App\Models\Commune;
 use App\Models\Etablissement;
 use App\Models\Contrat;
@@ -12,8 +13,6 @@ use App\Models\User;
 use App\Models\Ville;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
@@ -28,12 +27,13 @@ class EtablissementController extends Controller
      */
     public function index()
     {
-        $etablissements=Etablissement::where("id",">",0)->with("ville","commune","typeEtablissement","adminActuel")->orderByDesc('created_at')->get();
-        $communes=Commune::all();
-        $villes=Ville::where("id",">",0)->with("communes")->get();
-        $typeEtablissements=Type_etablissement::all();
+        $codeNumeros=Code_numero::all();
 
-        return Inertia::render('Admin/Etablissement/Index',["etablissements"=>$etablissements,"typeEtablissements"=>$typeEtablissements,"villes"=>$villes,"communes"=>$communes]);
+        $etablissements=Etablissement::where("id",">",0)->with(["ville","commune","typeEtablissement","admins"=>function($query){
+            $query->orderByDesc("created_at")->get();
+        }])->orderByDesc('created_at')->get();
+
+        return Inertia::render('Admin/Etablissement/Index',["etablissements"=>$etablissements,"codeNumeros"=>$codeNumeros]);
     }
 
     /**
@@ -43,7 +43,12 @@ class EtablissementController extends Controller
      */
     public function create()
     {
+        $codeNumeros=Code_numero::all();
+        $communes=Commune::all();
+        $villes=Ville::where("id",">",0)->with("communes")->get();
+        $typeEtablissements=Type_etablissement::all();
 
+        return Inertia::render('Admin/Etablissement/Create',["typeEtablissements"=>$typeEtablissements,"villes"=>$villes,"communes"=>$communes,"codeNumeros"=>$codeNumeros]);
     }
 
     /**
@@ -54,11 +59,10 @@ class EtablissementController extends Controller
      */
     public function store(Request $request)
     {
-        //$code=$request->ville["libelle"][0]."".$request->commune["libelle"][0]."".$request->nomEtablissement[0]."".Etablissement::all()->last();
 
         $request->validate([
             "nomEtablissement"=>"required",
-            "codeEtablissement"=>"required|string|unique:etablissements",
+            "code"=>"required|string|unique:etablissements",
             'login' => 'required|string|unique:users',
             'telephone' => 'required|string|unique:users',
             'email' => 'string|email|max:255|unique:users',
@@ -78,7 +82,7 @@ class EtablissementController extends Controller
             ]);
 
            $etablissement=Etablissement::create([
-               "code"=>$request->codeEtablissement,
+               "code"=>$request->code,
                "nom"=>$request->nomEtablissement,
                "user_id"=>$user->id,
                "telephone"=>$request->telephoneEtab,
@@ -99,10 +103,13 @@ class EtablissementController extends Controller
             $request->ville!=null && $etablissement->ville()->associate(Ville::find($request->ville["id"]))->save();
 
             DB::commit();
-            return redirect()->back()->with("success", "Etablissement créé avec succès");
+
+            $etablissements=Etablissement::where("id",">",0)->with("ville","commune","typeEtablissement","admins")->orderByDesc('created_at')->get();
+
+            return Inertia::render('Admin/Etablissement/Index',["etablissements"=>$etablissements])->with("success", "Etablissement créé avec succès");
 
         }
-        catch(Exception $e){
+        catch(\Exception $e){
 
             echo($e);
             DB::rollback();
@@ -154,6 +161,7 @@ class EtablissementController extends Controller
 
     public function destroy($id,Etablissement $etablissement)
     {
+
         $etablissement->delete();
 
         return redirect()->back();

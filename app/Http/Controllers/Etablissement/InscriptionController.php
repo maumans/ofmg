@@ -204,10 +204,16 @@ class InscriptionController extends Controller
 
         $apprenant=Apprenant::where('matricule', $request->matricule)->first();
 
-        $request->validate([
+        $validator=$request->validate([
             "nom" =>"required",
             "prenom" =>"required",
-            "matricule" =>["required"],
+            "matricule" =>["required",
+                function ($attribute, $value, $fail) {
+                    if (Apprenant::where('matricule', $value)->whereRelation("classe.etablissement","id",Auth::user()->etablissementAdmin->id)->first()) {
+                        $fail('Le '.$attribute.' est unique par etablissement');
+                    }
+                },
+            ],
             "lieuNaissance" =>"required",
             "dateNaissance" =>"required",
             "classe" =>"required",
@@ -232,7 +238,7 @@ class InscriptionController extends Controller
            $apprenant=Apprenant::create([
                "nom" =>$request->nom,
                "prenom" =>$request->prenom,
-               "matricule" =>strtoupper($request->prenom[0])."".strtoupper($request->nom[0])."".uniqid(),
+               "matricule" =>$request->matricule,
                "classe_id" =>$request->classe["id"],
                "date_naissance" =>$request->dateNaissance,
                "lieu_naissance" =>$request->lieuNaissance,

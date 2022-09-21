@@ -20,6 +20,7 @@ import HeroSlider, {
 import BasicSlider from "@/Components/heroSliders/BasicSlider";
 import BlendModeSlider from "@/Components/heroSliders/BlendModeSlider";
 import NavBarSlider from "@/Components/heroSliders/NavBarSlider";
+import SnackBar from "@/Components/SnackBar";
 
 export default function Welcome(props) {
     return (

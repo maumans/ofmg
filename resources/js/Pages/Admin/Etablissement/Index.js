@@ -18,33 +18,16 @@ import SnackBar from "@/Components/SnackBar";
 function Index(props) {
 
     const [etablissements,setEtablissements] = useState();
-    const [communesVilles,setCommunesVilles] = useState();
-
-    const {data,setData,post,reset}=useForm({
-        "nomEtablissement":"",
-        "codeEtablissement":"",
-        "typeEtablissement":"",
-        "ville":"",
-        "commune":"",
-        "nom":"",
-        "prenom":"",
-        "telephone":"",
-        "telephoneEtab":"",
-        "login":"",
-        "email":"",
-        "password":"",
-        "confirmPassword":"",
-    });
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
         { field: 'code', headerName: 'CODE', width: 200 },
         { field: 'nom', headerName: 'NOM', width: 250 },
-        { field: 'login', headerName: 'LOGIN', width: 250},
+        { field: 'login', headerName: 'LOGIN', width: 250,renderCell:(r)=>r.row?.admins[0]?.login},
         { field: 'type', headerName: 'TYPE', width: 250,renderCell:(r)=>r.row.type_etablissement?.libelle },
         { field: 'ville', headerName: 'VILLE', width: 250,renderCell:(r)=>r.row.ville?.libelle },
         { field: 'commune', headerName: 'COMMUNE', width: 250,renderCell:(r)=>r.row.commune?.libelle },
-        { field: 'email', headerName: 'EMAIL ADMIN', width: 250,renderCell:(r)=>r.row.admins[0]?.email },
+        { field: 'email', headerName: 'EMAIL ADMIN', width: 250,renderCell:(r)=>r.row?.admins[0]?.email },
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
@@ -60,6 +43,12 @@ function Index(props) {
 
     ];
 
+    const [successSt, setSuccessSt]= useState(null);
+
+    useEffect(() => {
+        setSuccessSt(props.success)
+    },[props.success])
+
     function handleDelete(id){
         confirm("Voulez-vous supprimer cet etablissement?") && Inertia.delete(route("admin.etablissement.destroy",[props.auth.user.id,id]),{preserveScroll:true})
     }
@@ -72,36 +61,13 @@ function Index(props) {
         alert("SHOW"+id)
     }
 
-    function handleSubmit(e)
-    {
-        e.preventDefault();
-
-        post(route("admin.etablissement.store",props.auth.user.id),{data,onSuccess: ()=>reset(
-            "nomEtablissement",
-                "codeEtablissement",
-                "typeEtablissement",
-                "telephone",
-                "telephoneEtab",
-                "ville",
-                "commune",
-                "nom",
-                "prenom",
-                "login",
-                "email",
-                "password",
-                "confirmPassword",
-            )})
-
-    }
-
     useEffect(() => {
         setEtablissements(props.etablissements);
     },[props.etablissements])
 
-    useEffect(()=>{
-        setCommunesVilles(data.ville?.communes)
-        setData("commune",null)
-    },[data.ville])
+    function handleCreate() {
+        Inertia.get(route("admin.etablissement.create",props.auth.user.id))
+    }
 
     return (
         <AdminPanel auth={props.auth} error={props.error} active={"etablissement"}>
@@ -111,114 +77,11 @@ function Index(props) {
                     <div className={"my-5 text-2xl"}>
                         Gestion des etablissements
                     </div>
-
-                    <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5"}>
-                        <div>
-                            Infos de l'etablissement
-                        </div>
-                        <div className={"gap-4 grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1"}>
-                            <div className={"w-full"}>
-                                <TextField  className={"w-full"} name={"nomEtablissement"} label={"Nom de l'etablissement"} value={data.nomEtablissement} onChange={(e)=>setData("nomEtablissement",e.target.value)} required/>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.nomEtablissement}</div>
-                            </div>
-
-                            <div className={"w-full"}>
-                                <TextField  className={"w-full"} name={"codeEtablissement"} label={"Code de l'etablissement"} value={data.codeEtablissement} onChange={(e)=>setData("codeEtablissement",e.target.value)} required/>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.nomEtablissement}</div>
-                            </div>
-
-                            <div>
-                                <FormControl  className={"w-full"}>
-                                    <Autocomplete
-                                        onChange={(e,val)=>setData("typeEtablissement",val)}
-                                        disablePortal={true}
-                                        options={props.typeEtablissements}
-                                        getOptionLabel={(option)=>option.libelle}
-                                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        renderInput={(params)=><TextField  fullWidth {...params} placeholder={"type d'etablissements"} label={params.libelle} required/>}
-                                    />
-                                </FormControl>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.ville}</div>
-                            </div>
-                            <div>
-                                <FormControl  className={"w-full"}>
-                                    <Autocomplete
-                                        onChange={(e,val)=>{
-                                            setData("ville",val)
-                                        }}
-                                        disablePortal={true}
-                                        options={props.villes}
-                                        getOptionLabel={(option)=>option.libelle}
-                                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        renderInput={(params)=><TextField  fullWidth {...params} placeholder={"ville"} label={params.libelle}/>}
-                                    />
-                                </FormControl>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.ville}</div>
-                            </div>
-                            <div>
-                                <FormControl  className={"w-full"}>
-                                    <Autocomplete
-                                        onChange={(e,val)=>setData("commune",val)}
-                                        disablePortal={true}
-                                        options={communesVilles?communesVilles:props.communes}
-                                        getOptionLabel={(option)=>option.libelle?option.libelle:""}
-                                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                                        renderInput={(params)=><TextField  fullWidth {...params} placeholder={"commune"} label={params.libelle}/>}
-                                    />
-                                </FormControl>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.region}</div>
-                            </div>
-                            <div>
-                                <TextField className={"w-full"}  name={"telephoneEtab"} label={"Telephone"} value={data.telephoneEtab} onChange={(e)=>setData("telephoneEtab",e.target.value)} required/>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.telephoneEtab}</div>
-                            </div>
-                            <Divider className={"md:col-span-3"} />
-
-                            <div className={"md:col-span-3"}>
-                                Compte de l'administrateur de l'etablissement
-                            </div>
-                            <div>
-                                <TextField className={"w-full"}  name={"nom"} label={"Nom"} value={data.nom} onChange={(e)=>setData("nom",e.target.value)} required/>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.nom}</div>
-                            </div>
-
-                            <div>
-                                <TextField className={"w-full"}  name={"prenom"} label={"Prenom"} value={data.prenom} onChange={(e)=>setData("prenom",e.target.value)} required/>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.prenom}</div>
-                            </div>
-
-                            <div>
-                                <TextField className={"w-full"}  name={"telephone"} label={"Telephone"} value={data.telephone} onChange={(e)=>setData("telephone",e.target.value)} required/>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.telephone}</div>
-                            </div>
-
-                            <div className={"w-full"}>
-                                <TextField className={"w-full"} name={"login"} label={"login"} value={data.login} onChange={(e)=>setData("login",e.target.value)}/>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.login}</div>
-                            </div>
-
-                            <div>
-                                <TextField className={"w-full"}  name={"email"} label={"Email"} value={data.email} onChange={(e)=>setData("email",e.target.value)} required/>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.email}</div>
-                            </div>
-                            <div>
-                                <TextField className={"w-full"} inputProps={{type: "password"}}  name={"password"} label={"Mot de passe"} value={data.password} onChange={(e)=>setData("password",e.target.value)} required/>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.password}</div>
-                            </div>
-                            <div>
-                                <TextField className={"w-full"}  name={"confirmPassword"} label={"Confirmer le mot de passe"} value={data.confirmPassword} onChange={(e)=>setData("confirmPassword",e.target.value)} required/>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.confirmPassword}</div>
-                            </div>
-
-                            <div>
-                                <button style={{height: 56}} className={"p-2 text-white bg-green-600 rounded"} type={"submit"}>
-                                    Valider
-                                </button>
-                            </div>
-                        </div>
-
-                    </form>
-
+                    <div>
+                        <button onClick={handleCreate} className={"px-2 bg-green-500 text-white hover:bg-green-600 transition duration-500 rounded my-3"} style={{height: 56}}>
+                            Ajouter un etablissement
+                        </button>
+                    </div>
                     <div style={{width: '100%' }} className={"flex justify-center"}>
                         {
                             etablissements &&
@@ -234,7 +97,7 @@ function Index(props) {
                             />
                         }
                     </div>
-                    <SnackBar success={ props.success }/>
+                    <SnackBar success={ successSt }/>
                 </div>
             </div>
         </AdminPanel>

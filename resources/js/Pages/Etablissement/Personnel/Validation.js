@@ -31,13 +31,14 @@ const style = {
     p: 4,
 };
 
-function Validation({auth,error,salaires,success}) {
+function Validation({auth,error,salaires,paiementsOccasionnels,success}) {
 
     const [etape,setEtape]=useState(1)
 
     const [motifAnnulation,setMotifAnnulation]=useState(null)
 
     const [salairesSt,setSalairesSt]=useState([])
+    const [paiementsOccasionnelsSt,setPaiementsOccasionnelsSt]=useState([])
 
     const [errorSt,setErrorSt] = useState(null)
 
@@ -45,6 +46,11 @@ function Validation({auth,error,salaires,success}) {
 
     const {data,setData,post}=useForm({
         "salaireId":null,
+        "motifAnnulation":null,
+    })
+
+    const {data:dataOccasionnel,setData:setDataOccasionnel}=useForm({
+        "paiementeOccasionnelId":null,
         "motifAnnulation":null,
     })
 
@@ -63,9 +69,13 @@ function Validation({auth,error,salaires,success}) {
         setValue(newValue);
     };
 
+    useEffect(() => {
+        value===1 && setEtape(3)
+        value===0 && setEtape(1)
+    },[value])
+
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
-        //{ field: 'matricule', headerName: 'MATRICULE', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.matricule) },
         { field: 'prenom', headerName: 'PRENOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.prenom) },
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
         { field: 'telephone', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.telephone) },
@@ -85,9 +95,28 @@ function Validation({auth,error,salaires,success}) {
         },
     ];
 
+    const columnsOccasionnel = [
+        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'prenom', headerName: 'PRENOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.prenom) },
+        { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
+        { field: 'telephone', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.numero_retrait) },
+        { field: 'montant', headerName: 'MONTANT', width: 130, renderCell:(cellValues)=>(formatNumber(cellValues.row.montant)+" FG")  },
+        { field: 'action', headerName: 'ACTION',width:200,
+            renderCell:(cellValues)=>(
+                <div className={"space-x-2"}>
+                    <button type="button" onClick={(e)=>{
+                        setDataOccasionnel("paiementeOccasionnelId",cellValues.row.id)
+                        handleOpenModal()
+                    }} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
+                        Annuler
+                    </button>
+                </div>
+            )
+        },
+    ];
+
     const columnsModal = [
         { field: 'id', headerName: 'ID', width: 70 },
-        //{ field: 'matricule', headerName: 'MATRICULE', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.matricule) },
         { field: 'prenom', headerName: 'PRENOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.prenom) },
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
         { field: 'telephone', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.telephone) },
@@ -95,21 +124,41 @@ function Validation({auth,error,salaires,success}) {
         { field: 'montant', headerName: 'MONTANT', width: 130, renderCell:(cellValues)=>(formatNumber(cellValues.row.montant)+" FG")  },
     ];
 
+    const columnsModalOccasionnel = [
+        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'prenom', headerName: 'PRENOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.prenom) },
+        { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
+        { field: 'telephone', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.numero_retrait) },
+        { field: 'montant', headerName: 'MONTANT', width: 130, renderCell:(cellValues)=>(formatNumber(cellValues.row.montant)+" FG") },
+    ];
+
     function handleSubmit(e)
     {
         e.preventDefault();
 
-        confirm("Voulez-vous effectuer ces paiements ?") && Inertia.post(route("etablissement.personnel.paiement.validationSalaire.store",[auth.user.id]),salairesSt,{preserveState:false})
+        Inertia.post(route("etablissement.personnel.paiement.validationSalaire.store",[auth.user.id]),salairesSt,{preserveState:false})
+
+    }
+
+    function handleSubmitOccasionnel(e)
+    {
+        e.preventDefault();
+
+        Inertia.post(route("etablissement.personnel.paiement.validationOccasionnel.store",[auth.user.id]),paiementsOccasionnelsSt,{preserveState:false})
 
     }
 
     function handleCancel(e)
     {
         e.preventDefault();
-        confirm("Voulez-vous annuler ce paiement ?") && Inertia.post(route("etablissement.personnel.paiement.validationCancel",[auth.user.id]),data,{preserveState:false})
+        Inertia.post(route("etablissement.personnel.paiement.validationCancel",[auth.user.id]),data,{preserveState:false})
     }
 
-    const [open, setOpen] = React.useState(false);
+    function handleCancelOccasionnel(e)
+    {
+        e.preventDefault();
+        Inertia.post(route("etablissement.personnel.paiement.validationOccasionnelCancel",[auth.user.id]),dataOccasionnel,{preserveState:false})
+    }
 
     return (
         <AdminPanel auth={auth} error={error} active={"salaire"} sousActive={"validationSalaire"}>
@@ -123,13 +172,14 @@ function Validation({auth,error,salaires,success}) {
                               allowScrollButtonsMobile
                               aria-label="scrollable force tabs example"
                         >
-                            <Tab label="Paiements en attente de validation" {...a11yProps(0)} />
+                            <Tab label="Paiements salaires" {...a11yProps(0)} />
+                            <Tab label="Paiements occasionnels" {...a11yProps(1)} />
                         </Tabs>
                     </Box>
                     <TabPanel value={value} index={0}>
                         <div className={"p-5"}>
                             <div className="text-xl my-5 font-bold">
-                                Paiements de salaires en attentes de validation
+                                Validation des paiements de salaires
                             </div>
                             {
                                 etape===1
@@ -228,6 +278,131 @@ function Validation({auth,error,salaires,success}) {
                             >
                                 <Box sx={style}>
                                     <form onSubmit={handleCancel} className="w-full">
+                                        <TextareaAutosize
+                                            onChange={(e)=>setData("motifAnnulation",e.target.value)}
+                                            className="w-full"
+                                            aria-label="minimum height"
+                                            minRows={3}
+                                            placeholder="Expliquez le motif de l'annulation"
+                                            required
+                                        />
+                                        <div className="flex justify-between mt-5 w-full">
+                                            <button type="button" onClick={handleCloseModal} className={"p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500"}>
+                                                Fermer
+                                            </button>
+
+                                            <button className={`bg-green-500 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500`}>
+                                                Valider
+                                            </button>
+
+                                        </div>
+                                    </form>
+                                </Box>
+                            </Modal>
+                        </div>
+                    </TabPanel>
+                    <TabPanel value={value} index={1}>
+                        <div className={"p-5"}>
+                            <div className="text-xl my-5 font-bold">
+                                Validation des paiements occasionnels
+                            </div>
+                            {
+                                etape===3
+                                &&
+                                <div className={"mb-5 text-blue-600"}>
+                                    Veuillez selectionner les paiements à valider *
+                                </div>
+                            }
+
+                            {
+                                etape===3 &&
+                                <motion.div
+                                    initial={{y:-100,opacity:0}}
+                                    animate={{y:0,opacity:1}}
+                                    transition={{
+                                        duration:0.5,
+                                        type:"spring",
+                                    }}
+
+                                    style={{height:450, width: '100%' }}
+                                >
+
+                                    <DataGrid
+                                        components={{
+                                            Toolbar:GridToolbar,
+                                        }}
+                                        rows={paiementsOccasionnels}
+                                        columns={columnsOccasionnel}
+                                        pageSize={10}
+                                        rowsPerPageOptions={[10]}
+                                        checkboxSelection
+                                        autoHeight
+                                        onSelectionModelChange={(newSelectionModel) => {
+                                            setPaiementsOccasionnelsSt(paiementsOccasionnels.filter((paiementOccasionel)=>newSelectionModel.find(r=>r===paiementOccasionel.id)));
+                                        }}
+                                    />
+
+                                    <div>
+                                        <button onClick={()=>{
+                                            paiementsOccasionnelsSt.length!==0 ?
+                                                setEtape(4):
+                                                alert("Veuillez selectionner les paiements à valider")
+                                        }} className={"my-4 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500"}>
+                                            Passer à la validation <ArrowForwardIosIcon/>
+                                        </button>
+                                    </div>
+
+                                </motion.div>
+                            }
+
+
+                            {
+                                etape===4 &&
+                                <motion.div
+                                    initial={{x:-100,opacity:0}}
+                                    animate={{x:0,opacity:1}}
+                                    transition={{
+                                        duration:0.5,
+                                        type:"spring",
+                                    }}
+                                    style={{height:450, width: '100%' }}
+                                >
+                                    {
+                                        paiementsOccasionnelsSt &&
+                                        <DataGrid
+                                            components={{
+                                                Toolbar:GridToolbar,
+                                            }}
+                                            rows={paiementsOccasionnelsSt}
+                                            columns={columnsModalOccasionnel}
+                                            pageSize={10}
+                                            rowsPerPageOptions={[10]}
+                                            autoHeight
+                                        />
+                                    }
+
+                                    <div className="flex justify-between">
+                                        <button onClick={()=>setEtape(3)} className={"my-4 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500"}>
+                                            <ArrowBackIosIcon/>  precedent
+                                        </button>
+
+                                        <button onClick={handleSubmitOccasionnel} className={"my-4 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500"}>
+                                            Valider
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            }
+                            <SnackBar success={success}/>
+
+                            <Modal
+                                keepMounted
+                                open={openModal}
+                                onClose={handleCloseModal}
+                                aria-labelledby="keep-mounted-modal-title"
+                                aria-describedby="keep-mounted-modal-description"
+                            >
+                                <Box sx={style}>
+                                    <form onSubmit={handleSubmitOccasionnel} className="w-full">
                                         <TextareaAutosize
                                             onChange={(e)=>setData("motifAnnulation",e.target.value)}
                                             className="w-full"

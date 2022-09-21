@@ -18,6 +18,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ModalComponent from "@/Components/Modal";
 import formatNumber from "@/Utils/formatNumber";
+import { useConfirmDialog } from 'react-mui-confirm';
 
 const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, ref) {
     const { onChange, ...other } = props;
@@ -61,9 +62,22 @@ const style = {
     p: 10,
 };
 
-function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires}) {
+function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires,codeNumeros}) {
 
     const [successSt,setSuccessSt]=useState(null)
+    const [codeNumerosSt, setCodeNumerosSt]=useState();
+
+    //const confirm = useConfirmDialog();
+
+
+    useEffect(() => {
+        if(codeNumeros)
+        {
+            let st=""
+            codeNumeros.map((c,i)=>st=st+(i? "|":"")+c.libelle)
+            setCodeNumerosSt(st)
+        }
+    },[])
 
     useEffect(() => {
         setSuccessSt(success)
@@ -74,6 +88,15 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires}) {
     useEffect(() => {
         setPersonnelsSt(personnels)
     },[])
+
+    const {data:dataOccasionnel,setData:setDataOccasionnel}=useForm({
+        "nom":"",
+        "prenom":"",
+        "telephone":"",
+        "montant":"",
+        "motif":"",
+
+    });
 
     const {data,setData,post}=useForm({
 
@@ -150,8 +173,17 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires}) {
     {
         e.preventDefault();
 
+        /*
+        confirm({
+            title: 'Voulez-vous transmettre?',
+        }).then(() => console.log("letion cancelled."))
+            .catch(() => console.log("Deletion cancelled."));
+
+         */
+
         moisSt ?
-            confirm("Voulez-vous effectuer ces paiements ?") && Inertia.post(route("etablissement.personnel.paiement.salaire.store",[auth.user.id,moisSt.id]),data,{preserveState:false})
+            confirm('Voulez-vous transmettre?')
+             && Inertia.post(route("etablissement.personnel.paiement.salaire.store",[auth.user.id,moisSt.id]),data,{preserveState:false})
             :
             alert("Veuillez selectionner le mois")
 
@@ -173,7 +205,7 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires}) {
                     autoHeight
                 />
                 <button  onClick={handleSubmit} className={"my-4 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500"}>
-                   Mettre en attente de validation
+                  Transmettre pour validation
                 </button>
             </>
     )
@@ -196,6 +228,11 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires}) {
         setValue(newValue);
     };
 
+    function handleOccasionnelSubmit(e) {
+        e.preventDefault();
+        Inertia.post(route("etablissement.personnel.paiementeOccasionnel",[auth.user.id]),dataOccasionnel,{preserveState:false});
+    }
+
     return (
         <AdminPanel auth={auth} error={error} active={"salaire"} sousActive={"paiementSalaire"}>
             <div className="p-5">
@@ -208,11 +245,12 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires}) {
                               aria-label="scrollable force tabs example"
                         >
                             <Tab label="Paiements manuels" {...a11yProps(0)} />
-                            <Tab label="Paiements annulés" {...a11yProps(1)} />
+                            <Tab label="Paiements occasionnels" {...a11yProps(1)} />
+                            <Tab label="Paiements annulés" {...a11yProps(2)} />
                         </Tabs>
                     </Box>
                     <TabPanel value={value} index={0}>
-                        <div className={"p-5"}>
+                        <div>
                             <div className="text-xl my-5 font-bold">
                                 Paiement des salaires du personnel ({anneeEnCours.dateDebut.split("-")[0]+"/"+anneeEnCours.dateFin.split("-")[0]})
                             </div>
@@ -306,6 +344,70 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires}) {
                         </div>
                     </TabPanel>
                     <TabPanel value={value} index={1}>
+                        <div className="text-xl my-5 font-bold">
+                            Effectuer un paiement occasionnel ({anneeEnCours.dateDebut.split("-")[0]+"/"+anneeEnCours.dateFin.split("-")[0]})
+                        </div>
+                        <form onSubmit={handleOccasionnelSubmit} className={"gap-5 grid md:grid-cols-3 sm:grid-cols-2 mb-5 border p-2"}>
+                            <div>
+                                <TextField className={"w-full"}  name={"prenom"} label={"Prenom"} onChange={(e)=>setDataOccasionnel("prenom",e.target.value)}
+                                           autoComplete="prenom"
+                                           required
+                                />
+                            </div>
+                            <div>
+                                <TextField className={"w-full"}  name={"nom"} label={"Nom"} onChange={(e)=>setDataOccasionnel("nom",e.target.value)}
+                                           autoComplete="nom"
+                                           required
+                                />
+                            </div>
+
+                            <div>
+                                <TextField className={"w-full"}  name={"telephone"} label={"Telephone"} onChange={(e)=>setDataOccasionnel("telephone",e.target.value)}
+                                           inputProps={{
+
+                                               pattern:"(^"+codeNumerosSt+")[0-9]{6}"
+                                           }}
+                                           autoComplete="telephone"
+                                           required
+                                />
+                            </div>
+
+                            <div>
+
+                                <TextField
+                                    className={"w-full"}  name={"montant"} label={"Montant"} onChange={(e)=>setDataOccasionnel("montant",e.target.value)}
+                                    InputProps={{
+                                        inputComponent: NumberFormatCustom,
+                                        inputProps:{
+                                            max:10000000000,
+                                            name:"montant"
+
+                                        },
+                                    }}
+                                    required
+                                />
+                            </div>
+
+                            <div className={"md:col-span-3 sm:col-span-2"}>
+                                <TextareaAutosize className={"w-full"} placeholder={"Quel est le motif du paiement?"} style={{height:200}} onChange={(e)=>setDataOccasionnel("motif",e.target.value)}
+                                                  autoComplete="telephone"
+                                                  required
+                                />
+                            </div>
+
+
+                            <div className={'md:col-span-2'}>
+                                <button className={"p-3 text-white bg-green-600 rounded"} type={"submit"}>
+                                    Enregistrer
+                                </button>
+                            </div>
+                        </form>
+                    </TabPanel>
+
+                    <TabPanel value={value} index={2}>
+                        <div className="text-xl my-5 font-bold">
+                            Paiement de salaires annulés ({anneeEnCours.dateDebut.split("-")[0]+"/"+anneeEnCours.dateFin.split("-")[0]})
+                        </div>
                         <DataGrid
                             components={{
                                 Toolbar:GridToolbar,

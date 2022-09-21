@@ -25,17 +25,16 @@ function SnackBar(props) {
                     setOpen(false);
                 }}
             >
-                <Alert className={"text-2xl"} variant="filled" onClose={()=>{
+                <Alert className={"text-2xl"}  onClose={()=>{
                     props.update && props.update()
                     setOpen(false)
                 }} severity={props.success?"success":"error"} sx={{ width: '100%' }}>
                     <AlertTitle>
-                        {props.success && "Succès"}
-                        {props.error && "Erreur"}
+                        {props.success ? "Succès":"Erreur"}
+
                     </AlertTitle>
-                    <strong className="text-3xl p-5">
-                        {props.success && props.success}
-                        {props.error && props.error}
+                    <strong className="text-2xl p-5">
+                        {props.success ? props.success:props.error}
                     </strong>
                 </Alert>
             </Snackbar>

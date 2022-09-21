@@ -12,7 +12,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
 import 'swiper/css/effect-fade';
 
-const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
+const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'E-school';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -22,4 +22,4 @@ createInertiaApp({
     },
 });
 
-InertiaProgress.init({ color: '#ff7900' });
+InertiaProgress.init({ color: '#ff7900'});

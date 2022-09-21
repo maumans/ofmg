@@ -41,7 +41,7 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
     );
 });
 
-function Historique({auth,error,salaires,success,mois}) {
+function Historique({auth,error,salaires,paiementOccasionnel,success,mois}) {
 
     const {data,setData,post}=useForm({
 
@@ -51,11 +51,19 @@ function Historique({auth,error,salaires,success,mois}) {
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
-        //{ field: 'matricule', headerName: 'MATRICULE', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.matricule) },
         { field: 'prenom', headerName: 'PRENOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.prenom) },
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
         { field: 'telephone', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.telephone) },
         { field: 'mois', headerName: 'MOIS', width: 130, renderCell:(cellValues)=>(cellValues.row.mois?.libelle)  },
+        { field: 'montant', headerName: 'MONTANT', width: 130, renderCell:(cellValues)=>(formatNumber(cellValues.row.montant)+" FG")  },
+    ];
+
+    const columnsOccasionnel = [
+        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'prenom', headerName: 'PRENOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.prenom) },
+        { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
+        { field: 'telephone', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.numero_retrait) },
+        { field: 'motif', headerName: 'MOTIF', width: 300, renderCell:(cellValues)=>(cellValues.row.motif) },
         { field: 'montant', headerName: 'MONTANT', width: 130, renderCell:(cellValues)=>(formatNumber(cellValues.row.montant)+" FG")  },
     ];
 
@@ -71,8 +79,12 @@ function Historique({auth,error,salaires,success,mois}) {
     return (
         <AdminPanel auth={auth} error={error} active={"salaire"} sousActive={"paiementHistorique"}>
             <div className={"p-5"}>
-                <div className="text-xl my-5 font-bold">
-                    Historiques des salaires du personnel
+                <div className="text-2xl my-5 font-bold">
+                    Historiques des paiements
+                </div>
+
+                <div className="text-lg my-5 font-bold">
+                    Salaires du personnel
                 </div>
                 <motion.div
                     initial={{y:-100,opacity:0}}
@@ -96,6 +108,39 @@ function Historique({auth,error,salaires,success,mois}) {
                             }}
                             rows={salaires}
                             columns={columns}
+                            pageSize={5}
+                            rowsPerPageOptions={[5]}
+                            autoHeight
+                        />
+                    }
+                </motion.div>
+
+                <div className="text-lg my-5   font-bold">
+                    Paiements occasionnels
+                </div>
+
+                <motion.div
+                    initial={{y:-100,opacity:0}}
+                    animate={{y:0,opacity:1}}
+                    transition={{
+                        duration:0.5,
+                        type:"spring",
+                    }}
+
+                    style={{height:450, width: '100%' }}
+                >
+                    {
+                        salaires &&
+                        <DataGrid
+                            components={{
+                                Toolbar:GridToolbar,
+                            }}
+
+                            componentsProps={{
+                                columnMenu:{backgroundColor:"red",background:"yellow"},
+                            }}
+                            rows={paiementOccasionnel}
+                            columns={columnsOccasionnel}
                             pageSize={5}
                             rowsPerPageOptions={[5]}
                             autoHeight
