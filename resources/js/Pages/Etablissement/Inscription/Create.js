@@ -8,7 +8,7 @@ import {
     useGridSelector
 } from '@mui/x-data-grid';
 import {
-    Autocomplete, Avatar, Checkbox,
+    Autocomplete, Avatar, Checkbox, CircularProgress,
     FormControl,
     FormControlLabel,
     FormGroup, InputAdornment,
@@ -293,9 +293,11 @@ function Create(props) {
         }));
     }
 
+    const [declancheur,setDeclancheur]=useState(null)
 
     function handleSearchButton()
     {
+        setDeclancheur(true)
         data.search?
         axios.get(route("etablissement.inscription.tuteur.search",[props.auth.user.id,data.search]),{preserveState:true,preserveScroll:true}).then((response)=>{
             setData("tuteurs",response.data)
@@ -305,6 +307,13 @@ function Create(props) {
             :
             setData("tuteursSearch",null)
     }
+
+    useEffect(() => {
+        if(data.tuteurs)
+        {
+            setDeclancheur(false)
+        }
+    },[data.tuteurs])
 
     function deleteTuteurInTuteursAdd(telephone)
     {
@@ -476,6 +485,14 @@ function Create(props) {
                                 </button>
 
                             </div>
+
+                            {
+                                declancheur &&
+                                <Box className={"text-center"}>
+                                    <CircularProgress />
+                                </Box>
+
+                            }
 
                             {
                                 data.tuteurs?.length >0 &&

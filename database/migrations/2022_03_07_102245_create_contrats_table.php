@@ -16,9 +16,9 @@ class CreateContratsTable extends Migration
         Schema::create('contrats', function (Blueprint $table) {
             $table->id();
             $table->boolean("actif")->default(true);
-            $table->foreignId("etablissement_id")->nullable()->constrained("etablissements");
-            $table->foreignId("user_id")->nullable()->constrained("users");
-            $table->foreignId("annee_scolaire_id")->nullable()->constrained("annee_scolaires");
+            $table->foreignId("etablissement_id")->nullable()->constrained("etablissements")->cascadeOnDelete();
+            $table->foreignId("user_id")->nullable()->constrained("users")->cascadeOnDelete();
+            $table->foreignId("annee_scolaire_id")->nullable()->constrained("annee_scolaires")->cascadeOnDelete();
             $table->date("dateDebut")->nullable();
             $table->date("dateFin")->nullable();
             $table->enum("frequence",['HORAIRE',"MENSUELLE","AUCUN"])->nullable();
@@ -28,7 +28,7 @@ class CreateContratsTable extends Migration
         });
 
         Schema::create('users', function (Blueprint $table) {
-            $table->foreignId("contrat_id")->nullable()->constrained("contrats");
+            $table->foreignId("contrat_id")->nullable()->constrained("contrats")->cascadeOnDelete();
         });
     }
 

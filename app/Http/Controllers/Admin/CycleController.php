@@ -57,9 +57,11 @@ class CycleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($userId,$id)
     {
-        //
+        $cycle=Cycle::where("id",$id)->with("niveaux")->first();
+
+        return Inertia::render("Admin/Cycle/Show",["cycle"=>$cycle]);
     }
 
     /**

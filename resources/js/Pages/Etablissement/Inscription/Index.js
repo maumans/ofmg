@@ -34,6 +34,7 @@ import List from "@mui/material/List";
 import capitalize from "@/Utils/Capitalize";
 import {motion} from "framer-motion";
 import {submit} from "dom7";
+import DownloadIcon from '@mui/icons-material/Download';
 
 
 const style = {
@@ -610,8 +611,19 @@ function Index(props) {
                         <div>
                             Importer des inscriptions
                         </div>
-                        <div>
-                            <TextField type="file" name="inscriptions" onChange={(e)=>setData('inscriptions',e.target.files[0])}/>
+                        <div className={"flex "}>
+                            <div>
+                                <TextField type="file" name="inscriptions" onChange={(e)=>setData('inscriptions',e.target.files[0])}/>
+                            </div>
+                            <div className={"ml-5"}>
+                                <a href="/storage/ModeleFichier/inscription.xlsx" download>
+
+                                    <div className="bg-blue-400 flex items-center rounded text-white hover:transition hover:scale-100 duration-500 px-2" style={{height: 56}}>
+
+                                        <DownloadIcon/> Télécharger le modèle
+                                    </div>
+                                </a>
+                            </div>
                         </div>
                         <button type={'submit'} className={"p-2 my-4 text-white bg-green-500 hover:bg-green-600 rounded"}>
                             Importer

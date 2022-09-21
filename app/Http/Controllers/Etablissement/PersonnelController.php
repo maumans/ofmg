@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Etablissement;
 
 use App\Http\Controllers\Controller;
+use App\Models\Code_numero;
 use App\Models\Contrat_fonction;
 use App\Models\Contrat_fonction_mois;
 use App\Models\Fonction;
 use App\Models\Mois;
 use App\Models\Mois_Paye;
 use App\Models\Paiement;
+use App\Models\Paiement_occasionel;
 use App\Models\Personnel;
 use App\Models\Salaire;
 use App\Models\User;
@@ -123,6 +125,8 @@ class PersonnelController extends Controller
 
     public function salaire()
     {
+        $codeNumeros=Code_numero::all();
+
         $anneeEnCours=Auth::user()->etablissementAdmin->anneeEnCours;
 
         $intervalle=CarbonPeriod::create($anneeEnCours->dateDebut,"1 month",$anneeEnCours->dateFin);
@@ -154,7 +158,7 @@ class PersonnelController extends Controller
 
         $salaires=Salaire::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->whereRelation("anneeScolaire","id",Auth::user()->etablissementAdmin->anneeEnCours->id)->where("status","<>","ANNULE")->where("niveauValidation",1)->with("personnel","mois","anneeScolaire")->where("niveauValidation",1)->orderByDesc('id')->get();
 
-        return Inertia::render('Etablissement/Personnel/Salaire',["personnels"=>$personnels,"mois"=>$mois,"anneeEnCours"=>$anneeEnCours,"salaires"=>$salaires]);
+        return Inertia::render('Etablissement/Personnel/Salaire',["personnels"=>$personnels,"mois"=>$mois,"anneeEnCours"=>$anneeEnCours,"salaires"=>$salaires,"codeNumeros"=>$codeNumeros]);
     }
 
     public function salaireStore(Request $request,$user,$mois)
@@ -182,32 +186,22 @@ class PersonnelController extends Controller
             }
             DB::commit();
 
-            $salaires=Salaire::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->where("niveauValidation",1)->with("personnel","mois","anneeScolaire")->where("niveauValidation",1)->orderByDesc('id')->get();
-
-            //return Inertia::render('Etablissement/Personnel/Validation',["salaires"=>$salaires]);
-
             return redirect()->back()->with("success","Paiements de salaires mis en attente de validation ");
 
         }
-        catch(Exception $e){
+        catch(\Exception $e){
 
-            echo($e);
+            dd($e);
             DB::rollback();
         }
     }
 
-    public function historique($user,$ok=null)
-    {
-        $salaires=Salaire::where('status',"VALIDE")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with("personnel","mois")->orderByDesc('id')->get();
-
-        return Inertia::render('Etablissement/Personnel/Historique',["salaires"=>$salaires]);
-    }
-
     public function validationSalaire()
     {
-        $salaires=Salaire::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->where("niveauValidation",1)->with("personnel","mois","anneeScolaire")->where("status","<>","ANNULE")->orderByDesc('id')->get();
+        $salaires=Salaire::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->where("niveauValidation",1)->where("annee_scolaire_id",Auth::user()->etablissementAdmin->anneeEnCours->id)->with("personnel","mois","anneeScolaire")->where("status","<>","ANNULE")->orderByDesc('id')->get();
+        $paiementsOccasionnels=Paiement_occasionel::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->where("annee_scolaire_id",Auth::user()->etablissementAdmin->anneeEnCours->id)->where("niveauValidation",1)->with("anneeScolaire")->where("status","<>","ANNULE")->orderByDesc('id')->get();
 
-        return Inertia::render('Etablissement/Personnel/Validation',["salaires"=>$salaires]);
+        return Inertia::render('Etablissement/Personnel/Validation',["salaires"=>$salaires,"paiementsOccasionnels"=>$paiementsOccasionnels]);
     }
 
     public function validationStore(Request $request,$user)
@@ -225,14 +219,12 @@ class PersonnelController extends Controller
                     "niveauValidation"=>2,
                     "status"=>"VALIDE",
                 ]);
-                //Salaire::where("id",$salaire->id)->first()->cashout();
-
             }
             DB::commit();
 
             return Inertia::render("Etablissement/Personnel/ValidationOk");
         }
-        catch(Exception $e){
+        catch(\Exception $e){
             echo($e);
             DB::rollback();
         }
@@ -251,13 +243,107 @@ class PersonnelController extends Controller
             $salaire->save();
             DB::commit();
 
-            return redirect()->back()->with("success","Paiement annulé avec succès");
+            return redirect()->back()->with("success","Paiements annulé avec succès");
         }
-        catch(Exception $e){
+        catch(\Exception $e){
+            dd($e);
+            DB::rollback();
+        }
+
+    }
+
+    public function salaireOccasionnelStore(Request $request,$userId)
+    {
+        $request->validate([
+            "nom" =>"required|min:1",
+            "prenom" =>"required|min:1",
+            "telephone" =>"required|min:1",
+            "montant" =>"required|min:1",
+            "motif" =>"required|min:1",
+        ]);
+
+        DB::beginTransaction();
+
+        try{
+            Paiement_occasionel::create([
+                "nom"=>$request->nom,
+                "prenom"=>$request->prenom,
+                "motif"=>$request->motif,
+                "numero_depot"=>$request->telephone,
+                "numero_retrait"=>Auth::user()->etablissementAdmin->telephone,
+                "montant"=>$request->montant,
+                "etablissement_id"=>Auth::user()->etablissementAdmin->id,
+                "annee_scolaire_id"=>Auth::user()->etablissementAdmin->anneeEnCours->id,
+            ]);
+            DB::commit();
+
+            return redirect()->back()->with("success","Paiements mis en attentes de validation");
+        }
+        catch(\Exception $e){
+            dd($e);
+            DB::rollback();
+        }
+
+
+
+
+    }
+
+    public function validationOccasionnelStore(Request $request,$user)
+    {
+
+        DB::beginTransaction();
+
+        try{
+            foreach($request->all() as $paiementOccasionnel)
+            {
+                $p=Paiement_occasionel::where("id",$paiementOccasionnel["id"])->first();
+
+
+                $p->update([
+                    "niveauValidation"=>2,
+                    "status"=>"VALIDE",
+                ]);
+            }
+            DB::commit();
+
+            return Inertia::render("Etablissement/Personnel/ValidationOk");
+        }
+        catch(\Exception $e){
             echo($e);
             DB::rollback();
         }
 
+    }
+
+    public function validationOccasionnelCancel(Request $request,$user)
+    {
+        DB::beginTransaction();
+
+        try{
+            $paiementOccasionnel=Paiement_occasionel::find($request->paiementOccasionnelId);
+            $paiementOccasionnel->motifAnnulation=$request->motifAnnulation;
+            $paiementOccasionnel->status="ANNULE";
+            $paiementOccasionnel->niveauValidation=1;
+            $paiementOccasionnel->save();
+            DB::commit();
+
+            return redirect()->back()->with("success","Paiements annulé avec succès");
+        }
+        catch(\Exception $e){
+            dd($e);
+            DB::rollback();
+        }
+
+    }
+
+    public function historique($user,$ok=null)
+    {
+        $salaires=Salaire::where('status',"VALIDE")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with("personnel","mois","anneeScolaire")->orderByDesc('id')->get();
+
+        $paiementOccasionnel=Paiement_occasionel::where('status',"VALIDE")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with("anneeScolaire")->orderByDesc('id')->get();
+
+        return Inertia::render('Etablissement/Personnel/Historique',["salaires"=>$salaires,"paiementOccasionnel"=>$paiementOccasionnel,]);
     }
 
 

@@ -12,16 +12,6 @@ class Etablissement extends Model
     use HasFactory;
     protected $guarded=[];
 
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-    }
-
-    public function setCodeAttribute()
-    {
-        $this->attributes["code"] = Date::now()->format('YmdHis');
-    }
-
     public function commune()
     {
         return $this->belongsTo(Commune::class);
@@ -101,6 +91,11 @@ class Etablissement extends Model
     public function paiements()
     {
         return $this->hasMany(Salaire::class);
+    }
+
+    public function salairesOccasionnels()
+    {
+        return $this->hasMany(Paiement_occasionel::class);
     }
 
     public function contrats()

@@ -43,10 +43,13 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            "libelle"=>"required"
+        ]);
+
         $role=Role::create($request->validate([
             "libelle"=>"required|unique:roles"
         ]));
-        $role->typeRole()->associate(Type_role::find($request->typeRole["id"]))->save();
 
         return redirect()->back()->with("success","Role ajouté avec succès");
     }

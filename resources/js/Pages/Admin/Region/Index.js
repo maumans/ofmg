@@ -65,7 +65,7 @@ function Index(props) {
                         <DeleteIcon/>
                     </button>
 
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-300 rounded hover:text-blue-300 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white bg-blue-300 rounded hover:text-blue-300 hover:bg-white transition duration-500"}>
                         <VisibilityIcon/> villes
                     </button>
                 </div>
@@ -76,6 +76,10 @@ function Index(props) {
 
     function handleDelete(id){
         confirm("Voulez-vous supprimer cette region") && Inertia.delete(route("admin.region.destroy",[props.auth.user.id,id]),{preserveScroll:true})
+    }
+
+    function handleShow(id){
+        Inertia.get(route("admin.region.show",[props.auth.user.id,id]))
     }
 
     function handleEdit(id){
