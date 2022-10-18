@@ -37,8 +37,6 @@ function Index({auth,error,etablissement,nombreInscrit}) {
                     </div>
                 </motion.div>
             </div>
-
-            <SnackBar error={error}/>
         </AdminPanel>
     );
 }

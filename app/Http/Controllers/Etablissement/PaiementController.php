@@ -29,7 +29,6 @@ class PaiementController extends Controller
     {
         $paiements=Paiement::whereRelation("tarif.etablissement","id",Auth::user()->etablissementAdmin->id)->with("apprenant","typePaiement","modePaiement")->orderByDesc('created_at')->get();
 
-
         return Inertia::render('Etablissement/Paiement/Index',["paiements"=>$paiements]);
     }
 
@@ -48,24 +47,13 @@ class PaiementController extends Controller
         $tuteur=null;
         $apprenant=null;
 
-        if(!$matricule)
+        if($request->classeId)
         {
-            if($request->classeId)
-            {
-                $classe=Classe::where("id",$request->classeId)->first();
+            $classe=Classe::where("id",$request->classeId)->first();
 
-                $apprenants=$classe ? $classe->apprenants()->with("classe")->orderByDesc("created_at")->get() : null;
-            }
-            else
-            {
-                $apprenants=Apprenant::whereRelation("classe.etablissement","id",Auth::user()->etablissementAdmin->id)->with("classe")->orderByDesc('created_at')->get();
-            }
-
-
+            $apprenants=$classe ? $classe->apprenants()->with("classe")->orderByDesc("created_at")->get() : null;
         }
-
-
-        if ($tuteurNumber)
+        else if ($tuteurNumber)
         {
             $apprenant=null;
 
@@ -77,9 +65,9 @@ class PaiementController extends Controller
                 }])->get();
             }])->first();
         }
-
-        if($matricule)
+        else if($matricule)
         {
+
             $apprenant=Apprenant::where("matricule",$matricule)->first();
 
             $etablissement=$apprenant ? $apprenant->classe->etablissement:null;
@@ -120,6 +108,8 @@ class PaiementController extends Controller
 
         $classes=Classe::where('etablissement_id',Auth::user()->etablissementAdmin->id)->with("apprenants")->get();
 
+        //dd(Auth::user()->etablissementAdmin->id);
+
         $apprenants=Apprenant::whereRelation("classe.etablissement","id",Auth::user()->etablissementAdmin->id)->with("classe")->orderByDesc('created_at')->get();
 
 
@@ -134,13 +124,10 @@ class PaiementController extends Controller
      */
     public function store(Request $request)
     {
-        //dd($request->all());
         $request->validate([
             "tarifs"=>"required",
             "montants.*"=>"required",
             "total"=>"required",
-            "numero_retrait"=>"required",
-            "tuteurSelectedId"=>"required",
         ],
         [
             "tuteurSelectedId.required"=>"Veuillez selectionner un tuteur",
@@ -161,14 +148,14 @@ class PaiementController extends Controller
                 {
                     $paiement=Paiement::create([
                         "montant"=>$request->montants[$info[0]."_".$info[1]],
-                        "numero_retrait"=>$request->numero_retrait,
                         "type_paiement_id"=>$tarif["type_paiement_id"],
                         "mode_paiement_id"=>Mode_paiement::where("libelle","CASH")->first()->id,
                         "tuteur_id"=>$request->tuteurSelectedId,
+                        "etablissement_id"=>$tarif->etablissement_id
                     ]);
 
 
-                    //Paiement::where("id",$paiement->id)->first()->cashin();
+                    Paiement::where("id",$paiement->id)->first()->cashin();
 
                     $paiement->tarif()->associate($tarif->id)->save();
                     $paiement->apprenant()->associate($apprenant)->save();

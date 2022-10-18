@@ -14,6 +14,7 @@ import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-react";
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import BlockIcon from '@mui/icons-material/Block';
 import SnackBar from "@/Components/SnackBar";
 function CustomPagination() {
     const apiRef = useGridApiContext();
@@ -60,6 +61,7 @@ function Index(props) {
     },[props.users])
 
     const columns = [
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'nom', headerName: 'PRENOM',flex:1,minWidth:150},
         { field: 'prenom', headerName: 'NOM',flex:1,minWidth:150 },
         { field: 'login', headerName: 'LOGIN',flex:1,minWidth:150 },
@@ -90,13 +92,13 @@ function Index(props) {
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues,i)=>(
                 <div key={i} className={"space-x-2"}>
-                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white bg-blue-500 rounded hover:text-blue-500 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white orangeVioletBackground rounded hover:text-blue-500 hover:bg-white transition duration-500"}>
                         <VisibilityIcon/>
                     </button>
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground rounded hover:text-red-700 hover:bg-white transition duration-500"}>
                         <EditIcon/>
                     </button>
-                    <button onClick={()=>handleDelete(cellValues.row.id)} className={`${cellValues.row.status==="Actif"?" bg-red-500 rounded hover:text-red-500 hover:bg-white transition duration-500 p-2":" bg-green-500 rounded hover:text-green-500 hover:bg-white transition duration-500 p-2"} p-2 text-white`}>
+                    <button onClick={()=>handleDelete(cellValues.row.id)} className={`${cellValues.row.status==="Actif"?" bg-red-500 rounded hover:text-red-500 hover:bg-white transition duration-500 p-2":" orangeVertBackground rounded hover:text-green-500 hover:bg-white transition duration-500 p-2"} p-2 text-white`}>
                         {
                             cellValues.row.status==="Actif"?"Bloquer":" Debloquer"
                         }
@@ -128,6 +130,27 @@ function Index(props) {
 
     }
 
+    ////// SnackBar
+
+    const [error, setError] = useState(null)
+    const [success, setSuccess] = useState(null)
+
+
+
+    useEffect(() => {
+        setError(props.error)
+    },[props])
+
+    useEffect(() => {
+        setSuccess(props.success)
+    },[props])
+
+    function update()
+    {
+        error && setError(null)
+        success && setSuccess(null)
+    }
+
     return (
        <AdminPanel auth={props.auth} error={props.error} active={"utilisateur"}>
            <div className={"p-5 w-full"}>
@@ -148,7 +171,7 @@ function Index(props) {
                                    <div className={"flex my-2 text-red-600"}>{props.errors?.prenom}</div>
                                </div>
                                <div className={"w-full"}>
-                                   <TextField className={"w-full"} name={"login"} label={"Login"} value={data.login} onChange={(e)=>setData("login",e.target.value)}/>
+                                   <TextField className={"w-full"} name={"login"} label={"Identifiant"} value={data.login} onChange={(e)=>setData("login",e.target.value)}/>
                                    <div className={"flex my-2 text-red-600"}>{props.errors?.login}</div>
                                </div>
                                <div className={"w-full"}>
@@ -163,6 +186,7 @@ function Index(props) {
                                            id="demo-simple-select"
                                            value={data.situation_matrimoniale}
                                            onChange={(e)=>setData("situation_matrimoniale",e.target.value)}
+                                           label={"Situation matrimoniale"}
                                        >
                                            <MenuItem value={"Celibataire"}>Celibataire</MenuItem>
                                            <MenuItem value={"Marié"}>Marié(e)</MenuItem>
@@ -196,8 +220,8 @@ function Index(props) {
                                    />
                                    <div className={"text-red-600"}>{props.errors?.role}</div>
                                </div>
-                               <div className={"space-x-5 my-5 md:col-span-3"}>
-                                   <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white transition duration-500 border border-green-600"} style={{height: 56}} type={"submit"}>
+                               <div className={"gap-5 flex col-span-3"}>
+                                   <button className={"p-2 text-white orangeVertBackground rounded hover:text-green-600 hover:bg-white transition duration-500 border hover:border-green-600"} style={{height: 56}} type={"submit"}>
                                        Valider
                                    </button>
                                    <button className={"p-2 text-white bg-red-600 rounded hover:text-red-600 hover:bg-white transition duration-500 border border-red-500"} style={{height: 56}} type={"reset"}>

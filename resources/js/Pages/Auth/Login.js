@@ -45,7 +45,7 @@ export default function Login({ status, canResetPassword,auth }) {
 
                 <form onSubmit={submit}>
                     <div>
-                        <Label forInput="login" value="Login" />
+                        <Label forInput="login" value="Identifiant" />
 
                         <Input
                             type="text"

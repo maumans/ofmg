@@ -5,10 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Cycle;
 use App\Models\Departement;
-use App\Models\Etablissement;
 use App\Models\Option;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class OptionController extends Controller
@@ -68,9 +66,14 @@ class OptionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($userId,$id)
     {
-        //
+        $option =Option::where("id",$id)->first();
+
+        dd($option);
+
+
+        return Inertia::render("Admin/Option/Show",["cycle"=>$option]);
     }
 
     /**
@@ -93,7 +96,11 @@ class OptionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $option=Option::find($request->editId);
+        $option->libelle=$request->libelleEdit;
+        $option->save();
+
+        return redirect()->back()->with("success","Option modifiée avec succès");
     }
 
     /**

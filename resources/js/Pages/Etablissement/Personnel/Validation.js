@@ -222,7 +222,7 @@ function Validation({auth,error,salaires,paiementsOccasionnels,success}) {
                                             salairesSt.length!==0 ?
                                                 setEtape(2):
                                                 alert("Veuillez selectionner les paiements à valider")
-                                        }} className={"my-4 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500"}>
+                                        }} className={"my-4 p-2 text-white orangeVertBackground rounded hover:text-green-700 hover:bg-white transition duration-500"}>
                                             Passer à la validation <ArrowForwardIosIcon/>
                                         </button>
                                     </div>
@@ -257,11 +257,11 @@ function Validation({auth,error,salaires,paiementsOccasionnels,success}) {
                                     }
 
                                     <div className="flex justify-between">
-                                        <button onClick={()=>setEtape(1)} className={"my-4 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500"}>
+                                        <button onClick={()=>setEtape(1)} className={"my-4 p-2 text-white orangeVertBackground rounded hover:text-green-700 hover:bg-white transition duration-500"}>
                                             <ArrowBackIosIcon/>  precedent
                                         </button>
 
-                                        <button onClick={handleSubmit} className={"my-4 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500"}>
+                                        <button onClick={handleSubmit} className={"my-4 p-2 text-white orangeVertBackground rounded hover:text-green-700 hover:bg-white transition duration-500"}>
                                             Valider
                                         </button>
                                     </div>
@@ -291,7 +291,7 @@ function Validation({auth,error,salaires,paiementsOccasionnels,success}) {
                                                 Fermer
                                             </button>
 
-                                            <button className={`bg-green-500 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500`}>
+                                            <button className={`orangeVertBackground p-2 text-white orangeVertBackground rounded hover:text-green-700 hover:bg-white transition duration-500`}>
                                                 Valider
                                             </button>
 
@@ -347,7 +347,7 @@ function Validation({auth,error,salaires,paiementsOccasionnels,success}) {
                                             paiementsOccasionnelsSt.length!==0 ?
                                                 setEtape(4):
                                                 alert("Veuillez selectionner les paiements à valider")
-                                        }} className={"my-4 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500"}>
+                                        }} className={"my-4 p-2 text-white orangeVertBackground rounded hover:text-green-700 hover:bg-white transition duration-500"}>
                                             Passer à la validation <ArrowForwardIosIcon/>
                                         </button>
                                     </div>
@@ -382,11 +382,11 @@ function Validation({auth,error,salaires,paiementsOccasionnels,success}) {
                                     }
 
                                     <div className="flex justify-between">
-                                        <button onClick={()=>setEtape(3)} className={"my-4 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500"}>
+                                        <button onClick={()=>setEtape(3)} className={"my-4 p-2 text-white orangeVertBackground rounded hover:text-green-700 hover:bg-white transition duration-500"}>
                                             <ArrowBackIosIcon/>  precedent
                                         </button>
 
-                                        <button onClick={handleSubmitOccasionnel} className={"my-4 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500"}>
+                                        <button onClick={handleSubmitOccasionnel} className={"my-4 p-2 text-white orangeVertBackground rounded hover:text-green-700 hover:bg-white transition duration-500"}>
                                             Valider
                                         </button>
                                     </div>
@@ -416,7 +416,7 @@ function Validation({auth,error,salaires,paiementsOccasionnels,success}) {
                                                 Fermer
                                             </button>
 
-                                            <button className={`bg-green-500 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500`}>
+                                            <button className={`orangeVertBackground p-2 text-white orangeVertBackground rounded hover:text-green-700 hover:bg-white transition duration-500`}>
                                                 Valider
                                             </button>
 

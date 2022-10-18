@@ -85,7 +85,7 @@ class FonctionController extends Controller
         $fonction->libelle=$request->libelleEdit;
         $fonction->save();
 
-        return redirect()->back()->with("Fonction modifiée avec succès");
+        return redirect()->back()->with("success","Fonction modifiée avec succès");
     }
 
     /**

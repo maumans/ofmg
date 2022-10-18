@@ -86,7 +86,11 @@ class NiveauController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $niveau=Niveau::find($request->editId);
+        $niveau->libelle=$request->libelleEdit;
+        $niveau->save();
+
+        return redirect()->back()->with("success","Niveau modifié avec succès");
     }
 
     /**

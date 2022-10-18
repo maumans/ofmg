@@ -94,7 +94,6 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         "tarifs":"",
         "montants":[],
         "total":montantTotal?montantTotal:0,
-        "numero_retrait":"",
         classeSearch:"",
         tuteurSearch:"",
         "tuteurSelectedId":null
@@ -136,11 +135,15 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
     {
         //Inertia.post(route("etablissement.paiement.search",auth?.user?.id),{matricule:matricule || null,classeId:data?.classeSearch?.id || null,tuteurNumber:data?.tuteurSearch || null},{preserveScroll:true})
 
-        axios.post(route("etablissement.paiement.search",auth?.user?.id),{matricule:matricule || null,classeId:data?.classeSearch?.id || null,tuteurNumber:data?.tuteurSearch || null},{preserveScroll:true}).then(response=>{
+        axios.post(route("etablissement.paiement.search",auth?.user?.id),{matricule:matricule,classeId:data?.classeSearch?.id,tuteurNumber:data.tuteurSearch},{preserveScroll:true}).then(response=>{
             setSearchResult(response.data)
-            if (!response.data.apprenant && !response.data.apprenants)
+            if (response.data.apprenant===null && response.data.apprenants?.length===0 && response.data.tuteur===null)
             {
                 setAucunResultat("Aucun resultat")
+            }
+            else
+            {
+                setAucunResultat(null)
             }
         }).catch(err=>{
             console.log(err)
@@ -241,11 +244,10 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
 
     const columns = [
-        { field: 'id', headerName: 'ID',flex:1,minWidth: 70 },
+        { field: 'matricule', headerName: 'MATRICULE',flex:1,minWidth: 130 },
+
         { field: 'prenom', headerName: 'PRENOM' ,flex:1,minWidth: 130 },
         { field: 'nom', headerName: 'NOM' ,flex:1,minWidth: 130 },
-        { field: 'matricule', headerName: 'MATRICULE',flex:1,minWidth: 130 },
-        { field: 'date_naissance', headerName: 'DATE DE NAISSANCE',flex:1,minWidth: 200 },
         { field: 'classe', headerName: 'CLASSE',flex:1,minWidth:250,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
@@ -256,8 +258,8 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         { field: 'action', headerName: 'ACTION',flex:1,minWidth:200,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button type="button" onClick={()=>handleSearchMat(cellValues.row.matricule)} className={"p-2 text-white bg-blue-400 rounded"}>
-                        Proceder au paiement
+                    <button type="button" onClick={()=>handleSearchMat(cellValues.row.matricule)} className={"p-2 text-white orangeBlueBackground rounded"}>
+                        Procéder au paiement
                     </button>
                 </div>
             )
@@ -290,6 +292,10 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         }
     },[])
 
+    useEffect(() => {
+        console.log(data)
+    },[data])
+
 
     //////TAB 2 CODES
 
@@ -303,15 +309,23 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
             <div className="py-12">
                 <div className="mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white shadow-sm sm:rounded-lg">
-                        <h1 className="p-6 bg-white border-b border-gray-200 text-xl p-2 text-white bg-orange-400">PAIEMENT</h1>
+                        <h1 className="p-6 bg-white border-b border-gray-200 text-xl p-2 text-white orangeOrangeBackground">PAIEMENT</h1>
 
                         <div>
                             <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-5 p-2  mt-16 m-5">
                                <div className={"flex"}>
-                                   <TextField className={"w-full"}  name={"matricule"} label={"Entrez le matricule de l'apprenant"} value={data.matricule} onChange={(e)=>setData("matricule",e.target.value)}/>
+                                   <TextField className={"w-full"}  name={"matricule"} value={data.matricule} label={"Entrez le matricule de l'apprenant"} onChange={(e)=>setData(data=>({
+                                       "matricule":e.target.value,
+                                       "tuteurSearch":"",
+                                       "classeSearch":"",
+                                   }))}/>
                                </div>
                                 <div className={"flex"}>
-                                    <TextField className={"w-full"}  name={"tuteurSearch"} label={"Entrez le numero du tuteur"} value={data.tuteurSearch} onChange={(e)=>setData("tuteurSearch",e.target.value)}/>
+                                    <TextField className={"w-full"}  name={"tuteurSearch"} value={data.tuteurSearch} label={"Entrez le numero du tuteur"} onChange={(e)=>setData(data=>({
+                                        "matricule":"",
+                                        "tuteurSearch":e.target.value,
+                                        "classeSearch":"",
+                                    }))}/>
                                 </div>
 
                                 <div className={"flex"}>
@@ -320,9 +334,8 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                     >
                                         <Autocomplete
                                             className={"w-full"}
-                                            onChange={(e,val)=>{
-                                                setData("classeSearch",val)
-                                            }}
+                                            onChange={(e,val)=>setData("classeSearch",val)}
+
                                             disablePortal={true}
                                             options={classes}
                                             getOptionLabel={(option)=>option.libelle}
@@ -335,28 +348,37 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
 
                                 <div className={"md:col-span-3 flex md:justify-end"}>
-                                    <button onClick={()=>handleSearchMat(data.matricule)} className={"p-2 bg-green-400 text-white hover:bg-green-600 rounded"}><SearchIcon/> Rechercher</button>
+                                    <button onClick={()=>handleSearchMat(data.matricule)} className={"p-2 orangeVertBackground text-white hover:orangeVertBackground rounded"}><SearchIcon/> Rechercher</button>
                                 </div>
                             </div>
 
-                            <div className={"p-5"}>
-                                {
-                                    (apprenantsSt.length > 0 && apprenantsList === null) &&
-                                    <DataGrid
-                                        rows={apprenantsSt}
-                                        columns={columns}
-                                        pageSize={7}
-                                        rowsPerPageOptions={[7]}
-                                        autoHeight
-                                    />
-                                }
-                            </div>
+                            {
+                                (apprenantsSt.length > 0 && apprenantsList === null && !aucunResultat) &&
+                                <div className={"p-5"}>
+                                    {
 
-                            <div className={"flex justify-center"}>
-                                {
-                                    aucunResultat && aucunResultat
-                                }
-                            </div>
+                                        <DataGrid
+                                            rows={apprenantsSt}
+                                            columns={columns}
+                                            pageSize={7}
+                                            rowsPerPageOptions={[7]}
+                                            autoHeight
+                                        />
+                                    }
+                                </div>
+                            }
+
+
+                            {
+                                aucunResultat &&
+                                <div className={"flex justify-center pb-20"}>
+                                    {
+                                        aucunResultat
+                                    }
+                                </div>
+                            }
+
+
 
 
                             {
@@ -419,7 +441,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                                                     {
                                                                                         searchResult?.apprenant?.tuteurs?.length >0 &&
                                                                                         <div>
-                                                                                            <span className={"font-bold text-lg"}>Selectionnez l'auteur du paiement *</span>
+                                                                                            <span className={"font-bold text-lg"}>Selectionnez l'auteur du paiement</span>
                                                                                         </div>
                                                                                     }
 
@@ -461,7 +483,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                                                     <div key={t.id} className={"relative shadow-lg"}>
                                                                                         {
                                                                                             t.pivot.resteApayer===0 ?
-                                                                                                <div className={"absolute -right-2 -top-3 rounded p-3 bg-green-400 text-white"}>
+                                                                                                <div className={"absolute -right-2 -top-3 rounded p-3 orangeVertBackground text-white"}>
                                                                                                     Payé
                                                                                                 </div>
                                                                                                 :
@@ -563,29 +585,15 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
                                                     {
                                                         setApprenantsList?.length > 0 &&
-                                                        <div className={"p-2 ml-5 bg-orange-400 my-5 text-white w-max-c text-lg"} style={{width:"fit-content"}}>
-                                                            <span className={"font-bold"}>Montant total:</span> <span>{formatNumber(data.total)} FG</span>
-                                                        </div>
-                                                    }
-
-                                                    {
-                                                        tarifs && Object.values(tarifs).find(value=>value===true) && codeNumerosSt!=="" &&
-                                                        <div className={"ml-5"}>
-                                                            <TextField
-                                                                inputProps={{
-
-                                                                    pattern:"(^"+codeNumerosSt+")[0-9]{6}"
-                                                                }}
-                                                                className={"w-6/12"}  name={"numero_retrait"} label={"Entrez votre numero OM"} onChange={(e)=>setData("numero_retrait",e.target.value)}
-                                                                required
-                                                            />
+                                                        <div className={"p-2 ml-5 orangeOrangeBackground my-5 text-white w-max-c text-lg"} style={{width:"fit-content"}}>
+                                                            <span className={"font-bold"}>Montant total:</span> <span>{data.total ? formatNumber(data.total)+" FG": "0 FG"} </span>
                                                         </div>
                                                     }
 
                                                     {
                                                         tarifs && Object.values(tarifs).find(value=>value===true) &&
                                                         <div className={"flex ml-5 col-span-3"}>
-                                                            <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}}  type={"submit"}>
+                                                            <button className={"p-2 text-white orangeVertBackground rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}}  type={"submit"}>
                                                                 Valider
                                                             </button>
                                                         </div>

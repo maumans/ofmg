@@ -25,14 +25,11 @@ class TarifController extends Controller
 
         $tarifs=$etablissement->tarifs()->with("classe","typePaiement")->orderByDesc('created_at')->get();
 
-
         $typePaiements=Type_paiement::with(["tarifs"=>function($query){
             $query->where('etablissement_id',Auth::user()->etablissementAdmin->id)->get();
         }])->get();
 
-        //dd($typePaiements);
-
-        $classes=$etablissement->classes;
+        $classes=$etablissement->classes()->with("niveau")->orderByDesc('niveau_id')->get();
 
         $anneeScolaire=$etablissement->anneeEnCours;
 
@@ -68,19 +65,6 @@ class TarifController extends Controller
 
             foreach($request->classes as $classe)
             {
-
-                /*
-                    $request->validate([
-                        "classes.*" =>Rule::unique("tarifs")->where(function($query) use ($request,$classe){
-                           return $query->where("type_paiement_id",$request->typePaiement["id"])->where("classe_id",$classe["id"]);
-                        }),
-                    ],
-                    [
-                        "classes.*.unique"=>["tarifs existant"]
-                    ]);
-                 */
-
-
                 $tarif=Tarif::create([
                     "montant"=>$request->montant,
                     "obligatoire"=>$request->obligatoire,

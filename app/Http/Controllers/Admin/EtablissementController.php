@@ -45,7 +45,7 @@ class EtablissementController extends Controller
     {
         $codeNumeros=Code_numero::all();
         $communes=Commune::all();
-        $villes=Ville::where("id",">",0)->with("communes")->get();
+        $villes=Ville::with("communes")->get();
         $typeEtablissements=Type_etablissement::all();
 
         return Inertia::render('Admin/Etablissement/Create',["typeEtablissements"=>$typeEtablissements,"villes"=>$villes,"communes"=>$communes,"codeNumeros"=>$codeNumeros]);
@@ -64,7 +64,8 @@ class EtablissementController extends Controller
             "nomEtablissement"=>"required",
             "code"=>"required|string|unique:etablissements",
             'login' => 'required|string|unique:users',
-            'telephone' => 'required|string|unique:users',
+            'telephone' => 'required|string|unique:etablissements',
+            //'telephone' => 'required|string|unique:users',
             'email' => 'string|email|max:255|unique:users',
             'password' => ['required', Rules\Password::defaults()],
         ]);
@@ -77,7 +78,7 @@ class EtablissementController extends Controller
                 "login"=>$request->login,
                 "email"=>$request->email,
                 'password' => Hash::make($request->password),
-                "telephone"=>$request->telephone,
+                "telephone"=>$request->telephoneAdmin,
 
             ]);
 
@@ -85,7 +86,7 @@ class EtablissementController extends Controller
                "code"=>$request->code,
                "nom"=>$request->nomEtablissement,
                "user_id"=>$user->id,
-               "telephone"=>$request->telephoneEtab,
+               "telephone"=>$request->telephone,
             ]);
 
             $user->roles()->syncWithoutDetaching(Role::where("libelle", "etablissement")->first());
@@ -99,12 +100,12 @@ class EtablissementController extends Controller
             ]);
 
             $request->commune!=null && $etablissement->commune()->associate(Commune::find($request->commune["id"]))->save();
-            $etablissement->typeEtablissement()->associate(Type_etablissement::find($request->typeEtablissement["id"]))->save();
+            $request->typeEtablissement!=null && $etablissement->typeEtablissement()->associate(Type_etablissement::find($request->typeEtablissement["id"]))->save();
             $request->ville!=null && $etablissement->ville()->associate(Ville::find($request->ville["id"]))->save();
 
             DB::commit();
 
-            $etablissements=Etablissement::where("id",">",0)->with("ville","commune","typeEtablissement","admins")->orderByDesc('created_at')->get();
+            $etablissements=Etablissement::with("ville","commune","typeEtablissement","admins")->orderByDesc('created_at')->get();
 
             return Inertia::render('Admin/Etablissement/Index',["etablissements"=>$etablissements])->with("success", "Etablissement créé avec succès");
 
@@ -121,22 +122,37 @@ class EtablissementController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Inertia\Response
      */
-    public function show($id)
+    public function show($user,$id)
     {
-        //
+        $communes=Commune::all();
+        $villes=Ville::with("communes")->get();
+
+        $etablissement=Etablissement::where('id',$id)->with(['ville',"commune",'typeEtablissement',"anneeEnCours","paiements"=>function($query){
+            $query->with('typePaiement',"modePaiement","apprenant.classe")->orderByDesc('created_at')->get();
+        }])->first();
+
+        return Inertia::render('Admin/Etablissement/Show',["etablissement"=>$etablissement]);
+
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Inertia\Response
      */
-    public function edit($id)
+    public function edit($user,$id)
     {
-        //
+        $communes=Commune::all();
+        $typeEtablissements=Type_etablissement::all();
+        $villes=Ville::with("communes")->get();
+        $codeNumeros=Code_numero::all();
+
+        $etablissement=Etablissement::where('id',$id)->with('ville',"commune",'typeEtablissement')->first();
+
+        return Inertia::render('Admin/Etablissement/Edit',["etablissement"=>$etablissement,"communes"=>$communes,"villes"=>$villes,"typeEtablissements"=>$typeEtablissements,"codeNumeros"=>$codeNumeros]);
     }
 
     /**
@@ -144,11 +160,44 @@ class EtablissementController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id,$etablissementId)
     {
-        //
+        /*
+            $request->validate([
+                "nomEtablissement"=>"required",
+                "code"=>"required|string|unique:etablissements",
+                'telephone' => 'required|string|unique:etablissements',
+            ]);
+        */
+
+        DB::beginTransaction();
+        try {
+                $etablissement=Etablissement::find($etablissementId);
+
+                $request->nomEtablissement && $etablissement->nom= $request->nomEtablissement;
+                $request->code && $etablissement->code= $request->code;
+                $request->telephone && $etablissement->telephone= $request->telephone;
+
+                $etablissement->save();
+
+                $request->commune!=null && $etablissement->commune()->associate(Commune::find($request->commune["id"]))->save();
+                $request->typeEtablissement!=null && $etablissement->typeEtablissement()->associate(Type_etablissement::find($request->typeEtablissement["id"]))->save();
+                $request->ville!=null && $etablissement->ville()->associate(Ville::find($request->ville["id"]))->save();
+
+                DB::commit();
+
+                return redirect()->back()->with("success", "Etablissement modifié avec succès");
+
+        }
+        catch(Exception $e){
+            DB::rollback();
+        }
+
+
+
+
     }
 
     /**

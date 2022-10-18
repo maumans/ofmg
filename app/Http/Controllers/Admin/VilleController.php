@@ -86,7 +86,12 @@ class VilleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        //dd($request->all());
+        $ville=Ville::find($request->editId);
+        $ville->libelle=$request->libelleEdit;
+        $ville->save();
+
+        return redirect()->back()->with("success","Ville modifiée avec succès");
     }
 
     /**

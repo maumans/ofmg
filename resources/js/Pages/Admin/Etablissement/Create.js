@@ -28,12 +28,11 @@ function Create(props) {
         "commune":"",
         "nom":"",
         "prenom":"",
+        "telephoneAdmin":"",
         "telephone":"",
-        "telephoneEtab":"",
         "login":"",
         "email":"",
         "password":"",
-        "confirmPassword":"",
     });
 
 
@@ -46,7 +45,7 @@ function Create(props) {
                 "code",
                 "typeEtablissement",
                 "telephone",
-                "telephoneEtab",
+                "telephoneAdmin",
                 "ville",
                 "commune",
                 "nom",
@@ -54,7 +53,6 @@ function Create(props) {
                 "login",
                 "email",
                 "password",
-                "confirmPassword",
             )})
 
     }
@@ -73,6 +71,27 @@ function Create(props) {
         setCommunesVilles(data.ville?.communes)
         setData("commune",null)
     },[data.ville])
+
+    ////// SnackBar
+
+    const [error, setError] = useState(null)
+    const [success, setSuccess] = useState(null)
+
+
+
+    useEffect(() => {
+        setError(props.error)
+    },[props])
+
+    useEffect(() => {
+        setSuccess(props.success)
+    },[props])
+
+    function update()
+    {
+        error && setError(null)
+        success && setSuccess(null)
+    }
 
     return (
         <AdminPanel auth={props.auth} error={props.error} active={"etablissement"}>
@@ -146,8 +165,8 @@ function Create(props) {
                                         pattern:"(^"+codeNumerosSt+")[0-9]{6}"
                                     }}
 
-                                    className={"w-full"}  name={"telephoneEtab"} label={"Telephone"} onChange={(e)=>setData("telephoneEtab",e.target.value)} required/>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.telephoneEtab}</div>
+                                    className={"w-full"}  name={"telephone"} label={"Telephone"} onChange={(e)=>setData("telephone",e.target.value)} required/>
+                                <div className={"flex my-2 text-red-600"}>{props.errors?.telephone}</div>
                             </div>
                             <Divider className={"md:col-span-3"} />
 
@@ -171,8 +190,8 @@ function Create(props) {
                                         pattern:"(^"+codeNumerosSt+")[0-9]{6}"
                                     }}
 
-                                    className={"w-full"}  name={"telephone"} label={"Telephone"} onChange={(e)=>setData("telephone",e.target.value)} required/>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.telephone}</div>
+                                    className={"w-full"}  name={"telephoneAdmin"} label={"Telephone"} onChange={(e)=>setData("telephoneAdmin",e.target.value)} required/>
+                                <div className={"flex my-2 text-red-600"}>{props.errors?.telephoneAdmin}</div>
                             </div>
 
                             <div className={"w-full"}>
@@ -185,24 +204,19 @@ function Create(props) {
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.email}</div>
                             </div>
                             <div>
-                                <TextField className={"w-full"} inputProps={{type: "password"}}  name={"password"} label={"Mot de passe"} onChange={(e)=>setData("password",e.target.value)} required/>
+                                <TextField className={"w-full"}  name={"password"} label={"Mot de passe"} onChange={(e)=>setData("password",e.target.value)} required/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.password}</div>
                             </div>
-                            <div>
-                                <TextField className={"w-full"} inputProps={{type: "password"}}  name={"confirmPassword"} label={"Confirmer le mot de passe"} onChange={(e)=>setData("confirmPassword",e.target.value)} required/>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.confirmPassword}</div>
-                            </div>
 
-                            <div>
-                                <button style={{height: 56}} className={"p-2 text-white bg-green-600 rounded"} type={"submit"}>
+                            <div className={"md:col-span-3 sm:col-span-2"}>
+                                <button style={{height: 56}} className={"p-2 text-white orangeVertBackground rounded"} type={"submit"}>
                                     Valider
                                 </button>
                             </div>
                         </div>
 
                     </form>
-                    <SnackBar success={ props.success} />
-                </div>
+                    <SnackBar error={error} update={update} success={success} />                </div>
             </div>
         </AdminPanel>
     );

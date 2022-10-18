@@ -14,16 +14,17 @@ import {useForm} from "@inertiajs/inertia-react";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SnackBar from "@/Components/SnackBar";
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 function Index(props) {
 
     const [etablissements,setEtablissements] = useState();
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'code', headerName: 'CODE', width: 200 },
         { field: 'nom', headerName: 'NOM', width: 250 },
-        { field: 'login', headerName: 'LOGIN', width: 250,renderCell:(r)=>r.row?.admins[0]?.login},
+        { field: 'login', headerName: 'IDENTIFIANT', width: 250,renderCell:(r)=>r.row?.admins[0]?.login},
         { field: 'type', headerName: 'TYPE', width: 250,renderCell:(r)=>r.row.type_etablissement?.libelle },
         { field: 'ville', headerName: 'VILLE', width: 250,renderCell:(r)=>r.row.ville?.libelle },
         { field: 'commune', headerName: 'COMMUNE', width: 250,renderCell:(r)=>r.row.commune?.libelle },
@@ -31,7 +32,10 @@ function Index(props) {
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white orangeVioletBackground rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
+                        <VisibilityIcon/>
+                    </button>
+                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
                         <EditIcon/>
                     </button>
                     <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
@@ -54,11 +58,11 @@ function Index(props) {
     }
 
     function handleEdit(id){
-        alert("EDIT"+id)
+        Inertia.get(route("admin.etablissement.edit",[props.auth.user.id,id]))
     }
 
     function handleShow(id){
-        alert("SHOW"+id)
+        Inertia.get(route("admin.etablissement.show",[props.auth.user.id,id]))
     }
 
     useEffect(() => {
@@ -78,7 +82,7 @@ function Index(props) {
                         Gestion des etablissements
                     </div>
                     <div>
-                        <button onClick={handleCreate} className={"px-2 bg-green-500 text-white hover:bg-green-600 transition duration-500 rounded my-3"} style={{height: 56}}>
+                        <button onClick={handleCreate} className={"px-2 orangeVertBackground text-white hover:orangeVertBackground transition duration-500 rounded my-3"} style={{height: 56}}>
                             Ajouter un etablissement
                         </button>
                     </div>
@@ -97,7 +101,6 @@ function Index(props) {
                             />
                         }
                     </div>
-                    <SnackBar success={ successSt }/>
                 </div>
             </div>
         </AdminPanel>

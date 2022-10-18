@@ -79,7 +79,7 @@ function Save({tuteur,apprenant,etablissement,nbrMois,total,paiements}) {
             }
 
            <PDFDownloadLink  document={<MyDocument tuteur={tuteur} apprenant={apprenant} etablissement={etablissement } nbrMois={nbrMois} total={total} paiements={paiements}/>} fileName={"reçu.pdf"}>
-               {({blob,url,loading, error})=>(loading?"loading": <button className={"p-2 text-white bg-green-400 rounded mt-5"}>Telecharger</button>)}
+               {({blob,url,loading, error})=>(loading?"loading": <button className={"p-2 text-white orangeVertBackground rounded mt-5"}>Telecharger</button>)}
            </PDFDownloadLink>
        </Fragment>
 )

@@ -40,7 +40,7 @@ function Ok({auth,errors,success,tuteur,total}) {
                         Le paiement a été effectué avec succès cliquez sur le button ci-dessous pour consulter le reçu du paiement
                     </div>
                     <div>
-                        <button onClick={handleOpenModal} className={"p-2 text-white bg-orange-400 hover:bg-orange-600 transition duration-500 rounded"}>
+                        <button onClick={handleOpenModal} className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>
                             Consulter le reçu
                         </button>
                     </div>

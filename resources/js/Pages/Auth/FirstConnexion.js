@@ -49,7 +49,7 @@ export default function firstConnexion({login,auth,mois }) {
 
                 <form onSubmit={submit}>
                     <div>
-                        <Label forInput="login" value="Login" />
+                        <Label forInput="login" value="Identifiant" />
 
                         <Input
                             type="text"
@@ -93,7 +93,7 @@ export default function firstConnexion({login,auth,mois }) {
 
                     <div className="flex items-center justify-end mt-4">
                         <Button className="ml-4" processing={processing}>
-                            Reinitialisé le mot de passe
+                            Réinitialiser le mot de passe
                         </Button>
                     </div>
                 </form>

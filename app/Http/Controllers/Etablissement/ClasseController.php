@@ -24,10 +24,10 @@ class ClasseController extends Controller
     {
         $options=null;
         $departements=null;
-        $classes=Auth::user()->etablissementAdmin->classes()->with("option.departement","niveau")->get();
+        $classes=Auth::user()->etablissementAdmin->classes()->with("option.departement","niveau")->orderByDesc('created_at')->get();
 
         Auth::user()->etablissementAdmin->typeEtablissement->libelle=="Université" && $niveaux=Niveau::whereRelation("cycle","libelle","Université")->with("cycle")->get();
-        Auth::user()->etablissementAdmin->typeEtablissement->libelle=="Ecole" && $niveaux=Niveau::whereRelation("cycle","libelle","Lycée")->with("cycle")->get();
+        Auth::user()->etablissementAdmin->typeEtablissement->libelle=="Ecole" && $niveaux=Niveau::whereRelation("cycle","libelle","<>","Université")->with("cycle")->get();
 
         $departement=null;
         Auth::user()->etablissementAdmin->typeEtablissement->libelle=="Université" && $departements=Departement::with("options")->get();
@@ -87,9 +87,9 @@ class ClasseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id,Classe $classe)
+    public function show($id,$classeId)
     {
-        $classe=$classe->with('apprenants')->first();
+        $classe=Classe::where("id",$classeId)->with('apprenants')->first();
 
 
         return Inertia::render("Etablissement/Classe/Show",["classe"=>$classe]);

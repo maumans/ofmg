@@ -59,10 +59,10 @@ function Index(props) {
         { field: 'action', headerName: 'ACTION',width:400,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white bg-blue-400 bg-blue-400 rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground orangeBlueBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
                         <VisibilityIcon/>
                     </button>
-                    <button onClick={()=>handleOpen(cellValues.row)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleOpen(cellValues.row)} className={"p-2 text-white orangeBlueBackground rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
                        <EditIcon/>
                     </button>
                     <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
@@ -107,11 +107,32 @@ function Index(props) {
         Inertia.post(route("etablissement.niveau.update",[props.auth.user.id,params.id]),{_method: "put",dataEdit})
     }
 
+    ////// SnackBar
+
+    const [error, setError] = useState(null)
+    const [success, setSuccess] = useState(null)
+
+
+
+    useEffect(() => {
+        setError(props.error)
+    },[props])
+
+    useEffect(() => {
+        setSuccess(props.success)
+    },[props])
+
+    function update()
+    {
+        error && setError(null)
+        success && setSuccess(null)
+    }
+
     return (
         <AdminPanel auth={props.auth} error={props.error} active={"niveau"}>
             <div className={"p-5"}>
                 <div>
-                    <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
+                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
                         Gestion des niveaux
                     </div>
 
@@ -129,7 +150,7 @@ function Index(props) {
                                 <div className={"flex text-red-600"}>{props.errors?.description}</div>
                             </div>
                             <div>
-                                <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"}>
+                                <button className={"p-2 text-white orangeVertBackground rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"}>
                                     Enregister
                                 </button>
                             </div>
@@ -159,7 +180,7 @@ function Index(props) {
                                         <div className={"flex text-red-600"}>{props.errors?.description}</div>
                                     </div>
                                     <div>
-                                        <button className={"p-3 text-white bg-green-600 rounded"} type={"submit"}>
+                                        <button className={"p-3 text-white orangeVertBackground rounded"} type={"submit"}>
                                             Enregister
                                         </button>
                                     </div>
@@ -193,8 +214,7 @@ function Index(props) {
                         }
                     </motion.div>
 
-                    <SnackBar success={ props.success }/>
-                </div>
+                    <SnackBar error={error} update={update} success={success} />                </div>
             </div>
         </AdminPanel>
     );

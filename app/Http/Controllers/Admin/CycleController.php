@@ -88,7 +88,7 @@ class CycleController extends Controller
         $cycle->libelle=$request->libelleEdit;
         $cycle->save();
 
-        return redirect()->back()->with("Cycle modifié avec succès");
+        return redirect()->back()->with("success","Cycle modifié avec succès");
     }
 
     /**

@@ -7,7 +7,17 @@ import {
     useGridApiContext,
     useGridSelector
 } from '@mui/x-data-grid';
-import {Autocomplete, FormControl, InputLabel, MenuItem, Pagination, Select, TextField} from "@mui/material";
+import {
+    Autocomplete, Button,
+    Dialog, DialogActions, DialogContent,
+    DialogTitle,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Pagination,
+    Select,
+    TextField
+} from "@mui/material";
 import AdminPanel from "@/Layouts/AdminPanel";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-react";
@@ -17,6 +27,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import SnackBar from "@/Components/SnackBar";
+import DialogContentText from "@mui/material/DialogContentText";
 
 function Index(props) {
 
@@ -29,50 +40,31 @@ function Index(props) {
     });
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'libelle', headerName: 'LIBELLE', width: 250 },
-        { field: 'editer', headerName: 'EDITER',width:250,hide: data.editId==="",
-            renderCell:(cellValues)=>(
-                data.editId===cellValues.row.id &&
-                <div>
-                    <TextField variant={"standard"}  name={"libelleEdit"} label={"libelle"} value={data.libelleEdit} onChange={(e)=>setData("libelleEdit",e.target.value)}/>
-                    <div className={"flex my-2 text-red-600"}>{props.errors?.libelleEdit}</div>
-                </div>
-            )
-        },
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    {
-                        data.editId===cellValues.row.id &&
-                        <>
-                            <button onClick={()=>setData("editId","")} className={"p-2 text-white bg-red-500 rounded hover:text-red-700 hover:bg-white transition duration-500"}>
-                                <CloseIcon/>
-                            </button>
-                            <button onClick={handleSubmitEdit} className={"p-2 text-white bg-green-500 rounded hover:text-green-700 hover:bg-white transition duration-500"}>
-                                <CheckIcon/>
-                            </button>
-                        </>
-                    }
-                    {
-                        data.editId !==cellValues.row.id &&
-                        <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
-                            <EditIcon/>
-                        </button>
-                    }
-
+                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white orangeVioletBackground rounded hover:text-blue-300 hover:bg-white transition duration-500"}>
+                        <VisibilityIcon/> villes
+                    </button>
+                    <button onClick={()=>handleEdit(cellValues.row)} className={"p-2 text-white orangeBlueBackground rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
+                        <EditIcon/>
+                    </button>
                     <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
                         <DeleteIcon/>
-                    </button>
-
-                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white bg-blue-300 rounded hover:text-blue-300 hover:bg-white transition duration-500"}>
-                        <VisibilityIcon/> villes
                     </button>
                 </div>
             )
         },
 
     ];
+
+    const [open, setOpen] = React.useState(false);
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     function handleDelete(id){
         confirm("Voulez-vous supprimer cette region") && Inertia.delete(route("admin.region.destroy",[props.auth.user.id,id]),{preserveScroll:true})
@@ -82,16 +74,18 @@ function Index(props) {
         Inertia.get(route("admin.region.show",[props.auth.user.id,id]))
     }
 
-    function handleEdit(id){
-        setData("editId",id)
+    function handleEdit(row){
+        setOpen(true);
+        setData(data=>({
+            ...data,
+            editId:row.id,
+            libelleEdit:row.libelle
+        }))
     }
-
-    useEffect(() => {
-        setData("libelleEdit","")
-    },[data.editId])
 
     function handleSubmitEdit(){
         Inertia.put(route("admin.region.update",[props.auth.user.id,data.editId]),data,{preserveScroll:true});
+        setOpen(false)
     }
 
     function handleSubmit(e)
@@ -105,6 +99,27 @@ function Index(props) {
     useEffect(() => {
         setRegions(props.regions);
     },[props.regions])
+
+    ////// SnackBar
+
+    const [error, setError] = useState(null)
+    const [success, setSuccess] = useState(null)
+
+
+
+    useEffect(() => {
+        setError(props.error)
+    },[props])
+
+    useEffect(() => {
+        setSuccess(props.success)
+    },[props])
+
+    function update()
+    {
+        error && setError(null)
+        success && setSuccess(null)
+    }
 
 
     return (
@@ -123,7 +138,7 @@ function Index(props) {
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.libelle}</div>
                             </div>
                             <div>
-                                <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"} style={{height: 56}}>
+                                <button className={"p-2 text-white orangeVertBackground rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"} style={{height: 56}}>
                                     Valider
                                 </button>
                             </div>
@@ -146,8 +161,32 @@ function Index(props) {
                             />
                         }
                     </div>
-                    <SnackBar success={ props.success }/>
-                </div>
+                    <Dialog open={open} onClose={handleClose}>
+                        <DialogTitle>Modification</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                Modification du libelle de la region
+                            </DialogContentText>
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                id="name"
+                                type="email"
+                                fullWidth
+                                variant={"standard"}
+                                name={"libelleEdit"}
+                                label={"libelle"}
+                                value={data.libelleEdit}
+                                onChange={(e)=>setData("libelleEdit",e.target.value)}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose}>Annuler</Button>
+                            <Button onClick={handleSubmitEdit}>Enregistrer</Button>
+                        </DialogActions>
+                    </Dialog>
+
+                    <SnackBar error={error} update={update} success={success} />                </div>
             </div>
         </AdminPanel>
     );

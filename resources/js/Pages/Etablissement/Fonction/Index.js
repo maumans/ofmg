@@ -25,12 +25,12 @@ function Index(props) {
     });
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'libelle', headerName: 'LIBELLE', width: 130 },
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
                         <EditIcon/>
                     </button>
                     <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
@@ -66,6 +66,27 @@ function Index(props) {
         setFonctions(props.fonctions);
     },[props.fonctions])
 
+    ////// SnackBar
+
+    const [error, setError] = useState(null)
+    const [success, setSuccess] = useState(null)
+
+
+
+    useEffect(() => {
+        setError(props.error)
+    },[props])
+
+    useEffect(() => {
+        setSuccess(props.success)
+    },[props])
+
+    function update()
+    {
+        error && setError(null)
+        success && setSuccess(null)
+    }
+
 
     return (
         <AdminPanel auth={props.auth} error={props.error} active={"fonction"}>
@@ -83,7 +104,7 @@ function Index(props) {
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.libelle}</div>
                             </div>
                             <div>
-                                <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"} style={{height:56}}>
+                                <button className={"p-2 text-white orangeVertBackground rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"} style={{height:56}}>
                                     Valider
                                 </button>
                             </div>
@@ -116,8 +137,7 @@ function Index(props) {
                     </motion.div>
                 </div>
             </div>
-            <SnackBar error={props.error} success={ props.success } />
-
+            <SnackBar error={error} update={update} success={success} />
         </AdminPanel>
     );
 }

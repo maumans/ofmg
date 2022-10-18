@@ -240,7 +240,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         { field: 'action', headerName: 'ACTION',width:100,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white bg-blue-400 bg-blue-400 rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground orangeBlueBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
                         <VisibilityIcon/>
                     </button>
                 </div>
@@ -258,7 +258,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <h1 className="p-6 bg-white border-b border-gray-200 text-xl p-2 text-white bg-orange-400">PAIEMENT</h1>
+                        <h1 className="p-6 bg-white border-b border-gray-200 text-xl p-2 text-white orangeOrangeBackground">PAIEMENT</h1>
 
                         <div>
 
@@ -272,7 +272,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                     <div className={"flex my-2 text-red-600"}>{errors?.matricule}</div>
                                 </div>
                                 <div>
-                                    <button type="submit" style={{height: 56}} className={"p-2 bg-green-400 text-white hover:bg-green-600 rounded"}>Rechercher</button>
+                                    <button type="submit" style={{height: 56}} className={"p-2 orangeVertBackground text-white hover:orangeVertBackground rounded"}>Rechercher</button>
                                 </div>
                             </form>
 
@@ -314,7 +314,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                     <div key={t.id} className={"relative shadow-lg"}>
                                                         {
                                                             t.pivot.resteApayer===0 ?
-                                                                <div className={"absolute -right-2 -top-3 rounded p-3 bg-green-400 text-white"}>
+                                                                <div className={"absolute -right-2 -top-3 rounded p-3 orangeVertBackground text-white"}>
                                                                     Payé
                                                                 </div>
                                                                 :
@@ -412,7 +412,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
                                     {
                                         tarifs && Object.values(tarifs).find(value=>value===true) &&
-                                        <div className={"p-2 bg-orange-400 mt-5 text-white w-max-c text-lg"} style={{width:"fit-content"}}>
+                                        <div className={"p-2 orangeOrangeBackground mt-5 text-white w-max-c text-lg"} style={{width:"fit-content"}}>
                                             <span className={"font-bold"}>Montant total:</span> <span>{formatNumber(data.total)} FG</span>
                                         </div>
                                     }
@@ -434,7 +434,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                     {
                                         tarifs && Object.values(tarifs).find(value=>value===true) &&
                                         <div className={"flex col-span-3"}>
-                                            <button className={"p-2 text-white bg-green-400 font-bold rounded"}  type={"submit"}>
+                                            <button className={"p-2 text-white orangeVertBackground font-bold rounded"}  type={"submit"}>
                                                 Valider
                                             </button>
                                         </div>

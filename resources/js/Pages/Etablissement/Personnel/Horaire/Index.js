@@ -23,7 +23,7 @@ function Index({auth,error,personnels,success}) {
         { field: 'action', headerName: 'ACTION',minWidth: 300, flex: 1,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleFonctions(cellValues.row.id)} className={"p-2 text-white bg-blue-400 rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleFonctions(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
                         Ajout horaire
                     </button>
                 </div>

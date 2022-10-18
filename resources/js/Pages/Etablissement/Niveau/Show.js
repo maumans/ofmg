@@ -22,10 +22,10 @@ function Index(props) {
         { field: 'action', headerName: 'ACTION',width:400,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white bg-blue-400"}>
+                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground"}>
                         Voir les details
                     </button>
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700"}>
+                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground"}>
                         modifier
                     </button>
                     <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white`}>
@@ -70,32 +70,6 @@ function Index(props) {
                     <div className={"my-5 text-2xl"}>
                        Liste des eleves de la {props.niveau.description}
                     </div>
-
-                    {
-                        /*
-
-                                            <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5"}>
-
-                        <div className={"gap-4 grid md:grid-cols-3 grid-cols-1 items-center"}>
-                            <div>
-                                <TextField  name={"libelle"} label={"libelle"} value={data.libelle} onChange={(e)=>setData("libelle",e.target.value)}/>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.libelle}</div>
-                            </div>
-                            <div>
-                                <TextField  name={"description"} label={"description"} value={data.description} onChange={(e)=>setData("description",e.target.value)}/>
-                                <div className={"flex my-2 text-red-600"}>{props.errors?.description}</div>
-                            </div>
-                            <div>
-                                <button className={"p-3 text-white bg-green-600 rounded"} type={"submit"}>
-                                    Valider
-                                </button>
-                            </div>
-                        </div>
-
-                    </form>
-
-                         */
-                    }
 
                     <div style={{height:450, width: '100%' }} className={"flex justify-center"}>
                         {

@@ -73,7 +73,7 @@ function Save({apprenant,total}) {
             }
 
            <PDFDownloadLink  document={<MyDocument apprenant={apprenant} total={total} />} fileName={"reçu.pdf"}>
-               {({blob,url,loading, error})=>(loading?"loading": <button className={"p-2 text-white bg-green-400 rounded mt-5"}>Telecharger</button>)}
+               {({blob,url,loading, error})=>(loading?"loading": <button className={"p-2 text-white orangeVertBackground rounded mt-5"}>Telecharger</button>)}
            </PDFDownloadLink>
        </Fragment>
 )

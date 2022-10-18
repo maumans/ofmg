@@ -1,7 +1,7 @@
 import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {DataGrid, gridPageCountSelector, gridPageSelector, useGridApiContext, useGridSelector} from '@mui/x-data-grid';
 import {
-    Autocomplete,
+    Autocomplete, Dialog, DialogContent,
     FormControl,
     InputAdornment,
     InputLabel,
@@ -9,7 +9,7 @@ import {
     Modal,
     Pagination,
     Select,
-    TextField
+    TextField, Tooltip
 } from "@mui/material";
 import AdminPanel from "@/Layouts/AdminPanel";
 import {Inertia} from "@inertiajs/inertia";
@@ -83,21 +83,21 @@ function Index(props) {
     const handleClose = () => setOpen(false);
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'libelle', headerName: 'LIBELLE', minWidth: 400,flex:1, editable: true },
-        { field: 'option', headerName: 'OPTION', minWidth: 300,flex:1, editable: true,  renderCell:(cellValues)=>(
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
+        { field: 'libelle', headerName: 'LIBELLE', minWidth: 400,flex:1 },
+        { field: 'option', headerName: 'OPTION', minWidth: 300,flex:1,  renderCell:(cellValues)=>(
             cellValues.row.option?.libelle
             )},
-        { field: 'departement', headerName: 'DEPARTEMENT', minWidth: 300,flex:1, editable: true,  renderCell:(cellValues)=>(
+        { field: 'departement', headerName: 'DEPARTEMENT', minWidth: 300,flex:1,  renderCell:(cellValues)=>(
                 cellValues.row.option?.departement?.libelle
             )},
         { field: 'action', headerName: 'ACTION',width:400,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white bg-blue-400 bg-blue-400 rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white orangeVioletBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
                         <VisibilityIcon/>
                     </button>
-                    <button onClick={()=>handleOpen(cellValues.row)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleOpen(cellValues.row)} className={"p-2 text-white orangeBlueBackground rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
                        <EditIcon/>
                     </button>
                     <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
@@ -135,12 +135,6 @@ function Index(props) {
         setClasses(props.classes);
     },[props.classes]);
 
-    function handleCellEditCommit(params) {
-
-        setData(params.field,params.value);
-
-        Inertia.post(route("etablissement.classe.update",[props.auth.user.id,params.id]),{_method: "put",dataEdit})
-    }
 
     useEffect(() => {
         props.options && setOptions(props.options);
@@ -173,11 +167,32 @@ function Index(props) {
 
     },[dataEdit.niveau,dataEdit.option,dataEdit.code])
 
+    ////// SnackBar
+
+    const [error, setError] = useState(null)
+    const [success, setSuccess] = useState(null)
+
+
+
+    useEffect(() => {
+        setError(props.error)
+    },[props])
+
+    useEffect(() => {
+        setSuccess(props.success)
+    },[props])
+
+    function update()
+    {
+        error && setError(null)
+        success && setSuccess(null)
+    }
+
     return (
         <AdminPanel auth={props.auth} error={props.error} active={"classe"}>
             <div className={"p-5"}>
                 <div>
-                    <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
+                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
                         Gestion des classes
                     </div>
 
@@ -257,14 +272,16 @@ function Index(props) {
                             }
 
                             <div className={"w-full"}>
-                                <TextField
-                                    value={data.code}
-                                    className={"w-full"}  name={"code"} label={"Code"} onChange={(e)=>setData("code",e.target.value)}
-                                />
+                                <Tooltip title="Code en guise de prefixe (Ex: 10ème année A)">
+                                    <TextField
+                                        value={data.code}
+                                        className={"w-full"}  name={"code"} label={"Code"} onChange={(e)=>setData("code",e.target.value)}
+                                    />
+                                </Tooltip>
                             </div>
 
                             <div className={"md:col-span-2"}>
-                                <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"}>
+                                <button className={"p-2 text-white orangeVertBackground rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"}>
                                     Enregister
                                 </button>
                             </div>
@@ -272,14 +289,11 @@ function Index(props) {
 
                     </form>
 
-                    <Modal
-                        keepMounted
+                    <Dialog
                         open={open}
                         onClose={handleClose}
-                        aria-labelledby="keep-mounted-modal-title"
-                        aria-describedby="keep-mounted-modal-description"
                     >
-                        <Box sx={style}>
+                        <DialogContent>
                             <form action="" onSubmit={handleEdit} className={"space-y-5 my-5 p-2 border rounded"}>
                                 <div className={"text-lg font-bold mb-5"}>
                                     Modifier une classe
@@ -297,40 +311,39 @@ function Index(props) {
                                     </div>
 
                                 }
-                                <div className={"gap-4 grid md:grid-cols-2 sm:grid-cols-2 grid-cols-1 items-center"} style={{maxWidth:1000}}>
+                                <div className={"gap-4 grid grid-cols-1 items-center"} style={{maxWidth:1000}}>
                                     {
                                         dataEdit.niveau &&
                                         <div className={"w-full"}>
-                                            <FormControl  className={"w-full"}>
-                                                <Autocomplete
-                                                    value={dataEdit.niveau}
+                                            <Autocomplete
+                                                className={"w-full"}
+                                                value={dataEdit.niveau}
 
-                                                    onChange={(e,val)=>{
-                                                        setDataEdit("niveau",val)
-                                                    }}
-                                                    disablePortal={true}
-                                                    options={props.niveaux}
-                                                    getOptionLabel={(option)=>option.libelle}
-                                                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                                                    renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Niveau"}  required label={params.libelle}/>}
+                                                onChange={(e,val)=>{
+                                                    setDataEdit("niveau",val)
+                                                }}
+                                                disablePortal={true}
+                                                options={props.niveaux}
+                                                getOptionLabel={(option)=>option.libelle}
+                                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                                renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Niveau"}  required label={params.libelle}/>}
 
-                                                />
-                                            </FormControl>
+                                            />
                                         </div>
                                     }
 
 
 
-                                    <div className={"md:grid-cols-2 sm:grid-cols-2"}>
-                                        <button className={"p-3 text-white bg-green-600 rounded"} type={"submit"}>
+                                    <div>
+                                        <button className={"p-3 text-white orangeVertBackground rounded"} type={"submit"}>
                                             Enregister
                                         </button>
                                     </div>
                                 </div>
 
                             </form>
-                        </Box>
-                    </Modal>
+                        </DialogContent>
+                    </Dialog>
 
                     <motion.div
                         initial={{y:-100,opacity:0}}
@@ -348,13 +361,12 @@ function Index(props) {
                                 pageSize={5}
                                 rowsPerPageOptions={[5]}
                                 autoHeight
-                                onCellEditCommit={handleCellEditCommit}
+                                //onCellEditCommit={handleCellEditCommit}
                             />
                         }
                     </motion.div>
 
-                    <SnackBar success={ props.success }/>
-                </div>
+                    <SnackBar error={error} update={update} success={success} />                </div>
             </div>
         </AdminPanel>
     );

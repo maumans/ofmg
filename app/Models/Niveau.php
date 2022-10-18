@@ -44,7 +44,7 @@ class Niveau extends Model
         return $this->belongsTo(Departement::class);
     }
 
-    public function option()
+    public function options()
     {
         return $this->belongsToMany(Option::class);
     }
