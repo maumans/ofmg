@@ -1,0 +1,41 @@
+{
+    "name": "crudfy/om-b2b",
+    "description": ":package_description",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Author Name",
+            "email": "author@email.com",
+            "homepage": "http://author.com"
+        }
+    ],
+    "homepage": "https://github.com/crudfy/om-b2b",
+    "keywords": ["Laravel", "OmB2b"],
+    "require": {
+        "illuminate/support": "~7|~8"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~7|~8",
+        "orchestra/testbench": "~7|~8"
+    },
+    "autoload": {
+        "psr-4": {
+            "Crudfy\\OmB2b\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Crudfy\\OmB2b\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Crudfy\\OmB2b\\OmB2bServiceProvider"
+            ],
+            "aliases": {
+                "OmB2b": "Crudfy\\OmB2b\\Facades\\OmB2b"
+            }
+        }
+    }
+}
