@@ -27,7 +27,7 @@ function Index(props) {
 
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'libelle', headerName: 'LIBELLE', width: 250 },
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues)=>(
@@ -65,6 +65,27 @@ function Index(props) {
         setRoles(props.roles);
     },[props.roles])
 
+    ////// SnackBar
+
+    const [error, setError] = useState(null)
+    const [success, setSuccess] = useState(null)
+
+
+
+    useEffect(() => {
+        setError(props.error)
+    },[props])
+
+    useEffect(() => {
+        setSuccess(props.success)
+    },[props])
+
+    function update()
+    {
+        error && setError(null)
+        success && setSuccess(null)
+    }
+
 
     return (
         <AdminPanel auth={props.auth} error={props.error} active={"role"}>
@@ -83,7 +104,7 @@ function Index(props) {
                             </div>
 
                             <div>
-                                <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"} style={{height:56}}>
+                                <button className={"p-2 text-white orangeVertBackground rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"} style={{height:56}}>
                                     Valider
                                 </button>
                             </div>

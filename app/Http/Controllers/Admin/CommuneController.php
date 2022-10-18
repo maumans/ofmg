@@ -86,7 +86,11 @@ class CommuneController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $commune=Commune::find($request->editId);
+        $commune->libelle=$request->libelleEdit;
+        $commune->save();
+
+        return redirect()->back()->with("success","Commune modifiée avec succès");
     }
 
     /**

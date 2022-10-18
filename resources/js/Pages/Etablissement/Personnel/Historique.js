@@ -6,11 +6,17 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {Inertia} from "@inertiajs/inertia";
 import {motion} from "framer-motion";
-import {Autocomplete, FormControl, TextField} from "@mui/material";
+import {Autocomplete, FormControl, Modal, TextareaAutosize, TextField} from "@mui/material";
 import {CheckIcon} from "@mui/icons-material/Check";
 import NumberFormat from "react-number-format";
 import {useForm} from "@inertiajs/inertia-react";
 import formatNumber from "@/Utils/formatNumber";
+import Box from "@mui/material/Box";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import {a11yProps, TabPanel} from "@/Components/TabPanel";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 
 const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, ref) {
     const { onChange, ...other } = props;
@@ -50,7 +56,7 @@ function Historique({auth,error,salaires,paiementOccasionnel,success,mois}) {
     const [moisSt,setMoisSt]=useState("");
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'prenom', headerName: 'PRENOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.prenom) },
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
         { field: 'telephone', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.telephone) },
@@ -59,7 +65,7 @@ function Historique({auth,error,salaires,paiementOccasionnel,success,mois}) {
     ];
 
     const columnsOccasionnel = [
-        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'prenom', headerName: 'PRENOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.prenom) },
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
         { field: 'telephone', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.numero_retrait) },
@@ -76,6 +82,13 @@ function Historique({auth,error,salaires,paiementOccasionnel,success,mois}) {
         Inertia.post(route("etablissement.personnel.store",auth.user.id),data,{preserveState:false})
     }
 
+    ////TABS
+    const [value, setValue] = React.useState(0);
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+
     return (
         <AdminPanel auth={auth} error={error} active={"salaire"} sousActive={"paiementHistorique"}>
             <div className={"p-5"}>
@@ -83,70 +96,83 @@ function Historique({auth,error,salaires,paiementOccasionnel,success,mois}) {
                     Historiques des paiements
                 </div>
 
-                <div className="text-lg my-5 font-bold">
-                    Salaires du personnel
-                </div>
-                <motion.div
-                    initial={{y:-100,opacity:0}}
-                    animate={{y:0,opacity:1}}
-                    transition={{
-                        duration:0.5,
-                        type:"spring",
-                    }}
+                <Box sx={{ width: '100%' }}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <Tabs value={value} onChange={handleChange}
+                              variant="scrollable"
+                              scrollButtons
+                              allowScrollButtonsMobile
+                              aria-label="scrollable force tabs example"
+                        >
+                            <Tab label="Paiements salaires" {...a11yProps(0)} />
+                            <Tab label="Paiements occasionnels" {...a11yProps(1)} />
+                        </Tabs>
+                    </Box>
+                    <TabPanel value={value} index={0}>
+                       <div>
+                           <motion.div
+                               initial={{y:-100,opacity:0}}
+                               animate={{y:0,opacity:1}}
+                               transition={{
+                                   duration:0.5,
+                                   type:"spring",
+                               }}
 
-                    style={{height:450, width: '100%' }}
-                >
-                    {
-                        salaires &&
-                        <DataGrid
-                            components={{
-                                Toolbar:GridToolbar,
-                            }}
+                               style={{height:450, width: '100%' }}
+                           >
+                               {
+                                   salaires &&
+                                   <DataGrid
+                                       components={{
+                                           Toolbar:GridToolbar,
+                                       }}
 
-                            componentsProps={{
-                                columnMenu:{backgroundColor:"red",background:"yellow"},
-                            }}
-                            rows={salaires}
-                            columns={columns}
-                            pageSize={5}
-                            rowsPerPageOptions={[5]}
-                            autoHeight
-                        />
-                    }
-                </motion.div>
+                                       componentsProps={{
+                                           columnMenu:{backgroundColor:"red",background:"yellow"},
+                                       }}
+                                       rows={salaires}
+                                       columns={columns}
+                                       pageSize={5}
+                                       rowsPerPageOptions={[5]}
+                                       autoHeight
+                                   />
+                               }
+                           </motion.div>
+                       </div>
+                    </TabPanel>
+                    <TabPanel value={value} index={1}>
+                       <div>
+                           <motion.div
+                               initial={{y:-100,opacity:0}}
+                               animate={{y:0,opacity:1}}
+                               transition={{
+                                   duration:0.5,
+                                   type:"spring",
+                               }}
 
-                <div className="text-lg my-5   font-bold">
-                    Paiements occasionnels
-                </div>
+                               style={{height:450, width: '100%' }}
+                           >
+                               {
+                                   salaires &&
+                                   <DataGrid
+                                       components={{
+                                           Toolbar:GridToolbar,
+                                       }}
 
-                <motion.div
-                    initial={{y:-100,opacity:0}}
-                    animate={{y:0,opacity:1}}
-                    transition={{
-                        duration:0.5,
-                        type:"spring",
-                    }}
-
-                    style={{height:450, width: '100%' }}
-                >
-                    {
-                        salaires &&
-                        <DataGrid
-                            components={{
-                                Toolbar:GridToolbar,
-                            }}
-
-                            componentsProps={{
-                                columnMenu:{backgroundColor:"red",background:"yellow"},
-                            }}
-                            rows={paiementOccasionnel}
-                            columns={columnsOccasionnel}
-                            pageSize={5}
-                            rowsPerPageOptions={[5]}
-                            autoHeight
-                        />
-                    }
-                </motion.div>
+                                       componentsProps={{
+                                           columnMenu:{backgroundColor:"red",background:"yellow"},
+                                       }}
+                                       rows={paiementOccasionnel}
+                                       columns={columnsOccasionnel}
+                                       pageSize={5}
+                                       rowsPerPageOptions={[5]}
+                                       autoHeight
+                                   />
+                               }
+                           </motion.div>
+                       </div>
+                    </TabPanel>
+                </Box>
                 <SnackBar success={success}/>
             </div>
         </AdminPanel>

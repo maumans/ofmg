@@ -204,7 +204,7 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires,codeN
                     rowsPerPageOptions={[10]}
                     autoHeight
                 />
-                <button  onClick={handleSubmit} className={"my-4 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500"}>
+                <button  onClick={handleSubmit} className={"my-4 p-2 text-white orangeVertBackground rounded hover:text-green-700 hover:bg-white transition duration-500"}>
                   Transmettre pour validation
                 </button>
             </>
@@ -305,7 +305,7 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires,codeN
                                 }
 
                                 <div>
-                                    <button onClick={()=>setOpen(true)} className={"my-4 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500"}>
+                                    <button onClick={()=>setOpen(true)} className={"my-4 p-2 text-white orangeVertBackground rounded hover:text-green-700 hover:bg-white transition duration-500"}>
                                         Enregistrer
                                     </button>
                                     <ModalComponent open={open} setOpen={setOpen} contenu={contenu} width={800} minWidth={100}/>
@@ -336,7 +336,7 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires,codeN
                                         />
                                     }
 
-                                    <button onClick={handleSubmit} className={"my-4 p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500"}>
+                                    <button onClick={handleSubmit} className={"my-4 p-2 text-white orangeVertBackground rounded hover:text-green-700 hover:bg-white transition duration-500"}>
                                         Valider
                                     </button>
                                 </Box>
@@ -397,7 +397,7 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires,codeN
 
 
                             <div className={'md:col-span-2'}>
-                                <button className={"p-3 text-white bg-green-600 rounded"} type={"submit"}>
+                                <button className={"p-3 text-white orangeVertBackground rounded"} type={"submit"}>
                                     Enregistrer
                                 </button>
                             </div>

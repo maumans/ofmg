@@ -43,7 +43,7 @@ export default function Authenticated({auth, header, children}) {
                                     <div className="shrink-0 flex items-center">
                                         <Link href="/">
                                             <div
-                                                className={"text-3xl font-bold text-orange-400"}
+                                                className={"text-3xl font-bold orangeOrangeColor"}
                                             >
                                                 E-School
                                             </div>
@@ -89,10 +89,9 @@ export default function Authenticated({auth, header, children}) {
                                                 <span className="inline-flex rounded-md">
                                                     <button
                                                         type="button"
-                                                        className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
+                                                        className="inline-flex items-center px-3 py-2 border border-2 border-white text-sm leading-4 font-medium rounded-md text-white bg-black  hover:text-gray-500 focus:outline-none transition ease-in-out duration-150"
                                                     >
-                                                        {auth?.user?.prenom + " " + auth?.user?.nom}
-
+                                                        <span className={"font-bold mr-4"}>{auth?.user?.prenom + " " + auth?.user?.nom}</span> <span className={"orangeOrangeColor"}> | {auth.admin || auth.etablissement ?"Administrateur":auth.ofmg?"OFGM":auth.tuteur?"Tuteur":auth.comptable?"Comptable":auth.directeur?"directeur":"" }</span>
                                                         <svg
                                                             className="ml-2 -mr-0.5 h-4 w-4"
                                                             xmlns="http://www.w3.org/2000/svg"
@@ -201,6 +200,7 @@ export default function Authenticated({auth, header, children}) {
                                         <div className="px-4">
                                             <div className="font-medium text-base text-white">{auth?.user?.prenom+" "+auth?.user?.nom}</div>
                                             <div className="font-medium text-sm text-white">{auth?.user?.email}</div>
+                                            <span className={"orangeOrangeColor"}>{auth.admin || auth.etablissement ?"Administrateur":auth.ofmg?"OFGM":auth.tuteur?"Tuteur":auth.comptable?"Comptable":auth.directeur?"directeur":"" }</span>
                                         </div>
 
                                         <div className="mt-3 space-y-1">

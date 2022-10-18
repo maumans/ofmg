@@ -118,7 +118,7 @@ class PaiementController extends Controller
             {
                 $info=explode("_",$key);
                 $apprenant=Apprenant::find($info[0]);
-                $tarif=Tarif::find($info[1]);
+                $tarif=Tarif::where("id",$info[1])->first();
 
                 if($value)
                 {
@@ -126,8 +126,10 @@ class PaiementController extends Controller
                     $paiement=Paiement::create([
                         "montant"=>$request->montants[$info[0]."_".$info[1]],
                         "numero_retrait"=>$request->numero_retrait,
+                        "numero_depot"=>$tarif->etablissement->telephone,
                         "type_paiement_id"=>$tarif["type_paiement_id"],
                         "mode_paiement_id"=>Mode_paiement::where("libelle","OM WEB")->first()->id,
+                        "etablissement_id"=>$tarif->etablissement_id
                     ]);
 
                     //Paiement::where("id",$paiement->id)->first()->cashin();

@@ -69,7 +69,7 @@ function Portofolio(props) {
                                 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ex exercitationem fuga illo labore molestias saepe veritatis. Alias aliquid corporis dolor eius eveniet labore odit qui repudiandae sit. Animi, iure, officia.
                             </div>
                             <div className={"flex gap-4 mt-10"}>
-                                <button className={"py-3 px-10 bg-green-500 text-white"}>
+                                <button className={"py-3 px-10 orangeVertBackground text-white"}>
                                     Hire Me
                                 </button>
                                 <button className={"py-3 px-10 border border-2  border-black"}>
@@ -79,7 +79,7 @@ function Portofolio(props) {
                         </div>
                     </div>
                     <div className={"absolute top-0 right-0 overflow-hidden"} style={{height: 700,width:700}}>
-                        <div style={{width: 500, height: 700,transform:'rotate(60deg)',right:-88,top:-166}} className={"bg-green-500 absolute "}>
+                        <div style={{width: 500, height: 700,transform:'rotate(60deg)',right:-88,top:-166}} className={"orangeVertBackground absolute "}>
 
                         </div>
                         <div className={"relative"} style={{top:100}}>
@@ -127,7 +127,7 @@ function Portofolio(props) {
                         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque autem consequatur deleniti doloremque harum ipsa iure magni necessitatibus, placeat quidem tempora voluptates! Culpa doloremque error explicabo nemo nesciunt odit voluptates.
                     </div>
 
-                    <button className={"py-3 px-10 bg-green-500 text-white"}>
+                    <button className={"py-3 px-10 orangeVertBackground text-white"}>
                         Hire Me
                     </button>
 

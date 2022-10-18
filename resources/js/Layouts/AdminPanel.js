@@ -41,13 +41,13 @@ function ResponsiveDrawer(props) {
 
     const drawerEtablissementUser = (
         <List
-            className={"bg-orange-500"}
-            sx={{width: '100%',height:"100%",color:"white",bgColor:"#ff7900",paddingTop:8 }}
+            className={"orangeOrangeBackground"}
+            sx={{width: '100%',color:"white",paddingTop:8,backgroundColor:"#FF7900" }}
             component="nav"
         >
             <Link href={route("etablissement.index",props.auth.user.id)}>
                 <ListItemButton sx={props.active==="vue"?{backgroundColor:"#bc5610",color:"white"}:null}>
-                    <ListItemText primary="Vue d'ensemble" />
+                    <ListItemText primary="Vue d'ensemble"/>
                 </ListItemButton>
             </Link>
 
@@ -202,7 +202,7 @@ function ResponsiveDrawer(props) {
                                 <Divider component="li"/>
 
                                 {
-                                    props.auth.niveauValidation !==1
+                                    (props.auth.user.niveauValidation ===2 || props.auth.etablissement)
                                         &&
                                     <>
                                         <Link href={route("etablissement.personnel.paiement.validationSalaire",props.auth.user.id)}>
@@ -230,8 +230,8 @@ function ResponsiveDrawer(props) {
 
     const drawer = (
             <List
-                className={"bg-orange-500"}
-                sx={{width: '100%',height:"100%",color:"white",bgColor:"#ff7900",paddingTop:8 }}
+                className={"orangeOrangeBackground"}
+                sx={{width: '100%',color:"white",bgColor:"#ff7900",paddingTop:8 }}
                 component="nav"
             >
                 <Link href={route("admin.user.index",props.auth.user.id)}>
@@ -358,7 +358,7 @@ function ResponsiveDrawer(props) {
                     width: { md: `calc(100% - ${drawerWidth}px)` },
                     ml: { md: `${drawerWidth}px` },
                     marginTop:"64px",
-                    backgroundColor:"#ff7900",
+                    backgroundColor:"#FF7900",
                     zIndex:20
                 }}
             >

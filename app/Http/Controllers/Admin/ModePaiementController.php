@@ -82,7 +82,7 @@ class ModePaiementController extends Controller
         $modePaiement->libelle=$request->libelleEdit;
         $modePaiement->save();
 
-        return redirect()->back()->with("Mode de paiement modifié avec succès");
+        return redirect()->back()->with("success","Mode de paiement modifié avec succès");
     }
 
     /**

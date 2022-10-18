@@ -82,7 +82,7 @@ class TypePaiementController extends Controller
         $typePaiement->libelle=$request->libelleEdit;
         $typePaiement->save();
 
-        return redirect()->back()->with("Type de frais modifiée avec succès");
+        return redirect()->back()->with("success","Type de frais modifiée avec succès");
     }
 
     /**

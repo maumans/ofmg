@@ -77,6 +77,7 @@ class ContratController extends Controller
     public function store(Request $request)
     {
 
+
         if (!$request->personnel)
         {
             if(strtolower($request->fonction["libelle"])=="directeur" || strtolower($request->fonction["libelle"])=="comptable")
@@ -86,7 +87,8 @@ class ContratController extends Controller
                     "prenom" =>"required|min:1",
                     "telephone" =>"required|min:1",
                     "adresse" =>"required",
-                    "email" =>"min:1|email|unique:users",
+                    "email" =>"nullable|email|unique:users",
+                    "login" =>"required|min:1|unique:users",
                     "password" =>"required",
                     "niveauValidation"=>strtolower($request->fonction["libelle"])=="comptable" ?"required":""
                 ]);
@@ -104,6 +106,7 @@ class ContratController extends Controller
 
         DB::beginTransaction();
 
+
         try{
 
             if (!$request->personnel)
@@ -113,6 +116,7 @@ class ContratController extends Controller
                     "prenom" =>$request->prenom,
                     "telephone" =>$request->telephone,
                     "adresse" =>$request->adresse,
+                    "login" =>$request->login,
                     "email" =>$request->email,
                     "password" =>Hash::make($request->password),
                 ]);
@@ -122,13 +126,15 @@ class ContratController extends Controller
                 if(strtolower($request->fonction["libelle"])=="comptable" || strtolower($request->fonction["libelle"])=="directeur")
                 {
                     $request->validate([
-                        "email" =>"required|min:1|email|unique:users",
+                        "login" =>"required|min:1|unique:users",
+                        "email" =>"nullable|email|unique:users",
                         "password" =>"required",
                     ]);
                 }
 
                 $user=User::find($request->personnel["id"]);
 
+                $user->login=$request->login;
                 $user->email=$request->email;
                 $user->password=$request->password;
 

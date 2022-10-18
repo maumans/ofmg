@@ -3,4 +3,68 @@
     --tw-ring-color: transparent;
 }
 
+.orangeOrangeColor
+{
+    color: #FF7900
+}
+
+.orangeBlueColor
+{
+    color: #4BB4E6
+}
+
+.orangeVertColor
+{
+    color: #50BE87
+}
+
+.orangeRoseColor
+{
+    color: #FFB4E6
+}
+
+.orangeVioletColor
+{
+    color: #A885D8
+}
+.orangeJauneColor
+{
+    color: #FFD200
+}
+
+.orangeBlancColor
+{
+    color: white
+}
+
+.orangeOrangeBackground
+{
+    background-color: #FF7900
+}
+
+.orangeVertBackground
+{
+    background-color: #50BE87
+}
+
+.orangeBlueBackground
+{
+    background-color: #4BB4E6
+}
+
+.orangeVioletBackground
+{
+    background-color: #A885D8
+}
+
+.orangeJauneBackground
+{
+    background-color: #FFD200
+}
+
+.orangeOrangeBorder
+{
+    border-color: #FF7900
+}
+
 

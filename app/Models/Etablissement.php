@@ -90,7 +90,7 @@ class Etablissement extends Model
 
     public function paiements()
     {
-        return $this->hasMany(Salaire::class);
+        return $this->hasMany(Paiement::class);
     }
 
     public function salairesOccasionnels()

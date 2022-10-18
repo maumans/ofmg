@@ -27,7 +27,7 @@ function Index(props) {
     });
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'typePaiement', headerName: 'TYPE PAIEMENT', width:130,renderCell:(cellValues)=>cellValues.row.type_paiement?.libelle },
         { field: 'niveau', headerName: 'NIVEAU', width:130, renderCell:(cellValues)=>cellValues.row.niveau?.libelle },
         { field: 'montant', headerName: 'MONTANT', width:130 },
@@ -36,7 +36,7 @@ function Index(props) {
         { field: 'action', headerName: 'ACTION',width:200,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700"}>
+                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground"}>
                         modifier
                     </button>
                     <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white`}>
@@ -148,7 +148,7 @@ function Index(props) {
                             </div>
 
                             <div className={"flex col-span-3 justify-end"}>
-                                <button className={"p-2 text-white bg-green-600 font-bold"}  type={"submit"}>
+                                <button className={"p-2 text-white orangeVertBackground font-bold"}  type={"submit"}>
                                     Valider
                                 </button>
                             </div>

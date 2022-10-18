@@ -139,7 +139,7 @@ export default function Register({auth}) {
                         </div>
 
                         <div>
-                            <Label forInput="login" value="Login" />
+                            <Label forInput="login" value="Identifiant" />
 
                             <Input
                                 type="text"

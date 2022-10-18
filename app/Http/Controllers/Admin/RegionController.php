@@ -89,7 +89,7 @@ class RegionController extends Controller
         $region->libelle=$request->libelleEdit;
         $region->save();
 
-        return redirect()->back()->with("Region modifiée avec succès");
+        return redirect()->back()->with("success","Region modifiée avec succès");
     }
 
     /**

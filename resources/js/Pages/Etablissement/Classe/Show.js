@@ -22,10 +22,10 @@ function Index(props) {
         { field: 'action', headerName: 'ACTION',width:400,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white bg-blue-400"}>
+                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground"}>
                         Voir les details
                     </button>
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700"}>
+                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground"}>
                         modifier
                     </button>
                     <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white`}>

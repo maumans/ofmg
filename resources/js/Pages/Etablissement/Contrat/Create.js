@@ -137,7 +137,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
         { field: 'action', headerName: 'ACTION',width:100,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleDelete(cellValues.row.id)} className={"p-2 text-white bg-blue-400 bg-blue-400 rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleDelete(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground orangeBlueBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
                         <DeleteIcon/>
                     </button>
                 </div>
@@ -191,7 +191,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
         <AdminPanel auth={auth} error={errors} active={"contrat"} sousActive={"creerContrat"}>
             <div className={"p-5"}>
                 <div>
-                    <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
+                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
                         Gestion des contrats
                     </div>
                      <div className={"p-5 border rounded"}>
@@ -315,7 +315,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
                                                  );
                                              })}
                                          </List>
-                                         <button onClick={handleSelectPersonnel} className={"p-3 rounded bg-green-600 text-white flex text-center items-center mt-4"}>
+                                         <button onClick={handleSelectPersonnel} className={"p-3 rounded orangeVertBackground text-white flex text-center items-center mt-4"}>
                                              Choisir
                                          </button>
                                      </div>
@@ -329,7 +329,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
                                              <div>
                                                  L'employé n'existe pas? Veuillez le créer
                                              </div>
-                                             <button onClick={()=>setNewEmp(true)} type="button" className={"p-2 text-white bg-blue-400 rounded"}>
+                                             <button onClick={()=>setNewEmp(true)} type="button" className={"p-2 text-white orangeBlueBackground rounded"}>
                                                  Creer un employé
                                              </button>
                                          </div>
@@ -374,7 +374,12 @@ function Create({auth,errors,fonctions,classes,matieres}) {
                                                  &&
                                                  <>
                                                      <div>
-                                                         <TextField /*disabled={data.personnel?.email!==""}*/  className={"w-full"}  name={"email"} label={"Email"} value={data.personnel?.email?data.personnel?.email:data.email} onChange={(e)=>setData("email",e.target.value)} required/>
+                                                         <TextField /*disabled={data.personnel?.email!==""}*/  className={"w-full"}  name={"login"} label={"Identifiant"} value={data.personnel?.login?data.personnel?.login:data.login} onChange={(e)=>setData("login",e.target.value)} required/>
+                                                         <div className={"my-2 text-red-600"}>{errors?.login}</div>
+                                                     </div>
+
+                                                     <div>
+                                                         <TextField /*disabled={data.personnel?.email!==""}*/  className={"w-full"}  name={"email"} label={"Email"} value={data.personnel?.email?data.personnel?.email:data.email} onChange={(e)=>setData("email",e.target.value)}/>
                                                          <div className={"my-2 text-red-600"}>{errors?.email}</div>
                                                      </div>
 
@@ -504,7 +509,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
                                                  data.fonction?.libelle.toLowerCase() ==="enseignant" &&
                                                      <>
                                                          <div className={"md:col-span-3 sm:col-span-2"}>
-                                                             <button onClick={handleAdd} type="button" className={"text-white border p-2 bg-blue-600 rounded hover:bg-blue-700 transition duration-500 mb-4"}>Ajouter</button>
+                                                             <button onClick={handleAdd} type="button" className={"text-white border p-2 orangeBlueBackground rounded hover:orangeBlueBackground transition duration-500 mb-4"}>Ajouter</button>
                                                          </div>
                                                          <div className={"md:col-span-3 sm:col-span-2"}>
                                                              <DataGrid
@@ -535,7 +540,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
 
                              <div className={"grid md:grid-cols-2 grid-cols-1 gap-4 mt-4 bg-white p-4"} >
                                  <div className={"md:col-span-2 "}>
-                                     <button style={{height: 56}} className={"p-2 text-white bg-green-600 rounded"} type={"submit"}>
+                                     <button style={{height: 56}} className={"p-2 text-white orangeVertBackground rounded"} type={"submit"}>
                                          Valider
                                      </button>
                                  </div>

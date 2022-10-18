@@ -83,7 +83,7 @@ class MatiereController extends Controller
         $matiere->libelle=$request->libelleEdit;
         $matiere->save();
 
-        return redirect()->back()->with("Matière modifiée avec succès");
+        return redirect()->back()->with("success","Matière modifiée avec succès");
     }
 
     /**

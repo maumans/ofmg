@@ -8,7 +8,7 @@ import {
     useGridSelector
 } from '@mui/x-data-grid';
 import {
-    Autocomplete, Avatar, Checkbox, CircularProgress,
+    Autocomplete, Avatar, Checkbox, CircularProgress, Dialog, DialogContent,
     FormControl,
     FormControlLabel,
     FormGroup, InputAdornment,
@@ -247,7 +247,7 @@ function Create(props) {
         { field: 'telephone', headerName: 'Tel', width:150},
         { field: 'telephone2', headerName: 'Tel 2', width:150},
         { field: 'telephone3', headerName: 'Tel 3', width:150},
-        { field: 'login', headerName: 'LOGIN', width:150},
+    { field: 'login', headerName: 'IDENTIFIANT', width:150},
         { field: 'email', headerName: 'EMAIL', width:150},
         { field: 'telephone', headerName: 'TELEPHONE', width:150},
         { field: 'password', headerName: 'MOT DE PASSE', width:150},
@@ -344,7 +344,7 @@ function Create(props) {
         <AdminPanel auth={props.auth} error={props.error} sousActive={"inscrire"} active={"inscription"} >
             <div className={"p-5"}>
                 <div>
-                    <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
+                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
                         Inscrire un {props.anneeEnCours?.etablissement.type_etablissement.libelle.toLowerCase() ==="ecole"?"élève":"etudiant"}
                     </div>
 
@@ -466,7 +466,7 @@ function Create(props) {
 
 
                                 <div >
-                                    <button onClick={()=>setOpenModal(true)} type={"button"} className={"rounded bg-green-600 p-3 text-white flex"}>
+                                    <button onClick={()=>setOpenModal(true)} type={"button"} className={"rounded orangeBlueBackground p-3 text-white flex"}>
                                         Ajouter un nouveau tuteur <span className={"ml-2 rounded-full bg-white text-green-600 flex text-center items-center"}><AddIcon /></span>
                                     </button>
                                 </div>
@@ -535,7 +535,7 @@ function Create(props) {
                                             );
                                         })}
                                     </List>
-                                    <button onClick={handleAddNewTuteur} className={"p-3 rounded bg-green-600 text-white flex text-center items-center mt-4"}>
+                                    <button onClick={handleAddNewTuteur} className={"p-3 rounded orangeVertBackground text-white flex text-center items-center mt-4"}>
                                         Ajouter
                                     </button>
                                 </div>
@@ -552,7 +552,7 @@ function Create(props) {
                                         {
                                             data.classe?.tarifs.map((tarif)=>(
                                             <div key={tarif.id} className={"mx-5"}>
-                                                <FormControlLabel control={<Checkbox disabled={tarif.obligatoire?true:false} name={tarif.id+""} defaultChecked={tarif.obligatoire?true:false} onChange={handleChange} />} label={<div>{tarif.type_paiement.libelle} <span className={"p-1 rounded bg-orange-600 text-white"}>{formatNumber(tarif.montant)} FG/AN</span></div>} />
+                                                <FormControlLabel control={<Checkbox disabled={tarif.obligatoire?true:false} name={tarif.id+""} defaultChecked={tarif.obligatoire?true:false} onChange={handleChange} />} label={<div>{tarif.type_paiement.libelle} <span className={"p-1 rounded orangeOrangeBackground text-white"}>{formatNumber(tarif.montant)} FG/AN</span></div>} />
                                             </div>
                                             ))
                                         }
@@ -563,13 +563,13 @@ function Create(props) {
                                 data.montant &&
                                 <div className={"my-5 p-2 font-bold"} style={{width:"fit-content"}}>
                                     Montant de l'inscription:
-                                    <span className={"my-5 p-2 text-white  bg-orange-600 font-bold"}>{formatNumber(data.montant)} FG</span>
+                                    <span className={"my-5 p-2 text-white  orangeOrangeBackground font-bold"}>{formatNumber(data.montant)} FG</span>
                                 </div>
                             }
 
 
                             <div className={"flex col-span-3 justify-end"}>
-                                <button className={"p-3 text-white bg-green-600 rounded"}  type={"submit"}>
+                                <button className={"p-3 text-white orangeVertBackground rounded"}  type={"submit"}>
                                     Enregistrer
                                 </button>
                             </div>
@@ -580,14 +580,11 @@ function Create(props) {
                     {
                         ////////// ADD TUTEUR MODAL
                     }
-                    <Modal
-                        keepMounted
+                    <Dialog
                         open={openModal}
                         onClose={handleCloseModal}
-                        aria-labelledby="keep-mounted-modal-title"
-                        aria-describedby="keep-mounted-modal-description"
                     >
-                        <Box sx={style}>
+                        <DialogContent>
                             <form onSubmit={handleAddNewTuteur} className={"gap-5 grid md:grid-cols-3 sm:grid-cols-2  grid-cols-1 items-end mb-5 border p-2"}>
                                 <div className={"text-lg font-bold md:col-span-3 sm:col-span-2"}>
                                     Infos du tuteur
@@ -700,7 +697,7 @@ function Create(props) {
                                 </div>
 
                                 <div className={'md:col-span-3 sm:col-span-2'}>
-                                    <button className={"p-3 text-white bg-green-600 rounded"} type={"submit"}>
+                                    <button className={"p-3 text-white orangeVertBackground rounded"} type={"submit"}>
                                         Enregistrer
                                     </button>
                                 </div>
@@ -729,9 +726,9 @@ function Create(props) {
                                     />
                                 </div>
                             }
-                        </Box>
+                        </DialogContent>
 
-                    </Modal>
+                    </Dialog>
                 </div>
             </div>
             <SnackBar error={tuteurAddError} success={ props.success || tuteurAddSuccess }  update={updateSnackBar}/>

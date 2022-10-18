@@ -44,7 +44,7 @@ function Index({auth,error,users,success}) {
         { field: 'action', headerName: 'ACTION',minWidth:130,flex:1,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleShow(cellValues.row)} className={"p-2 text-white bg-blue-400 bg-blue-400 rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleShow(cellValues.row)} className={"p-2 text-white orangeBlueBackground orangeBlueBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
                         Contrats <VisibilityIcon/>
                     </button>
                 </div>
@@ -56,6 +56,7 @@ function Index({auth,error,users,success}) {
     function columnsContratFunct(contrat)
     {
         const columnsContrat = [
+            { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
 
             { field: 'fonction', headerName: "FONCTION", flex: 1, minWidth: 150,  renderCell:(cellValues)=>(
                     cellValues.row.fonction?.libelle
@@ -98,7 +99,7 @@ function Index({auth,error,users,success}) {
             {
                 userContrat ?
                     <div className={"p-5"}>
-                        <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
+                        <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
                             Gestion des contrats
                         </div>
                         <div className={"text-2xl p-3 rounded bg-black text-white mb-5"} style={{width:"fit-content"}}>
@@ -140,7 +141,7 @@ function Index({auth,error,users,success}) {
                                         ))
                                     }
 
-                                    <button onClick={()=>setUserContrat(null)} className={"p-2 text-white bg-blue-400 bg-blue-400 rounded hover:text-blue-400 hover:bg-white transition duration-500 mt-5"}>
+                                    <button onClick={()=>setUserContrat(null)} className={"p-2 text-white orangeBlueBackground orangeBlueBackground rounded hover:text-blue-400 hover:bg-white transition duration-500 mt-5"}>
                                         <ArrowBackIosIcon></ArrowBackIosIcon> retour
                                     </button>
                                 </motion.div>
@@ -149,7 +150,7 @@ function Index({auth,error,users,success}) {
                     </div>
                     :
                     <div className={"p-5"}>
-                        <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
+                        <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
                             Gestion des contrats
                         </div>
                         <div className={"text-lg font-bold mb-5"}>

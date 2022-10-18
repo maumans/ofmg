@@ -69,13 +69,13 @@ function Index(props) {
     });
 
     const columns = [
-        { field: 'id', headerName: 'ID', width:100 },
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'dateDebut', headerName: 'DATE DE DEBUT', width: 200 },
         { field: 'dateFin', headerName: 'DATE DE FIN', width: 200 },
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleOpen(cellValues.row)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleOpen(cellValues.row)} className={"p-2 text-white orangeBlueBackground rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
                         <EditIcon/>
                     </button>
                     <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
@@ -117,6 +117,26 @@ function Index(props) {
         confirm("Voulez-vous vraiment cloturer l'année ?") && Inertia.get(route("etablissement.anneeScolaire.cloture"));
     }
 
+    ////// SnackBar
+
+    const [error, setError] = useState(null)
+    const [success, setSuccess] = useState(null)
+
+
+
+    useEffect(() => {
+        setError(props.error)
+    },[props])
+
+    useEffect(() => {
+        setSuccess(props.success)
+    },[props])
+
+    function update()
+    {
+        error && setError(null)
+        success && setSuccess(null)
+    }
 
 
     return (
@@ -124,7 +144,7 @@ function Index(props) {
             <div className={"p-5"}>
                 <div>
 
-                    <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
+                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
                         Gestion des années scolaires
                     </div>
 
@@ -174,7 +194,7 @@ function Index(props) {
                                             </button>
                                         </Tooltip>
                                         :
-                                        <button style={{height: 56}} className={"p-3 text-white bg-green-600 rounded"} type={"submit"}>
+                                        <button style={{height: 56}} className={"p-3 text-white orangeVertBackground rounded"} type={"submit"}>
                                             Enregistrer
                                         </button>
                                     }
@@ -236,7 +256,7 @@ function Index(props) {
                                                 </button>
                                             </Tooltip>
                                             :
-                                            <button style={{height: 56}} className={"p-3 text-white bg-green-600 rounded"} type={"submit"}>
+                                            <button style={{height: 56}} className={"p-3 text-white orangeVertBackground rounded"} type={"submit"}>
                                                 Enregistrer
                                             </button>
                                     }
@@ -269,8 +289,7 @@ function Index(props) {
                             />
                         }
                     </motion.div>
-                    <SnackBar success={ props.success }/>
-                </div>
+                    <SnackBar error={error} update={update} success={success} />                </div>
             </div>
         </AdminPanel>
     );

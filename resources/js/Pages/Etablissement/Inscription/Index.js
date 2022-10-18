@@ -1,4 +1,4 @@
-import React, {useEffect, useLayoutEffect, useState} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {
     DataGrid,
     gridPageCountSelector,
@@ -58,18 +58,26 @@ function Index(props) {
     const [tarifs,setTarifs] = useState();
     const [tarifsEdit,setTarifsEdit] = useState();
 
-    const [success,setSuccess] = useState(null);
+    ////// SnackBar
+
+    const [error, setError] = useState(null)
+    const [success, setSuccess] = useState(null)
+
+
 
     useEffect(() => {
-        props.success && setSuccess(props.success);
-    },[props.success])
+        setError(props.error)
+    },[props])
+
+    useEffect(() => {
+        setSuccess(props.success)
+    },[props])
 
     function update()
     {
-        setSuccess(null)
+        error && setError(null)
+        success && setSuccess(null)
     }
-
-
 
     useEffect(() => {
         (data.matriculeSearch==="" && data.anneeScolaireSearch===null && data.classeSearch===null ) && setInscriptions(props.inscriptions);
@@ -91,7 +99,7 @@ function Index(props) {
         tuteurs:"",
         tuteursSearch:[],
         tuteursAdd:[],
-        "inscriptions":null
+        inscriptions:null
     });
 
     const {data:dataTuteur,setData:setDataTuteur} = useForm({
@@ -127,7 +135,7 @@ function Index(props) {
     function handleExport(e)
     {
         e.preventDefault();
-        post(route("etablissement.inscription.import",props.auth.user.id),data.inscriptions, {preserveState: false})
+        post(route("etablissement.inscription.import",props.auth.user.id), {data:data.inscriptions,preserveScroll: true})
     }
 
     useEffect(() => {
@@ -292,6 +300,7 @@ function Index(props) {
 
 
     const columns = [
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'prenom', headerName: 'PRENOM', width:150,renderCell:(cellValues)=>cellValues.row.apprenant?.prenom},
         { field: 'nom', headerName: 'NOM', width:150,renderCell:(cellValues)=>cellValues.row.apprenant?.nom},
         { field: 'matricule', headerName: 'MATRICULE', width:150,renderCell:(cellValues)=>cellValues.row.apprenant?.matricule},
@@ -299,10 +308,10 @@ function Index(props) {
         { field: 'action', headerName: 'ACTION',width:150,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleDetails(cellValues.row)} className={"p-2 text-white bg-blue-400 rounded hover:text-blue-500 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleDetails(cellValues.row)} className={"p-2 text-white orangeVioletBackground rounded hover:text-blue-500 hover:bg-white transition duration-500"}>
                         <ListAltIcon/>
                     </button>
-                    <button onClick={()=>handleOpen(cellValues.row)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleOpen(cellValues.row)} className={"p-2 text-white orangeBlueBackground rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
                         <EditIcon/>
                     </button>
                     <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
@@ -422,7 +431,7 @@ function Index(props) {
         <AdminPanel auth={props.auth} error={props.error} sousActive={"listeInscripton"} active={"inscription"} >
             <div className={"p-5"}>
                 <div>
-                    <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
+                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
                         Liste des inscriptions
                     </div>
 
@@ -446,7 +455,7 @@ function Index(props) {
                                     options={props.anneeScolaires}
                                     getOptionLabel={(option)=>option.dateDebut.split("-")[0]+"/"+option.dateFin.split("-")[0]}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
-                                    renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Annee Scolaire"} label={params.libelle}/>}
+                                    renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Année Scolaire"} label={params.libelle}/>}
                                 />
                                 <div className={"flex text-red-600"}>{props.errors?.anneeScolaire}</div>
                             </FormControl>
@@ -467,7 +476,7 @@ function Index(props) {
                                 />
                                 <div className={"flex text-red-600"}>{props.errors?.classe}</div>
                             </FormControl>
-                            <button type="button" onClick={handleSearchButton} className={"rounded bg-gray-600 p-3 text-white flex"}>
+                            <button type="button" onClick={handleSearchButton} className={"rounded bg-black text-white"} style={{height: 56,width:56}}>
                                 <SearchIcon/>
                             </button>
                         </div>
@@ -557,7 +566,7 @@ function Index(props) {
                                         }
 
                                         <div className={"flex col-span-3 justify-end"}>
-                                            <button className={"p-3 text-white bg-green-600 rounded"}  type={"submit"}>
+                                            <button className={"p-3 text-white orangeVertBackground rounded"}  type={"submit"}>
                                                 Enregistrer
                                             </button>
                                         </div>
@@ -569,7 +578,7 @@ function Index(props) {
                             {
                                 openDetails &&
                                     <div className={"w-full h-full border border-orange-500 p-5 rounded space-y-8 items-between"}>
-                                        <div className={"text-3xl font-bold p-2 border text-white bg-orange-500 rounded"}>
+                                        <div className={"text-3xl font-bold p-2 border text-white orangeOrangeBackground rounded"}>
                                             Details de l'inscription
                                         </div>
                                         <div className={"flex space-x-5 items-center"}>
@@ -579,7 +588,7 @@ function Index(props) {
                                             </div>
                                         </div>
                                         <div className={"relative"}>
-                                            <div className="absolute -top-3 left-2 bg-orange-500 text-white rounded p-2">
+                                            <div className="absolute -top-3 left-2 orangeOrangeBackground text-white rounded p-2">
                                                 Infos apprenant
                                             </div>
                                             <div className={"md:flex flex-wrap md:gap-5 capitalize text-xl border rounded px-5 py-10 border-orange-500"}>
@@ -590,7 +599,7 @@ function Index(props) {
                                             </div>
                                         </div>
                                         <div className={"relative"}>
-                                            <div className="absolute -top-3 left-2 bg-orange-500 text-white rounded p-2">
+                                            <div className="absolute -top-3 left-2 orangeOrangeBackground text-white rounded p-2">
                                                 Infos inscription
                                             </div>
                                             <div className="md:flex flex-wrap md:gap-5 text-xl border rounded px-5 py-10 border-orange-500">
@@ -611,21 +620,23 @@ function Index(props) {
                         <div>
                             Importer des inscriptions
                         </div>
-                        <div className={"flex "}>
+                        <div className={"flex"}>
                             <div>
-                                <TextField type="file" name="inscriptions" onChange={(e)=>setData('inscriptions',e.target.files[0])}/>
+                                <TextField type="file" name="inscriptions" onChange={(e)=>setData('inscriptions',e.target?.files[0])}/>
+                                <div className="text-red-600">
+                                    {props.errors?.inscriptions}
+                                </div>
                             </div>
                             <div className={"ml-5"}>
                                 <a href="/storage/ModeleFichier/inscription.xlsx" download>
 
-                                    <div className="bg-blue-400 flex items-center rounded text-white hover:transition hover:scale-100 duration-500 px-2" style={{height: 56}}>
-
+                                    <div className="orangeBlueBackground flex items-center rounded text-white hover:transition hover:scale-100 duration-500 px-2" style={{height: 56}}>
                                         <DownloadIcon/> Télécharger le modèle
                                     </div>
                                 </a>
                             </div>
                         </div>
-                        <button type={'submit'} className={"p-2 my-4 text-white bg-green-500 hover:bg-green-600 rounded"}>
+                        <button type={'submit'} className={"p-2 my-4 text-white orangeVertBackground hover:orangeVertBackground rounded"}>
                             Importer
                         </button>
 
@@ -660,7 +671,9 @@ function Index(props) {
                     </motion.div>
                 </div>
             </div>
-            <SnackBar success={ success } update={update}/>
+            {
+                <SnackBar error={error} update={update} success={success} />
+            }
         </AdminPanel>
     );
 }

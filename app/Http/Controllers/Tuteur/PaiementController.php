@@ -37,7 +37,7 @@ class PaiementController extends Controller
         $payerAll=0;
 
         $tuteur=User::where('id',Auth::user()->id)->with(["paiementsTuteur"=>function($query){
-            $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif")->get();
+            $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif","etablissement")->get();
         },"tuteurApprenants"=>function($query){
             $query->whereHas("classe.etablissement.anneeEnCours")->with(["classe.etablissement.anneeEnCours","tarifs.typePaiement","tarifs"=>function($query){
                 $query->get();
@@ -73,6 +73,9 @@ class PaiementController extends Controller
                 $donneesParFrais->push(["libelle"=>$typePaiement->libelle,"montant"=>$montant,"resteApayer"=>$resteApayer,"payer"=>$montant-$resteApayer]);
             }
         }
+
+        //dd($donneesParFrais);
+
         return Inertia::render("Tuteur/Paiement/Index",["tuteur"=>$tuteur,"resteApayerAll"=>$resteApayerAll,"totalAll"=>$totalAll,"payerAll"=>$payerAll,"donneesParFrais"=>$donneesParFrais,"codeNumeros"=>$codeNumeros]);
     }
 
@@ -159,7 +162,7 @@ class PaiementController extends Controller
             {
                 $info=explode("_",$key);
                 $apprenant=Apprenant::find($info[0]);
-                $tarif=Tarif::find($info[1]);
+                $tarif=Tarif::where("id",$info[1])->first();
 
                 if($value)
                 {
@@ -167,9 +170,11 @@ class PaiementController extends Controller
                     $paiement=Paiement::create([
                         "montant"=>$request->montants[$info[0]."_".$info[1]],
                         "numero_retrait"=>$request->numero_retrait,
+                        "numero_depot"=>$tarif->etablissement->telephone,
                         "type_paiement_id"=>$tarif["type_paiement_id"],
                         "mode_paiement_id"=>Mode_paiement::where("libelle","OM WEB")->first()->id,
                         "tuteur_id"=>Auth::user()->id,
+                        "etablissement_id"=>$tarif->etablissement_id
                     ]);
 
                     //Paiement::where("id",$paiement->id)->first()->cashin();

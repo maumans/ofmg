@@ -18,7 +18,9 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 function Show(props) {
 
 
-    const columns = [{ field: 'libelle', headerName: 'VILLE', width: 300 },
+    const columns = [
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
+        { field: 'libelle', headerName: 'VILLE', width: 300 },
         { field: 'action', headerName: 'ACTION',width:350,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>

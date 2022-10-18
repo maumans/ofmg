@@ -418,112 +418,170 @@ class InscriptionController extends Controller
 
 
 
-    public function import(Request $request)
+    public function import(Request $request,$userId)
     {
+
+        $request->validate([
+            "inscriptions"=>"required",
+        ]);
+
         DB::beginTransaction();
 
         try{
             $apprenantsExiste=collect();
 
             $nom=$request->file("inscriptions")->store("importInscription","public");
-            $path=public_path()."\\storage\\".str_replace("/","\\",$nom);
+
+            $path=public_path('storage/'.$nom);
 
             if (!empty($path) && is_file($path)) {
-                FastExcel::import($path, function ($data) use ($apprenantsExiste) {
+
+                $datas=FastExcel::import($path);
+
+                foreach ($datas as $data) {
+
                     if ($data){
+
                         $apprenantEncours=Apprenant::whereRelation("classe.etablissement","id",Auth::user()->etablissementAdmin->id)->where("matricule",$data["matricule"])->first();
+
                         if(!$apprenantEncours)
                         {
                             $classe=Classe::where("libelle",$data["classe"])->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with(["tarifs.typePaiement"=>function($query){
                                 $query->where("libelle","Inscription")->orWhere("libelle","Scolarité")->get();
                             }])->first();
 
-                            dd($classe);
 
-
-                            $apprenant = Apprenant::create([
-                                "nom" => $data["nom"],
-                                "prenom" => $data["prenom"],
-                                "matricule" => $data["matricule"],
-                                "lieu_naissance" => $data["lieuNaissance"],
-                                "date_naissance" => $data["dateNaissance"],
-                                "classe_id"=>$classe->id
-                            ]);
-
-                            $tarifInscription=$classe->tarifs->where("typePaiement.libelle","Inscription")->first();
-
-                            $inscription=Inscription::create([
-                                "montant" =>$tarifInscription->montant,
-                                "typePaiement.libelle"=>["required",Rule::unique("tarifs")->where(function($query) use($tarifInscription,$classe) {
-                                    return $query->where("etablissement_id",Auth::user()->etablissementAdmin->id)->where("typePaiement_id",$tarifInscription->typePaiement->id)->where("classe_id",$classe->id);
-                                })],
-                            ]);
-
-                            $inscription->classe()->associate($classe)->save();
-                            $inscription->apprenant()->associate($apprenant)->save();
-                            $inscription->anneeScolaire()->associate(Auth::user()->etablissementAdmin->anneeEnCours)->save();
-
-                            foreach($classe->tarifs as $tarif){
-                                if($tarif)
-                                {
-                                    $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin);
-
-                                    $anneeScolaire=$tarif->anneeScolaire;
-
-                                    $apprenant->tarifs()->syncWithoutDetaching([$tarif->id=>["resteApayer"=>$tarif->montant,"nombreMois"=>$intervalle->count(),"annee_scolaire_id"=>$anneeScolaire->id]]);
-
-                                    foreach($intervalle as $date)
-                                    {
-                                        $moisPaye=Mois_Paye::create([
-                                            "montant"=>0
-                                        ]);
-
-                                        $moisPaye->mois()->associate(Mois::where("position",$date->month)->first())->save();
-                                        $moisPaye->apprenantTarif()->associate(Apprenant_tarif::where("tarif_id",$tarif->id)->where("apprenant_id",$apprenant->id)->first())->save();
-
-                                    }
-                                }
-
-                            }
-
-
-                            if($data["nomTuteur"])
+                            if($classe)
                             {
-                                $tuteur=User::where("email",$data["emailTuteur"])->orWhere("telephone",$data["telephone"])->first();
+                                $tarifInscription=$classe->tarifs()->whereRelation("typePaiement","libelle","Inscription")->first();
 
-                                if(!$tuteur)
+                                if($tarifInscription)
                                 {
-                                    $tuteur=User::create([
-                                        "nom"=>$data["nomTuteur"],
-                                        "prenom"=>$data["prenomTuteur"],
-                                        "telephone"=>$data["telephoneTuteur"],
-                                        "login"=>$data["telephoneTuteur"],
-                                        "email"=>$data["emailTuteur"],
-                                        "password"=>Hash::make($data["telephoneTuteur"]),
+                                    $apprenant = Apprenant::create([
+                                        "nom" => $data["nom"],
+                                        "prenom" => $data["prenom"],
+                                        "matricule" => $data["matricule"],
+                                        "lieu_naissance" => $data["lieuNaissance"],
+                                        "date_naissance" => $data["dateNaissance"],
+                                        "classe_id"=>$classe->id
                                     ]);
 
-                                    $tuteur->roles()->syncWithoutDetaching(Role::where("libelle","tuteur")->first());
+                                    $tarifInscription=$classe->tarifs()->whereRelation("typePaiement","libelle","Inscription")->first();
+
+                                    foreach ($data as $key => $value)
+                                    {
+                                        $t=$classe->tarifs()->whereRelation("typePaiement","libelle",$key)->first();
+
+                                        if($value==="Oui")
+                                        {
+                                            if($t)
+                                            {
+                                                $apprenant->tarifs()->save($t);
+                                            }
+                                            else
+                                            {
+                                                return redirect()->back()->with("error","Merci de verifier les services");
+                                            }
+                                        }
+                                    }
+
+
+                                    $inscription=Inscription::create([
+                                        "montant" =>$tarifInscription->montant,
+                                        "typePaiement.libelle"=>["required",Rule::unique("tarifs")->where(function($query) use($tarifInscription,$classe) {
+                                            return $query->where("etablissement_id",Auth::user()->etablissementAdmin->id)->where("typePaiement_id",$tarifInscription->typePaiement->id)->where("classe_id",$classe->id);
+                                        })],
+                                    ]);
+
+                                    $inscription->classe()->associate($classe)->save();
+                                    $inscription->apprenant()->associate($apprenant)->save();
+                                    $inscription->anneeScolaire()->associate(Auth::user()->etablissementAdmin->anneeEnCours)->save();
+
+
+                                    foreach($apprenant->tarifs as $tarif){
+                                        if($tarif)
+                                        {
+                                            $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin);
+
+                                            $anneeScolaire=$tarif->anneeScolaire;
+
+                                            $apprenant->tarifs()->syncWithoutDetaching([$tarif->id=>["resteApayer"=>$tarif->montant,"nombreMois"=>$intervalle->count(),"annee_scolaire_id"=>$anneeScolaire->id]]);
+
+
+                                            foreach($intervalle as $date)
+                                            {
+                                                $moisPaye=Mois_Paye::create([
+                                                    "montant"=>0
+                                                ]);
+
+                                                $moisPaye->mois()->associate(Mois::where("position",$date->month)->first())->save();
+                                                $moisPaye->apprenantTarif()->associate(Apprenant_tarif::where("tarif_id",$tarif->id)->where("apprenant_id",$apprenant->id)->first())->save();
+
+                                            }
+                                        }
+
+                                    }
+
+                                    if($data["nomTuteur"])
+                                    {
+                                        $tuteur=User::where("email",$data["emailTuteur"])->orWhere("telephone",$data["telephoneTuteur"])->first();
+
+                                        if(!$tuteur)
+                                        {
+                                            $tuteur=User::create([
+                                                "nom"=>$data["nomTuteur"],
+                                                "prenom"=>$data["prenomTuteur"],
+                                                "telephone"=>$data["telephoneTuteur"],
+                                                "login"=>$data["telephoneTuteur"],
+                                                "email"=>$data["emailTuteur"],
+                                                "password"=>Hash::make($data["telephoneTuteur"]),
+                                            ]);
+
+                                            $tuteur->roles()->syncWithoutDetaching(Role::where("libelle","tuteur")->first());
+                                        }
+                                    }
+
+                                    $apprenant->tuteurs()->syncWithoutDetaching(User::find($tuteur["id"]));
                                 }
                             }
+                            else
+                            {
+                                return redirect()->back()->with("error","Classe(s) Incorrecte(s)");
+                            }
 
-                            $apprenant->tuteurs()->syncWithoutDetaching(User::find($tuteur["id"]));
                         }
                         else
                         {
                             $apprenantsExiste->push($apprenantEncours);
                         }
                     }
+                    else
+                    {
+                        return redirect()->back()->with("error","Aucune donnée");
+                    }
 
-                });
+                };
+
+            }
+            else
+            {
+                return redirect()->back()->with("error","Fichier incorrect");
             }
 
-            DB::commit();
-
-            return $apprenantsExiste ? redirect()->back()->with("error","Import(s) en attente(s)"):redirect()->back()->with("success","Import effectué avec success");
+            if($apprenantsExiste)
+            {
+                DB::commit();
+                return redirect()->back()->with("error","Redondance de données");
+            }
+            else
+            {
+                DB::commit();
+                return redirect()->back()->with("success","Import effectué avec success");
+            }
 
         }
-            catch(Throwable $e){
-            echo($e);
+            catch(Exception $e){
+                return redirect()->back()->with("error","Fichier incorrect");
             DB::rollback();
         }
 

@@ -6,6 +6,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {Inertia} from "@inertiajs/inertia";
 import {motion} from "framer-motion";
+import ListAltIcon from "@mui/icons-material/ListAlt";
 
 function Index({auth,error,personnels,success}) {
 
@@ -15,7 +16,7 @@ function Index({auth,error,personnels,success}) {
     }
 
     const columns = [
-        { field: 'id', headerName: 'ID', minWidth: 70, flex: 1 },
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'prenom', headerName: 'PRENOM', minWidth: 130, flex: 1 },
         { field: 'nom', headerName: 'NOM', minWidth: 130, flex: 1 },
         { field: 'adresse', headerName: 'ADRESSE', minWidth: 130, flex: 1 },
@@ -23,10 +24,10 @@ function Index({auth,error,personnels,success}) {
         { field: 'action', headerName: 'ACTION',minWidth: 300, flex: 1,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleFonctions(cellValues.row.id)} className={"p-2 text-white bg-blue-400 rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
-                        Details
+                    <button onClick={()=>handleFonctions(cellValues.row.id)} className={"p-2 text-white orangeVioletBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
+                        <ListAltIcon/>
                     </button>
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
                         <EditIcon/>
                     </button>
                     <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>

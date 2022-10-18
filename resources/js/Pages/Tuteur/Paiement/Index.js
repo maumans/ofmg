@@ -218,9 +218,15 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
     }
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'Nom_complet', headerName: "NOM COMPLET DE L'APPRENANT",headerClassName:"header", flex: 1, minWidth: 300, fontWeight:"bold", renderCell:(cellValues)=>(
                 cellValues.row.apprenant.prenom+" "+cellValues.row.apprenant.nom
+            ) },
+        { field: 'etablissement', headerName: "ETABLISSEMENT",headerClassName:"header", flex: 1, minWidth: 300, fontWeight:"bold", renderCell:(cellValues)=>(
+                cellValues.row?.etablissement?.nom
+            ) },
+        { field: 'code', headerName: "CODE",headerClassName:"header", flex: 1, minWidth: 300, fontWeight:"bold", renderCell:(cellValues)=>(
+                cellValues.row?.etablissement?.code
             ) },
         { field: 'type_paiement', headerName: "TYPE DE FRAIS", flex: 1, minWidth: 150,  renderCell:(cellValues)=>(
                 cellValues.row.type_paiement?.libelle
@@ -234,7 +240,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
         { field: 'action', headerName: 'ACTION',width:100,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white bg-blue-400 bg-blue-400 rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground orangeBlueBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
                         <VisibilityIcon/>
                     </button>
                 </div>
@@ -417,7 +423,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                                                         <div key={t.id} className={"relative shadow-lg"}>
                                                                             {
                                                                                 t.pivot.resteApayer===0 ?
-                                                                                    <div className={"absolute -right-2 -top-3 rounded p-3 bg-green-400 text-white"}>
+                                                                                    <div className={"absolute -right-2 -top-3 rounded p-3 orangeVertBackground text-white"}>
                                                                                         Payé
                                                                                     </div>
                                                                                     :
@@ -515,7 +521,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
 
                                         {
                                             tarifs && Object.values(tarifs).find(value=>value===true) &&
-                                            <div className={"p-2 ml-5 bg-orange-400 my-5 text-white w-max-c text-lg"} style={{width:"fit-content"}}>
+                                            <div className={"p-2 ml-5 orangeOrangeBackground my-5 text-white w-max-c text-lg"} style={{width:"fit-content"}}>
                                                 <span className={"font-bold"}>Montant total:</span> <span>{formatNumber(data.total)} FG</span>
                                             </div>
                                         }
@@ -537,7 +543,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                         {
                                             tarifs && Object.values(tarifs).find(value=>value===true) &&
                                             <div className={"flex ml-5 col-span-3"}>
-                                                <button className={"p-2 text-white bg-green-400 font-bold rounded"}  type={"submit"}>
+                                                <button className={"p-2 text-white orangeVertBackground font-bold rounded"}  type={"submit"}>
                                                     Valider
                                                 </button>
                                             </div>

@@ -4,6 +4,7 @@ import {DataGrid, GridToolbar} from "@mui/x-data-grid";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import AdminPanel from "@/Layouts/AdminPanel";
 import SnackBar from "@/Components/SnackBar";
+import formatNumber from "@/Utils/formatNumber";
 
 function Index({auth,error,paiements,success}) {
 
@@ -17,24 +18,29 @@ function Index({auth,error,paiements,success}) {
         success && setSuccessSt(success);
     },[])
 
+
     const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
+
+        { field: 'created_at', headerName: "DATE", flex: 1, minWidth: 150, renderCell:(cellValues)=>(
+                cellValues.row.created_at.split("T")[0]
+            ) },
         { field: 'Nom_complet', headerName: "NOM COMPLET DE L'APPRENANT",headerClassName:"header", flex: 1, minWidth: 300, fontWeight:"bold", renderCell:(cellValues)=>(
                 cellValues.row.apprenant.prenom+" "+cellValues.row.apprenant.nom
             ) },
         { field: 'type_paiement', headerName: "TYPE DE FRAIS", flex: 1, minWidth: 150,  renderCell:(cellValues)=>(
                 cellValues.row.type_paiement?.libelle
             ) },
+        { field: 'montant', headerName: "MONTANT", flex: 1, minWidth: 150,  renderCell:(cellValues)=>(
+                formatNumber(cellValues.row.montant)+" FG"
+            ) },
         { field: 'mode_paiement', headerName: "MODE DE PAIEMENT", flex: 1, minWidth: 250,  renderCell:(cellValues)=>(
                 cellValues.row.mode_paiement?.libelle
-            ) },
-        { field: 'created_at', headerName: "DATE", flex: 1, minWidth: 150, renderCell:(cellValues)=>(
-                cellValues.row.created_at.split("T")[0]
             ) },
         { field: 'action', headerName: 'ACTION',width:100,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white bg-blue-400 bg-blue-400 rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground orangeBlueBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
                         <VisibilityIcon/>
                     </button>
                 </div>

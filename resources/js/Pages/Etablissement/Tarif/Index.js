@@ -27,6 +27,7 @@ import NumberFormat from "react-number-format";
 import SnackBar from "@/Components/SnackBar";
 import {motion} from "framer-motion";
 import formatNumber from "@/Utils/formatNumber";
+import {classes} from "@mui/x-date-pickers/ClockPicker/ClockNumber";
 
 const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, ref) {
     const { onChange, ...other } = props;
@@ -134,7 +135,7 @@ function Index(props) {
     });
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'typePaiement', headerName: 'TYPE FRAIS', minWidth:130,renderCell:(cellValues)=>cellValues.row.type_paiement?.libelle,flex:1 },
         { field: 'classe', headerName: 'CLASSE', minWidth:250,flex:1, renderCell:(cellValues)=>cellValues.row.classe?.libelle },
         { field: 'montant', headerName: 'MONTANT', minWidth:130,flex:1 ,renderCell:(cellValues)=>formatNumber(cellValues.row.montant)+" FG"},
@@ -144,7 +145,7 @@ function Index(props) {
         { field: 'action', headerName: 'ACTION',minWidth:200,flex:1,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white bg-blue-700 rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
+                    <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
                         <EditIcon/>
                     </button>
                     <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
@@ -193,7 +194,7 @@ function Index(props) {
     return (
         <AdminPanel auth={props.auth} error={props.error} active={"Service"}>
             <div>
-                <div className={"my-5 text-2xl text-white bg-orange-400 rounded text-white p-2"}>
+                <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
                     Gestion des services
                 </div>
 
@@ -218,14 +219,15 @@ function Index(props) {
                         <div>
                             <Autocomplete
                                 multiple
+                                filterOptions={(options)=>[{libelle:"Tout selectionner" }, ...options]}
                                 disabled={data.typePaiement?.concerne!=="APPRENANT"}
                                 id="tags-standard"
-                                onChange={(e,val)=>setData("classes",val)}
+                                groupBy={(option) => option.libelle !=="Tout selectionner" && option.niveau.libelle}
+                                onChange={(e,val)=> setData("classes",val)}
+                                isOptionEqualToValue={(option, value) => value.libelle==="Tout selectionner" && setData("classes",props.classes.filter((classe)=>(data.typePaiement?data.typePaiement?.tarifs.find(tarif=>tarif.classe_id===classe.id)===undefined:1)))}
                                 disablePortal={true}
-                                id={"combo-box-demo"}
                                 options={props.classes.filter((classe)=>(data.typePaiement?data.typePaiement?.tarifs.find(tarif=>tarif.classe_id===classe.id)===undefined:1))}
                                 getOptionLabel={option=>option.libelle}
-                                isOptionEqualToValue={(option, value) => option.id === value.id }
                                 required
                                 renderInput={(params)=><TextField fullWidth {...params} placeholder={"Classes"} label={params.libelle}/>}
                             />
@@ -286,7 +288,7 @@ function Index(props) {
                         <SnackBar error={error} update={update} success={success}/>
 
                         <div className={"flex md:col-span-3 justify-end"}>
-                            <button className={"p-2 text-white bg-green-600 rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}}  type={"submit"}>
+                            <button className={"p-2 text-white orangeVertBackground rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}}  type={"submit"}>
                                 Enregistrer
                             </button>
                         </div>

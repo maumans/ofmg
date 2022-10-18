@@ -86,7 +86,7 @@ class DepartementController extends Controller
         $departement->libelle=$request->libelleEdit;
         $departement->save();
 
-        return redirect()->back()->with("Fonction modifiée avec succès");
+        return redirect()->back()->with("success","Département modifiée avec succès");
     }
 
     /**

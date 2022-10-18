@@ -85,7 +85,7 @@ class CodeNumeroController extends Controller
         $codeNumero->libelle=$request->libelleEdit;
         $codeNumero->save();
 
-        return redirect()->back()->with("Code de numéro modifié avec succès");
+        return redirect()->back()->with("success","Code de numéro modifié avec succès");
     }
 
     /**
