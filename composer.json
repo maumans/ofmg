@@ -68,7 +68,10 @@
 
     "repositories": [
         {
-            "type": "composer",
+            "type": "path",
+            "options": {
+                "symlink": true
+            },
             "url": "package/crudfy/om-b2b"
         }
     ],
