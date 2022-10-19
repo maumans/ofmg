@@ -69,7 +69,7 @@
     "repositories": [
         {
             "type": "composer",
-            "url":  "./packages/crudfy/om-b2b"
+            "url": "package/crudfy/om-b2b"
         }
     ],
 
