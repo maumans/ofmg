@@ -39,6 +39,9 @@ class CreateEtablissementsTable extends Migration
      */
     public function down()
     {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropConstrainedForeignId("etablissement_id");
+        });
         Schema::dropIfExists('etablissements');
     }
 }

@@ -35,6 +35,10 @@ class  CreateAnneeScolairesTable extends Migration
      */
     public function down()
     {
+        Schema::table('etablissements', function (Blueprint $table) {
+            $table->dropConstrainedForeignId("annee_encours_id");
+        });
+
         Schema::dropIfExists('annee_scolaires');
     }
 }
