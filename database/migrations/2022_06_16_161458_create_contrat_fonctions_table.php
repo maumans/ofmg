@@ -13,7 +13,7 @@ class CreateContratFonctionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('contrat_fonctionss', function (Blueprint $table) {
+        Schema::create('contrat_fonctions', function (Blueprint $table) {
             $table->id();
             $table->integer('montant')->nullable();
             $table->enum('frequence',["HORAIRE","MENSUELLE"])->nullable();
