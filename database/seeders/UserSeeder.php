@@ -23,11 +23,11 @@ class UserSeeder extends Seeder
         $user=User::create([
             "prenom"=>"maurice",
             "nom"=>"mansaré",
-            "login"=>"mm",
+            "login"=>"adminMau",
             "email"=>"admin@gmail.com",
             "titre"=>"M",
             "situation_matrimoniale"=>"Celibataire",
-            'password' => Hash::make("29101997"),
+            'password' => Hash::make("12345678"),
             "date_naissance"=>Date::create(1997,5,9),
             "telephone"=>"621993863",
 
@@ -38,43 +38,17 @@ class UserSeeder extends Seeder
         $user=User::create([
             "prenom"=>"amadou",
             "nom"=>"diallo",
-            "login"=>"ad",
+            "login"=>"amadouDiallo",
             "email"=>"ad@gmail.com",
             "situation_matrimoniale"=>"Marié",
             "date_naissance"=>Date::create(1980,2,7),
-            'password' => Hash::make("29101997"),
+            'password' => Hash::make("12345678"),
             "telephone"=>"622457854",
 
         ]);
 
-        $user->roles()->syncWithoutDetaching(Role::where("libelle", "tuteur")->first());
+        $user->roles()->syncWithoutDetaching(Role::where("libelle", "admin")->first());
 
 
-        $user=User::create([
-            "prenom"=>"gando",
-            "nom"=>"diallo",
-            "login"=>"gd",
-            "email"=>"gd@gmail.com",
-            "situation_matrimoniale"=>"Concubin",
-            'password' => Hash::make("29101997"),
-            "telephone"=>"621213862",
-
-        ]);
-
-        $user->roles()->syncWithoutDetaching(Role::where("libelle", "ofmg")->first());
-
-        $user=User::create([
-            "prenom"=>"amadou",
-            "nom"=>"bah",
-            "login"=>"ab",
-            "email"=>"ab@gmail.com",
-            'password' => Hash::make("29101997"),
-            "date_naissance"=>Date::create(1993,9,2),
-            "situation_matrimoniale"=>"Divorcé",
-            "telephone"=>"621230960",
-
-        ]);
-
-        $user->roles()->syncWithoutDetaching(Role::where("libelle", "tuteur")->first());
     }
 }
