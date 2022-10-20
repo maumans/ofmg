@@ -27,7 +27,7 @@ class CreateContratsTable extends Migration
             $table->timestamps();
         });
 
-        Schema::create('users', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->foreignId("contrat_id")->nullable()->constrained("contrats")->cascadeOnDelete();
         });
     }
