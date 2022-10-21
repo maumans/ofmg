@@ -22,6 +22,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/api/orange/callback', function (){
+    return "Orange Callback";
+});
+
 Route::middleware('auth:api')->group(function () {
     Route::get("etablissement/validation/{code}",[\App\Http\Controllers\Api\EtablissementController::class,"validation"])->name("api.etablissement.validation");
     Route::get("etablissement/apprenant/{code}/{matricule}",[\App\Http\Controllers\Api\EtablissementController::class,"verification"])->name("api.etablissement.apprenant.verification");
