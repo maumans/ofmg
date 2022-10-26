@@ -1,7 +1,7 @@
 <?php
 return [
-	'authorization_header' => "Basic b1o5MGlQREFyWUJVdmEzWDVMS1Rib0hUY0dRZzJBalE6dk9QQ2pOaWJKd21DNDNCbQ==",
+    'authorization_header' => "Basic TWtIR2dVOVRDd2lQRFJJQ2hLVnB3TXUzMFRJckZsMHo6bk13QkNIalFNU25yQWdFVA==",
     'peerIdType' => 'msisdn',
-    'currency' => "OUV",
-    'posId' => 'fLCiSxS',
+    'currency' => "GNF",
+    'posId' => 's1wCRuT',
 ];

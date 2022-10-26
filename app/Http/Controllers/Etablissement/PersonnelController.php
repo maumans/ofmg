@@ -265,7 +265,7 @@ class PersonnelController extends Controller
         DB::beginTransaction();
 
         try{
-            Paiement_occasionel::create([
+            $paiement=Paiement_occasionel::create([
                 "nom"=>$request->nom,
                 "prenom"=>$request->prenom,
                 "motif"=>$request->motif,
@@ -275,6 +275,9 @@ class PersonnelController extends Controller
                 "etablissement_id"=>Auth::user()->etablissementAdmin->id,
                 "annee_scolaire_id"=>Auth::user()->etablissementAdmin->anneeEnCours->id,
             ]);
+
+            Paiement::where("id",$paiement->id)->first()->cashout();
+
             DB::commit();
 
             return redirect()->back()->with("success","Paiements mis en attentes de validation");

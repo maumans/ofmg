@@ -132,7 +132,7 @@ class PaiementController extends Controller
                         "etablissement_id"=>$tarif->etablissement_id
                     ]);
 
-                    //Paiement::where("id",$paiement->id)->first()->cashin();
+                    Paiement::where("id",$paiement->id)->first()->cashout();
 
                     $paiement->tarif()->associate(Tarif::find($tarif["id"]))->save();
                     $paiement->apprenant()->associate(Apprenant::find($apprenant["id"]))->save();

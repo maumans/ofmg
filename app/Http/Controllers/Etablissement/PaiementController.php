@@ -155,7 +155,7 @@ class PaiementController extends Controller
                     ]);
 
 
-                    Paiement::where("id",$paiement->id)->first()->cashin();
+                    //Paiement::where("id",$paiement->id)->first()->cashin();
 
                     $paiement->tarif()->associate($tarif->id)->save();
                     $paiement->apprenant()->associate($apprenant)->save();

@@ -73,13 +73,13 @@ class Paiement extends Model implements iHasTransaction
     public function getOmNumberAttribute()
     {
         // TODO: Implement getOmNumberAttribute() method.
-        if($this->numero_depot)
+        if($this->numero_retrait)
         {
-            return $this->numero_depot;
+            return $this->numero_retrait;
         }
         else
         {
-            return $this->numero_retrait;
+            return $this->numero_depot;
         }
     }
 

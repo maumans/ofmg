@@ -99,8 +99,4 @@ Route::resource('paiement',\App\Http\Controllers\PaiementController::class);
 Route::get("paiement/search/{code?}/{matricule?}",[\App\Http\Controllers\PaiementController::class,"search"])->name("paiement.search");
 Route::get("paiement/ok/{apprenantId}/{total}",[\App\Http\Controllers\PaiementController::class,"ok"])->name("paiement.ok");
 
-Route::post('api/orange/notifications', function (Request $request){
-    return "Orange Callback";
-});
-
 require __DIR__.'/auth.php';
