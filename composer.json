@@ -70,7 +70,10 @@
     "repositories": [
         {
             "type": "path",
-            "url": "./package/crudfy/om-b2b"
+            "url": "./package/crudfy/om-b2b",
+            "options": {
+                "symlink": false
+            }
         }
     ],
 
