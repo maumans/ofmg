@@ -29,13 +29,6 @@ Route::middleware('auth:api')->group(function () {
     Route::post("etablissement/apprenant/paiement/",[\App\Http\Controllers\Api\EtablissementController::class,"paiement"])->name("api.etablissement.apprenant.paiement");
 });
 
-Route::middleware(['auth.basic'])->any('orange/notifications', function (Request $request){
-    return "Orange Callback";
-});
-
-
-
-
 Route::post('login',[App\Http\Controllers\Api\AuthController::class,"login"] );
 Route::post('register',[App\Http\Controllers\Api\AuthController::class,"register"] );
 
