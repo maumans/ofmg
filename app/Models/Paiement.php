@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 class Paiement extends Model implements iHasTransaction
 {
     use HasFactory,HasTransaction;
-
     protected $guarded=[];
 
     protected $appends= ["resteApayer"];

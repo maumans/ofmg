@@ -17,7 +17,8 @@
         "laravel/tinker": "^2.5",
         "rap2hpoutre/fast-excel": "^4.1",
         "tightenco/ziggy": "^1.0",
-        "tymon/jwt-auth": "^1.0"
+        "tymon/jwt-auth": "^1.0",
+        "crudfy/om-b2b": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
@@ -69,12 +70,10 @@
     "repositories": [
         {
             "type": "path",
-            "options": {
-                "symlink": true
-            },
             "url": "./package/crudfy/om-b2b"
         }
     ],
+
 
     "minimum-stability": "dev",
     "prefer-stable": true
