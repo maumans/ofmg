@@ -38,9 +38,10 @@ class User extends Authenticatable // implements MustVerifyEmail
 
     protected $guarded=[];
 
-    protected $appends = ['salairesAp'];
+    protected $appends = ['salairesAp','userName'];
 
     protected $salairesAp;
+    protected $userName;
 
     /**
      * The attributes that should be hidden for serialization.
@@ -63,6 +64,9 @@ class User extends Authenticatable // implements MustVerifyEmail
 
     public function getSalairesApAttribute(){
         return $this->salairesAp;
+    }
+     public function getUserNameAttribute(){
+        return $this->login;
     }
     public function setSalairesApAttribute($salairesAp){
         $this->salairesAp = $salairesAp;
