@@ -18,7 +18,8 @@
         "rap2hpoutre/fast-excel": "^4.1",
         "tightenco/ziggy": "^1.0",
         "tymon/jwt-auth": "^1.0",
-        "crudfy/om-b2b": "*"
+        "crudfy/om-b2b": "*",
+        "crudfy/om-b2b/src/Commands/": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
