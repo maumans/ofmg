@@ -188,7 +188,7 @@ class OmB2b
         $body = [
             "peerIdType" => $this->config('peerIdType'),
             "currency" => $this->config('currency'),
-            "posId" => $this->config('posId'),
+            "posId" =>$props['posId'],
             "peerId" => $props['peerId'],
             "transactionId" => $props['transactionId'],
             "amount" => $props['amount'],

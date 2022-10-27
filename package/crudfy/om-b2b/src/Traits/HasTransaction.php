@@ -13,7 +13,8 @@ trait HasTransaction
                 [
                     'amount' => $this->amount,
                     'transactionId' => $this->transactionId,
-                    'number' => (string)$this->omNumber
+                    'number' => (string)$this->depotNumber,
+                    "posId" => $this->posId,
                 ],
                 $this
             );
@@ -30,7 +31,8 @@ trait HasTransaction
                 [
                     'amount' => $this->amount,
                     'transactionId' => $this->transactionId,
-                    'number' => (string)$this->omNumber
+                    'number' => (string)$this->retraitNumber,
+                    "posId" => $this->posId,
                 ],
                 $this
             );

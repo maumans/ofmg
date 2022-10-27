@@ -6,7 +6,13 @@ interface IHasTransaction
 
     public function getOmNumberAttribute();
 
+    public function getDepotNumberAttribute();
+
+    public function getRetraitNumberAttribute();
+
     public function getAmountAttribute();
+
+    public function getPosIdAttribute();
 
     public function getAddToTransactionAttribute();
 }

@@ -70,17 +70,18 @@ class Paiement extends Model implements iHasTransaction
         return uniqid()."sch";
     }
 
-    public function getOmNumberAttribute()
+    public function getDepotNumberAttribute()
     {
         // TODO: Implement getOmNumberAttribute() method.
-        if($this->numero_retrait)
-        {
-            return $this->numero_retrait;
-        }
-        else
-        {
+
             return $this->numero_depot;
-        }
+    }
+
+    public function getRetraitNumberAttribute()
+    {
+        // TODO: Implement getOmNumberAttribute() method.
+
+        return $this->numero_retrait;
     }
 
     public function getAmountAttribute()
@@ -93,5 +94,15 @@ class Paiement extends Model implements iHasTransaction
     {
         // TODO: Implement getAddToTransactionAttribute() method.
         return [];
+    }
+
+    public function getPosIdAttribute()
+    {
+        return $this->etablissement->code;
+    }
+
+    public function getOmNumberAttribute()
+    {
+        // TODO: Implement getOmNumberAttribute() method.
     }
 }
