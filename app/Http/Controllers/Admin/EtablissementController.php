@@ -63,6 +63,8 @@ class EtablissementController extends Controller
         $request->validate([
             "nomEtablissement"=>"required",
             "code"=>"required|string|unique:etablissements",
+            "posId"=>"required|string|unique:etablissements",
+            "msisdn"=>"required|string|unique:etablissements",
             'login' => 'required|string|unique:users',
             'telephone' => 'required|string|unique:etablissements',
             //'telephone' => 'required|string|unique:users',

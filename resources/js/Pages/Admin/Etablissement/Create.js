@@ -23,6 +23,8 @@ function Create(props) {
     const {data,setData,post,reset}=useForm({
         "nomEtablissement":"",
         "code":"",
+        "posId":"",
+        "msisdn":"",
         "typeEtablissement":"",
         "ville":"",
         "commune":"",
@@ -43,6 +45,8 @@ function Create(props) {
         post(route("admin.etablissement.store",props.auth.user.id),{data,onSuccess: ()=>reset(
                 "nomEtablissement",
                 "code",
+                "posId",
+                "msisdn",
                 "typeEtablissement",
                 "telephone",
                 "telephoneAdmin",
@@ -115,6 +119,16 @@ function Create(props) {
                             <div className={"w-full"}>
                                 <TextField  className={"w-full"} name={"code"} label={"Code de l'etablissement"} onChange={(e)=>setData("code",e.target.value)} required/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.code}</div>
+                            </div>
+
+                            <div className={"w-full"}>
+                                <TextField  className={"w-full"} name={"posId"} label={"PosId de l'etablissement"} onChange={(e)=>setData("posId",e.target.value)} required/>
+                                <div className={"flex my-2 text-red-600"}>{props.errors?.posId}</div>
+                            </div>
+
+                            <div className={"w-full"}>
+                                <TextField  className={"w-full"} name={"msisdn"} label={"Numero msisdn"} onChange={(e)=>setData("msisdn",e.target.value)} required/>
+                                <div className={"flex my-2 text-red-600"}>{props.errors?.msisdn}</div>
                             </div>
 
                             <div>

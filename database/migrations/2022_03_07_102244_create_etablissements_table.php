@@ -18,6 +18,8 @@ class CreateEtablissementsTable extends Migration
             $table->id();
             $table->string("code")->unique()->nullable();
             $table->string("nom")->nullable();
+            $table->string("posId")->unique()->nullable();
+            $table->string("msisdn")->unique()->nullable();
             $table->string("telephone")->unique()->nullable();
 
             $table->foreignId("type_etablissement_id")->nullable()->constrained("type_etablissements")->cascadeOnDelete();
