@@ -10,7 +10,7 @@ class Annee_scolaire extends Model
     use HasFactory;
 
     protected $guarded=[];
-
+    
     public function tarifs()
     {
         return $this->hasMany(Tarif::class);
