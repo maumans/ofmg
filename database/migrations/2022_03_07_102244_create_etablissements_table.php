@@ -17,6 +17,8 @@ class CreateEtablissementsTable extends Migration
         Schema::create('etablissements', function (Blueprint $table) {
             $table->id();
             $table->string("code")->unique()->nullable();
+            $table->string("posId")->unique()->nullable();
+            $table->string("msisdn")->unique()->nullable();
             $table->string("nom")->nullable();
             $table->string("telephone")->unique()->nullable();
 
