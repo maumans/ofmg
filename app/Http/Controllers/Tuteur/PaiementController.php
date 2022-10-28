@@ -157,7 +157,6 @@ class PaiementController extends Controller
 
         try{
 
-
             foreach ($request->tarifs as $key =>$value)
             {
                 $info=explode("_",$key);
@@ -177,6 +176,7 @@ class PaiementController extends Controller
                         "etablissement_id"=>$tarif->etablissement_id
                     ]);
 
+
                     Paiement::where("id",$paiement->id)->first()->cashout();
 
                     $paiement->tarif()->associate(Tarif::find($tarif["id"]))->save();
@@ -192,11 +192,11 @@ class PaiementController extends Controller
 
             return redirect()->route('tuteur.paiement.ok',['total'=>$request->total]);
         }
-        catch(Exception $e){
-
-            echo($e);
+        catch(Throwable $e){
             DB::rollback();
+            return $e;
         }
+
     }
 
     /**
