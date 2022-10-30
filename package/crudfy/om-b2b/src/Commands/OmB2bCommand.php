@@ -5,7 +5,7 @@ namespace Crudfy\OmB2b\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
-class OmB2bCommand extends Command
+class OmB2BCommand extends Command
 {
     /**
      * The name and signature of the console command.
