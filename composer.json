@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
+        "crudfy/om-b2b": "dev-main",
         "darkaonline/l5-swagger": "^8.3",
         "doctrine/dbal": "^3.4",
         "fruitcake/laravel-cors": "^2.0",
@@ -59,7 +60,7 @@
     "extra": {
         "laravel": {
             "dont-discover": [
-                "laravel/tusk"
+               
             ]
         }
     },
