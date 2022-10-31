@@ -1,6 +1,6 @@
 <?php
 
-namespace crudfy\omB2b\Commands;
+namespace Crudfy\OmB2b\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
