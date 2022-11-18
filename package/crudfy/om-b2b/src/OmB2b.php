@@ -110,8 +110,6 @@ class OmB2b
             'Content-Type' => 'application/json'
         ])->get($this->url('services'));
 
-        dd($this->getAuthToken(),"mau",$this->config(""));
-
         $data = $this->recursiveCollect(json_decode($request->body(), true));
         $serviceToken = $data->get('token')->get('value');
         $expire_in = $data->get('token')->get('expiresIn');
