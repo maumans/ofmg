@@ -60,7 +60,7 @@
     "extra": {
         "laravel": {
             "dont-discover": [
-                "laravel/tusk"
+               
             ]
         }
     },
