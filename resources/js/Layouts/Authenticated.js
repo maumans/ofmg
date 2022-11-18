@@ -29,7 +29,7 @@ const theme = createTheme(
 );
 
 
-export default function Authenticated({auth, header, children}) {
+export default function Authenticated({auth, children}) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (

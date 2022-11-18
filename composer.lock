@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "033ff5d2514a3d5aa1669107e8c35ae7",
+    "content-hash": "b07949d5e62b42856352eb79ddc9fbe2",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -117,6 +117,63 @@
                 }
             ],
             "time": "2022-08-10T22:54:19+00:00"
+        },
+        {
+            "name": "crudfy/om-b2b",
+            "version": "dev-Api",
+            "dist": {
+                "type": "path",
+                "url": "./package/crudfy/om-b2b",
+                "reference": "ff87dd1df7231b837066e7cfc0339fe97f8499e5"
+            },
+            "require": {
+                "illuminate/support": "~7|~8"
+            },
+            "require-dev": {
+                "orchestra/testbench": "~7|~8",
+                "phpunit/phpunit": "~7|~8"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Crudfy\\OmB2b\\OmB2bServiceProvider"
+                    ],
+                    "aliases": {
+                        "OmB2b": "Crudfy\\OmB2b\\Facades\\OmB2b"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Crudfy\\OmB2b\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Crudfy\\OmB2b\\Tests\\": "tests"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Author Name",
+                    "email": "author@email.com",
+                    "homepage": "http://author.com"
+                }
+            ],
+            "description": ":package_description",
+            "homepage": "https://github.com/crudfy/om-b2b",
+            "keywords": [
+                "Laravel",
+                "OmB2b"
+            ],
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "darkaonline/l5-swagger",
@@ -10166,7 +10223,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "crudfy/om-b2b": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

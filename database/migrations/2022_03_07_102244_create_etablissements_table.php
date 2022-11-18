@@ -21,7 +21,6 @@ class CreateEtablissementsTable extends Migration
             $table->string("posId")->unique()->nullable();
             $table->string("msisdn")->unique()->nullable();
             $table->string("telephone")->unique()->nullable();
-
             $table->foreignId("type_etablissement_id")->nullable()->constrained("type_etablissements")->cascadeOnDelete();
             $table->foreignId("commune_id")->nullable()->constrained("communes")->cascadeOnDelete();
             $table->foreignId("ville_id")->nullable()->constrained("villes")->cascadeOnDelete();

@@ -1,7 +1,7 @@
 <?php 
 return [
-	'auth_token' => "Bearer ZsYFOfC4EAlg51chE44RjdXGRJ7E",
-	'auth_token_expire_in' => "1666962461",
+	'auth_token' => "Bearer 3Hvc6XxywQ26wxWDK3BBS41579Pk",
+	'auth_token_expire_in' => "1667223972",
 	'service_token' => "ICBrMG1yMzY3Vmw0dWRoVDVHam90aG13PT0uK1MraHRVSmRPc0ZUemtaS0g0ekV4RGhYblAxcjZWbEl6VVZoZEJHYnVBOXA3WHlMbFFqZUhkK0dTRVpD",
 	'services' => "cashin,cashout",
 	'service_token_expire_in' => "1666888745",

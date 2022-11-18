@@ -25,7 +25,7 @@ class CreateTransactionsTable extends Migration
             $table->string('creationDate')->nullable();
             $table->string('posId')->nullable();
             $table->string('txnId')->nullable();
-            $table->enum('status', ['PENDING', 'SUCCESS', 'FAILLED'])->nullable();
+            $table->enum('status', ['PENDING', 'SUCCESS', 'FAILED'])->nullable();
             $table->string('item_model')->nullable();
             $table->string('item_key')->nullable();
             $table->timestamps();

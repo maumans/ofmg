@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Schema;
 
 class OmB2b
 {
-    private $baseUrl = 'https://api.orange.com/orange-money-b2b/v1/sx';
+    private $baseUrl = 'https://api.orange.com/orange-money-b2b/v1/gn';
 
     private function url($url) {
         return $this->baseUrl.'/'.$url;
@@ -109,6 +109,9 @@ class OmB2b
             'Authorization' => $this->getAuthToken(),
             'Content-Type' => 'application/json'
         ])->get($this->url('services'));
+
+        dd($this->getAuthToken(),"mau",$this->config(""));
+
         $data = $this->recursiveCollect(json_decode($request->body(), true));
         $serviceToken = $data->get('token')->get('value');
         $expire_in = $data->get('token')->get('expiresIn');
@@ -193,6 +196,7 @@ class OmB2b
             "transactionId" => $props['transactionId'],
             "amount" => $props['amount'],
         ];
+        //dd($this->config("authorization_header"),$this->getAuthToken());
         $request = Http::withHeaders([
             'Authorization' => $this->getAuthToken(),
             'x-omr-forms-token' => $this->getFormToken($service),
