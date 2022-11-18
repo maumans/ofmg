@@ -44,5 +44,5 @@ Route::post('register',[App\Http\Controllers\Api\AuthController::class,"register
 //Route::get("apprenant/chargementInfos/{matricule}",[\App\Http\Controllers\Api\ApprenantController::class,"chargementInfos"])->name("api.apprenant.chargementInfos");
 
 Route::middleware("auth.basic")->any('orange/notifications', function (Request $request){
-    return "Orange Callback";
+    \Illuminate\Support\Facades\Log::info($request->all());
 });
