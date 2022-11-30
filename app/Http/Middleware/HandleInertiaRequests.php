@@ -46,6 +46,7 @@ class HandleInertiaRequests extends Middleware
                 'comptable'=>$request->user() && $request->user()->isComptable(),
                 'directeur'=>$request->user() && $request->user()->isDirecteur(),
             ],
+            "transactionResponse" => session("transactionResponse"),
             "success"=>session("success"),
             "error"=>session("error"),
             "montantTotal"=>session("montantTotal"),

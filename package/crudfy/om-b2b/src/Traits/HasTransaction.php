@@ -16,7 +16,6 @@ trait HasTransaction
                     'number' => (string)$this->depotNumber,
                     "posId" => 's1wCRuT',
                 ],
-                $this
             );
         }
         else {
