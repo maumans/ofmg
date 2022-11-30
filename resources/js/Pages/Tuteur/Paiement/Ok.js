@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Authenticated from "@/Layouts/Authenticated";
 import SnackBar from "@/Components/SnackBar";
 import Box from "@mui/material/Box";
@@ -27,7 +27,7 @@ function Ok({auth,errors,success,tuteur,total,transactionResponse}) {
     }
 
     useEffect(() => {
-        console.log(transactionResponse)
+        console.log(transactionResponse,'MAU')
     })
 
 
