@@ -47,7 +47,7 @@ Route::post('register',[App\Http\Controllers\Api\AuthController::class,"register
 Route::middleware("auth.basic")->any('orange/notifications', function (Request $request) {
 
 
-    \Illuminate\Support\Facades\Log::info($request->all());
+    \Illuminate\Support\Facades\Log::info((string)$request->all());
 
     if($request->status == "SUCCESS")
     {
@@ -66,9 +66,5 @@ Route::middleware("auth.basic")->any('orange/notifications', function (Request $
 
         $transaction->save();
     }
-
-    session()->put("transactionResponse",$request->all());
-
-    return $request->message;
 
 });

@@ -312,11 +312,6 @@ class EtablissementController extends Controller
 
     public function paiement(Request $request)
     {
-        /*
-        $request->validate([
-
-        ]);
-        */
 
         $apprenant = Apprenant::where("matricule",$request->matricule)->whereRelation("classe.etablissement","code",$request->code)->with("tarifs")->first();
 
