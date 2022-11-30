@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -43,6 +44,28 @@ Route::post('register',[App\Http\Controllers\Api\AuthController::class,"register
 //Route::get("apprenant/validationMatricule/{matricule}",[\App\Http\Controllers\Api\ApprenantController::class,"validationMatricule"])->name("api.apprenant.validationMatricule");
 //Route::get("apprenant/chargementInfos/{matricule}",[\App\Http\Controllers\Api\ApprenantController::class,"chargementInfos"])->name("api.apprenant.chargementInfos");
 
-Route::middleware("auth.basic")->any('orange/notifications', function (Request $request){
+Route::middleware("auth.basic")->any('orange/notifications', function (Request $request) {
+
     session()->put("transactionResponse",$request->all());
+
+    if($request->status == "SUCCESS")
+    {
+        $transaction=Transaction::where("transactionId",$request->transactionData['transactionId'])->first();
+
+        $transaction->status = "SUCCESS";
+
+        $transaction->save();
+    }
+
+    if($request->status == "FAILED")
+    {
+        $transaction=Transaction::where("transactionId",$request->transactionData['transactionId'])->first();
+
+        $transaction->status = "FAILED";
+
+        $transaction->save();
+    }
+
+    return $request->message;
+
 });
