@@ -19,7 +19,7 @@ const style = {
     p: 4,
 };
 
-function Ok({auth,errors,success,tuteur,total,transactionResponse}) {
+function Ok({auth,errors,success,tuteur,total,transaction}) {
 
     const [openModal, setOpenModal] = useState(false);
     const handleOpenModal = () => {
@@ -27,9 +27,8 @@ function Ok({auth,errors,success,tuteur,total,transactionResponse}) {
     }
 
     useEffect(() => {
-        console.log(transactionResponse,'MAU')
+        console.log(transaction)
     })
-
 
     const handleCloseModal = () => setOpenModal(false);
 

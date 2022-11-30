@@ -43,7 +43,6 @@ Route::middleware(['auth', 'verified',"userIsAdminOrOfmg","firstConnexion","pass
     Route::resource('admin.commune',\App\Http\Controllers\Admin\CommuneController::class);
 });
 
-
 Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","passwordChangeDate"])->group(function (){
     Route::resource('etablissement',\App\Http\Controllers\EtablissementController::class);
     Route::resource('etablissement.niveau',\App\Http\Controllers\Etablissement\NiveauController::class)->middleware("anneeScolaireIsDefined");

@@ -8,6 +8,7 @@ use App\Models\Code_numero;
 use App\Models\Mode_paiement;
 use App\Models\Paiement;
 use App\Models\Tarif;
+use App\Models\Transaction;
 use App\Models\Type_paiement;
 use App\Models\User;
 use Carbon\Carbon;
@@ -176,7 +177,6 @@ class PaiementController extends Controller
                         "etablissement_id"=>$tarif->etablissement_id
                     ]);
 
-
                     Paiement::where("id",$paiement->id)->first()->cashout();
 
                     $paiement->tarif()->associate(Tarif::find($tarif["id"]))->save();
@@ -188,15 +188,16 @@ class PaiementController extends Controller
                 }
             }
 
+            $transaction=Transaction::where('item_key',$paiement->id)->first();
+
             DB::commit();
 
-            return redirect()->route('tuteur.paiement.ok',['total'=>$request->total]);
+            return redirect()->route('tuteur.paiement.ok',['total'=>$request->total,"transaction"=>$transaction]);
         }
         catch(Throwable $e){
             DB::rollback();
             return $e;
         }
-
     }
 
     /**
