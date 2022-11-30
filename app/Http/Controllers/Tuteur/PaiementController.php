@@ -178,9 +178,7 @@ class PaiementController extends Controller
 
 
                     $message=Paiement::where("id",$paiement->id)->first()->cashout();
-
-                    dd($message);
-
+                    
                     $paiement->tarif()->associate(Tarif::find($tarif["id"]))->save();
                     $paiement->apprenant()->associate(Apprenant::find($apprenant["id"]))->save();
 
