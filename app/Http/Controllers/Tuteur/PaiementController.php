@@ -190,6 +190,8 @@ class PaiementController extends Controller
 
             $transaction=Transaction::where('item_key',$paiement->id)->first();
 
+            dd($transaction);
+
             DB::commit();
 
             return redirect()->route('tuteur.paiement.ok',['total'=>$request->total,"transaction"=>$transaction]);
