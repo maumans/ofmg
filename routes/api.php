@@ -49,8 +49,6 @@ Route::middleware("auth.basic")->any('orange/notifications', function (Request $
 
     \Illuminate\Support\Facades\Log::info($request->all());
 
-    session()->put("transactionResponse",$request->all());
-
     if($request->status == "SUCCESS")
     {
         $transaction=Transaction::where("transactionId",$request->transactionData['transactionId'])->first();
@@ -68,6 +66,8 @@ Route::middleware("auth.basic")->any('orange/notifications', function (Request $
 
         $transaction->save();
     }
+
+    session()->put("transactionResponse",$request->all());
 
     return $request->message;
 
