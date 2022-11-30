@@ -49,8 +49,6 @@ Route::middleware("auth.basic")->any('orange/notifications', function (Request $
 
     \Illuminate\Support\Facades\Log::info($request->all());
 
-    dd($request->all());
-
     session()->put("transactionResponse",$request->all());
 
     if($request->status == "SUCCESS")
