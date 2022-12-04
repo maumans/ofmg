@@ -188,13 +188,9 @@ class PaiementController extends Controller
                 }
             }
 
-            $transaction=Transaction::where('item_key',$paiement->id)->first();
-
             DB::commit();
 
-            dd($transaction);
-
-            return redirect()->route('tuteur.paiement.ok',['total'=>$request->total,"transaction"=>$transaction]);
+            return redirect()->route('tuteur.paiement.ok',['total'=>$request->total,"paiementId"=>$paiement->id]);
         }
         catch(Throwable $e){
             DB::rollback();
@@ -248,8 +244,10 @@ class PaiementController extends Controller
         //
     }
 
-    public function ok($total)
+    public function ok($total,$paiementId)
     {
+
+        $transaction=Transaction::where('item_key',$paiementId)->first();
 
         $tuteur=User::where('id',Auth::user()->id)->with(["paiementsTuteur"=>function($query){
             $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif")->get();
@@ -259,6 +257,10 @@ class PaiementController extends Controller
             }])->get();
         }])->first();
 
-        return Inertia::render("Tuteur/Paiement/Ok",["tuteur"=>$tuteur,"total"=>$total])->with("success","Paiement effectué avec succès");
+        Auth::user()->notify(New \App\Notifications\PaiementConfirme($transaction));
+
+
+
+        return Inertia::render("Tuteur/Paiement/Ok",["tuteur"=>$tuteur,"total"=>$total,"transaction"=>$transaction]);
     }
 }
