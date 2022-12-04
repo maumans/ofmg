@@ -90,7 +90,7 @@ Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","pa
 
 Route::middleware(['auth', 'verified',"userIsTuteur","firstConnexion"])->group(function (){
     Route::resource('tuteur.paiement',\App\Http\Controllers\Tuteur\PaiementController::class);
-    Route::get("tuteur/paiement/ok/{total}",[\App\Http\Controllers\Tuteur\PaiementController::class,"ok"])->name("tuteur.paiement.ok");
+    Route::get("tuteur/paiement/ok/{total}/{paiementId}",[\App\Http\Controllers\Tuteur\PaiementController::class,"ok"])->name("tuteur.paiement.ok");
     Route::get("tuteur/{userId}/paiement/search/{matricule?}",[\App\Http\Controllers\Tuteur\PaiementController::class,"search"])->name("tuteur.paiement.search");
 });
 

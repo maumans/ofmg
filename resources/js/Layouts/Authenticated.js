@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
@@ -9,6 +9,9 @@ import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {frFR} from '@mui/material/locale';
 import {frFR as dgfrFR} from '@mui/x-data-grid';
 import {ConfirmDialogProvider} from "react-mui-confirm";
+
+import Badge from '@mui/material/Badge';
+import NotificationsIcon from "@mui/icons-material/Notifications";
 
 
 const theme = createTheme(
@@ -31,6 +34,13 @@ const theme = createTheme(
 
 export default function Authenticated({auth, children}) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+
+    useEffect(() => {
+        window.Echo.private(`App.Models.User.${auth.user.id}`)
+            .notification((notification) => {
+                console.log(notification.type);
+            });
+    })
 
     return (
         <ThemeProvider theme={theme}>
@@ -80,13 +90,19 @@ export default function Authenticated({auth, children}) {
                                     </div>
                                 </div>
 
+                                <div className="flex items-center">
+                                    <Badge badgeContent={auth.notifications.length} color={"primary"}>
+                                        <NotificationsIcon className="text-white" />
+                                    </Badge>
+                                </div>
+
                                 <div className="hidden sm:flex sm:items-center sm:ml-6">
                                     <div className="ml-3 relative">
                                         {
                                             auth.user ?
                                                 <Dropdown>
                                                     <Dropdown.Trigger>
-                                                <span className="inline-flex rounded-md">
+                                                        <span className="inline-flex rounded-md">
                                                     <button
                                                         type="button"
                                                         className="inline-flex items-center px-3 py-2 border border-2 border-white text-sm leading-4 font-medium rounded-md text-white bg-black  hover:text-gray-500 focus:outline-none transition ease-in-out duration-150"
@@ -196,6 +212,12 @@ export default function Authenticated({auth, children}) {
                                 auth.user
                                     ?
                                     <div className="pt-4 pb-1 border-t border-gray-200">
+
+                                        <div>
+                                            <Badge badgeContent={4} color="secondary">
+                                                <NotificationsIcon color="action" />
+                                            </Badge>
+                                        </div>
 
                                         <div className="px-4">
                                             <div className="font-medium text-base text-white">{auth?.user?.prenom+" "+auth?.user?.nom}</div>

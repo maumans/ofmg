@@ -37,10 +37,13 @@ function Ok({auth,errors,success,tuteur,total,transaction}) {
             auth={auth}
             errors={errors}
         >
-            <div className="flex justify-center">
-                <div className={"p-5 text-green-600 space-y-5 "}>
+            <div className="flex">
+                <div className={`p-5 ${transaction.status === "PENDING"?"text-green-600":"text-red-600"} space-y-5 `}>
                     <div>
-                        Le paiement a été effectué avec succès cliquez sur le button ci-dessous pour consulter le reçu du paiement
+                        {
+                            transaction.status === "PENDING"
+                            ? "Votre paiement est en attente de confirmation. Veuillez valider sur votre téléphone " : transaction.message
+                        }
                     </div>
                     <div>
                         <button onClick={handleOpenModal} className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>

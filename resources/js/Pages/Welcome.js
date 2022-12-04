@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Link, Head } from '@inertiajs/inertia-react';
 import Authenticated from "@/Layouts/Authenticated";
 import TypeAnimation from 'react-type-animation';

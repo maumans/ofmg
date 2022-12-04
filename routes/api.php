@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -49,22 +50,14 @@ Route::middleware("auth.basic")->any('orange/notifications', function (Request $
 
     \Illuminate\Support\Facades\Log::info((string)$request->all());
 
-    if($request->status == "SUCCESS")
-    {
         $transaction=Transaction::where("transactionId",$request->transactionData['transactionId'])->first();
 
-        $transaction->status = "SUCCESS";
+        $transaction->message = $request->message;
+
+        $transaction->status = $request->status;
 
         $transaction->save();
-    }
 
-    if($request->status == "FAILED")
-    {
-        $transaction=Transaction::where("transactionId",$request->transactionData['transactionId'])->first();
-
-        $transaction->status = "FAILED";
-
-        $transaction->save();
-    }
+        Auth::user()->notify(New \App\Notifications\PaiementConfirme($transaction));
 
 });

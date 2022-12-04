@@ -2,7 +2,7 @@ require('./bootstrap');
 
 import React from 'react';
 import { render } from 'react-dom';
-import { createInertiaApp } from '@inertiajs/inertia-react';
+import {createInertiaApp, usePage} from '@inertiajs/inertia-react';
 import { InertiaProgress } from '@inertiajs/progress';
 
 // Import Swiper styles
@@ -18,8 +18,13 @@ createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => require(`./Pages/${name}`),
     setup({ el, App, props }) {
+        window.User={
+            id:props.initialPage.props.auth.user.id
+        }
         return render(<App {...props} />, el);
     },
 });
+
+window.User = 1;
 
 InertiaProgress.init({ color: '#ff7900'});
