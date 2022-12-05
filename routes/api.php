@@ -58,6 +58,6 @@ Route::middleware("auth.basic")->any('orange/notifications', function (Request $
 
         \Illuminate\Support\Facades\Log::info($request->all());
 
-        Auth::user()->notify(New \App\Notifications\PaiementConfirme($transaction));
+        //Auth::user()->notify(New \App\Notifications\PaiementConfirme($transaction));
 
 });
