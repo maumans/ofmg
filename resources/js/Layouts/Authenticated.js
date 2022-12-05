@@ -37,6 +37,7 @@ export default function Authenticated({auth, children}) {
     Echo.private(`App.Models.User.${auth.user?.id}`)
         .notification((notification) => {
             setNotifications(notification);
+            console.log(notification)
         });
 
     const [notifications,setNotifications] = useState()
