@@ -45,7 +45,7 @@ class HandleInertiaRequests extends Middleware
                 'tuteur'=>$request->user() && $request->user()->isTuteur(),
                 'comptable'=>$request->user() && $request->user()->isComptable(),
                 'directeur'=>$request->user() && $request->user()->isDirecteur(),
-                'notifications'=>$request->user()->unreadNotifications
+                'notifications'=>$request->user() ? $request->user()->unreadNotifications : null
             ],
             "transactionResponse" => session("transactionResponse"),
             "success"=>session("success"),

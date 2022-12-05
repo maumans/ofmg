@@ -19,12 +19,10 @@ createInertiaApp({
     resolve: (name) => require(`./Pages/${name}`),
     setup({ el, App, props }) {
         window.User={
-            id:props.initialPage.props.auth.user.id
+            id:props.initialPage.props?.auth?.user?.id
         }
         return render(<App {...props} />, el);
     },
 });
-
-window.User = 1;
 
 InertiaProgress.init({ color: '#ff7900'});

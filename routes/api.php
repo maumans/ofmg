@@ -52,9 +52,9 @@ Route::middleware("auth.basic")->any('orange/notifications', function (Request $
 
         $transaction=Transaction::where("transactionId",$request->transactionData['transactionId'])->first();
 
-        $transaction->message = $request->message;
-
         $transaction->status = $request->status;
+
+        $transaction->message = $request->message;
 
         $transaction->save();
 

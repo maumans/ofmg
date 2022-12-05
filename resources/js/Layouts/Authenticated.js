@@ -36,7 +36,7 @@ export default function Authenticated({auth, children}) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     useEffect(() => {
-        window.Echo.private(`App.Models.User.${auth.user.id}`)
+        window.Echo.private(`App.Models.User.${auth?.user?.id}`)
             .notification((notification) => {
                 console.log(notification.type);
             });
@@ -91,7 +91,7 @@ export default function Authenticated({auth, children}) {
                                 </div>
 
                                 <div className="flex items-center">
-                                    <Badge badgeContent={auth.notifications.length} color={"primary"}>
+                                    <Badge badgeContent={auth.notifications?.length} color={"primary"}>
                                         <NotificationsIcon className="text-white" />
                                     </Badge>
                                 </div>
