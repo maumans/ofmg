@@ -48,7 +48,7 @@ Route::post('register',[App\Http\Controllers\Api\AuthController::class,"register
 Route::middleware("auth.basic")->any('orange/notifications', function (Request $request) {
 
 
-    \Illuminate\Support\Facades\Log::info((string)$request->all());
+    \Illuminate\Support\Facades\Log::info($request->all());
 
         $transaction=Transaction::where("transactionId",$request->transactionData['transactionId'])->first();
 
