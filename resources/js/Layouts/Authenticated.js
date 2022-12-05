@@ -34,11 +34,12 @@ const theme = createTheme(
 
 export default function Authenticated({auth, children}) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-
-    window.Echo.private(`App.Models.User.${auth.user?.id}`)
+    Echo.private(`App.Models.User.${auth.user?.id}`)
         .notification((notification) => {
-            console.log(notification.type);
+            setNotifications(notification);
         });
+
+    const [notifications,setNotifications] = useState()
 
     return (
         <ThemeProvider theme={theme}>

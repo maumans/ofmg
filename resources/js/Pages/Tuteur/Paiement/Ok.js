@@ -26,10 +26,6 @@ function Ok({auth,errors,success,tuteur,total,transaction}) {
         setOpenModal(true);
     }
 
-    useEffect(() => {
-        console.log(transaction)
-    })
-
     const handleCloseModal = () => setOpenModal(false);
 
     return (
