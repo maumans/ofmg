@@ -48,16 +48,16 @@ Route::post('register',[App\Http\Controllers\Api\AuthController::class,"register
 Route::middleware("auth.basic")->any('orange/notifications', function (Request $request) {
 
 
-    \Illuminate\Support\Facades\Log::info($request->all());
-
         $transaction=Transaction::where("transactionId",$request->transactionData['transactionId'])->first();
 
-        $transaction->status = $request->status;
+        $transaction->status = $request["status"];
 
-        $transaction->message = $request->message;
+        $transaction->message = $request['message'];
 
         $transaction->save();
 
-        //Auth::user()->notify(New \App\Notifications\PaiementConfirme($transaction));
+        \Illuminate\Support\Facades\Log::info($request->all(),$transaction);
+
+        Auth::user()->notify(New \App\Notifications\PaiementConfirme($transaction));
 
 });
