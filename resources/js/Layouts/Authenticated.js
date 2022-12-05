@@ -35,12 +35,10 @@ const theme = createTheme(
 export default function Authenticated({auth, children}) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
-    useEffect(() => {
-        window.Echo.private(`App.Models.User.${auth?.user?.id}`)
-            .notification((notification) => {
-                console.log(notification.type);
-            });
-    })
+    window.Echo.private(`App.Models.User.${auth.user?.id}`)
+        .notification((notification) => {
+            console.log(notification.type);
+        });
 
     return (
         <ThemeProvider theme={theme}>
