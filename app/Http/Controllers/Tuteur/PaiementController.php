@@ -256,7 +256,9 @@ class PaiementController extends Controller
                 $query->get();
             }])->get();
         }])->first();
-        
+
+        Auth::user()->notify(New \App\Notifications\PaiementConfirme($transaction));
+
         return Inertia::render("Tuteur/Paiement/Ok",["tuteur"=>$tuteur,"total"=>$total,"transaction"=>$transaction]);
     }
 }

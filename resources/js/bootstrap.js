@@ -1,3 +1,6 @@
+
+import {notify} from 'react-notify-toast';
+
 window._ = require('lodash');
 
 /**
@@ -17,6 +20,8 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
  */
 
 import Echo from 'laravel-echo';
+import React from "react";
+import SnackBarFinal from "@/Components/SnackBarFinal";
 
 window.Pusher = require('pusher-js');
 
@@ -26,5 +31,12 @@ window.Echo = new Echo({
     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
     forceTLS: true
 });
+
+// window.Echo.private(`App.Models.User.2`)
+//     .notification((notification) => {
+//         window.notification=notification
+//         //notify.show('Toasty!');
+//     });
+
 
 

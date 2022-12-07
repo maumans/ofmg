@@ -67,10 +67,14 @@ class EtablissementController extends Controller
             "msisdn"=>"required|string|unique:etablissements",
             'login' => 'required|string|unique:users',
             'telephone' => 'required|string|unique:etablissements',
-            //'telephone' => 'required|string|unique:users',
+            'telephoneAdmin' => 'required|string|unique:users',
             'email' => 'string|email|max:255|unique:users',
             'password' => ['required', Rules\Password::defaults()],
+        ],
+        [
+            "telephoneAdmin"=>"telephone"
         ]);
+
 
         DB::beginTransaction();
         try {

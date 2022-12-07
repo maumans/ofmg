@@ -65,7 +65,7 @@ class PaiementConfirme extends Notification
     public function toBroadcast($notifiable)
     {
         return new BroadcastMessage([
-            "transactionId"=>$this->transaction->id
+            "transaction"=>$this->transaction
         ]);
     }
 }

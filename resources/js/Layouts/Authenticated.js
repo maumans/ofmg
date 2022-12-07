@@ -12,6 +12,7 @@ import {ConfirmDialogProvider} from "react-mui-confirm";
 
 import Badge from '@mui/material/Badge';
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import SnackBarFinal from "@/Components/SnackBarFinal";
 
 
 const theme = createTheme(
@@ -33,14 +34,16 @@ const theme = createTheme(
 
 
 export default function Authenticated({auth, children}) {
-    const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-    Echo.private(`App.Models.User.${auth.user?.id}`)
-        .notification((notification) => {
-            setNotifications(notification);
-            console.log(notification)
-        });
 
-    const [notifications,setNotifications] = useState()
+    const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+
+    const [notification,setNotification]=useState(null)
+
+
+
+    useEffect(() => {
+        console.log(notification)
+    },[notification])
 
     return (
         <ThemeProvider theme={theme}>
@@ -90,11 +93,15 @@ export default function Authenticated({auth, children}) {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center">
-                                    <Badge badgeContent={auth.notifications?.length} color={"primary"}>
-                                        <NotificationsIcon className="text-white" />
-                                    </Badge>
-                                </div>
+                                {
+                                    /*
+                                        <div className="flex items-center">
+                                            <Badge badgeContent={auth.notifications?.length} color={"primary"}>
+                                                <NotificationsIcon className="text-white" />
+                                            </Badge>
+                                        </div>
+                                    */
+                                }
 
                                 <div className="hidden sm:flex sm:items-center sm:ml-6">
                                     <div className="ml-3 relative">
@@ -103,31 +110,29 @@ export default function Authenticated({auth, children}) {
                                                 <Dropdown>
                                                     <Dropdown.Trigger>
                                                         <span className="inline-flex rounded-md">
-                                                    <button
-                                                        type="button"
-                                                        className="inline-flex items-center px-3 py-2 border border-2 border-white text-sm leading-4 font-medium rounded-md text-white bg-black  hover:text-gray-500 focus:outline-none transition ease-in-out duration-150"
-                                                    >
-                                                        <span className={"font-bold mr-4"}>{auth?.user?.prenom + " " + auth?.user?.nom}</span> <span className={"orangeOrangeColor"}> | {auth.admin || auth.etablissement ?"Administrateur":auth.ofmg?"OFGM":auth.tuteur?"Tuteur":auth.comptable?"Comptable":auth.directeur?"directeur":"" }</span>
-                                                        <svg
-                                                            className="ml-2 -mr-0.5 h-4 w-4"
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            viewBox="0 0 20 20"
-                                                            fill="currentColor"
-                                                        >
-                                                            <path
-                                                                fillRule="evenodd"
-                                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                                clipRule="evenodd"
-                                                            />
-                                                        </svg>
-                                                    </button>
-                                                </span>
+                                                            <button
+                                                                className="inline-flex items-center px-3 py-2 border border-2 border-white text-sm leading-4 font-medium rounded-md text-white bg-black  hover:text-gray-500 focus:outline-none transition ease-in-out duration-150"
+                                                            >
+                                                                <span className={"font-bold mr-4"}>{auth?.user?.prenom + " " + auth?.user?.nom}</span> <span className={"orangeOrangeColor"}> | {auth.admin || auth.etablissement ?"Administrateur":auth.ofmg?"OFGM":auth.tuteur?"Tuteur":auth.comptable?"Comptable":auth.directeur?"directeur":"" }</span>
+                                                                <svg
+                                                                    className="ml-2 -mr-0.5 h-4 w-4"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    viewBox="0 0 20 20"
+                                                                    fill="currentColor"
+                                                                >
+                                                                    <path
+                                                                        fillRule="evenodd"
+                                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                                        clipRule="evenodd"
+                                                                    />
+                                                                </svg>
+                                                            </button>
+                                                        </span>
                                                     </Dropdown.Trigger>
 
                                                     <Dropdown.Content>
-                                                        <Dropdown.Link href={route('logout')} method="post"
-                                                                       as="button">
-                                                            Deconnexion
+                                                        <Dropdown.Link href={route('logout')} method="post" as="button">
+                                                            Déconnexion
                                                         </Dropdown.Link>
                                                     </Dropdown.Content>
                                                 </Dropdown>
@@ -213,11 +218,15 @@ export default function Authenticated({auth, children}) {
                                     ?
                                     <div className="pt-4 pb-1 border-t border-gray-200">
 
-                                        <div>
-                                            <Badge badgeContent={4} color="secondary">
-                                                <NotificationsIcon color="action" />
-                                            </Badge>
-                                        </div>
+                                        {
+                                            /*
+                                            <div>
+                                                <Badge badgeContent={4} color="secondary">
+                                                    <NotificationsIcon color="action" />
+                                                </Badge>
+                                            </div>
+                                             */
+                                        }
 
                                         <div className="px-4">
                                             <div className="font-medium text-base text-white">{auth?.user?.prenom+" "+auth?.user?.nom}</div>
@@ -242,8 +251,12 @@ export default function Authenticated({auth, children}) {
                     </nav>
 
                     <main style={{paddingTop: 64}}>
+
                         {children}
                     </main>
+                    {
+                        notification && <SnackBarFinal success={notification.transaction.message}/>
+                    }
                 </div>
             </ConfirmDialogProvider>
         </ThemeProvider>

@@ -3,8 +3,9 @@ import Authenticated from "@/Layouts/Authenticated";
 import SnackBar from "@/Components/SnackBar";
 import Box from "@mui/material/Box";
 import Save from "@/Components/Pdfrender";
-import {Modal} from "@mui/material";
+import {LinearProgress, Modal} from "@mui/material";
 import {useRemember} from "@inertiajs/inertia-react";
+import SnackBarFinal from "@/Components/SnackBarFinal";
 
 const style = {
     position: 'absolute',
@@ -26,52 +27,70 @@ function Ok({auth,errors,success,tuteur,total,transaction}) {
         setOpenModal(true);
     }
 
+    const [notification,setNotification] = useState(null);
+
     const handleCloseModal = () => setOpenModal(false);
+
+    Echo.private(`App.Models.User.2`)
+        .notification((notif) => {
+            setNotification(notif)
+            //notify.show('Toasty!');
+        });
+
+    useEffect(() => {
+        console.log(notification)
+    },[notification])
 
     return (
         <Authenticated
             auth={auth}
             errors={errors}
+            setNotification={setNotification}
         >
+
             <div className="flex">
                 <div className={`p-5 ${transaction.status === "PENDING"?"text-green-600":"text-red-600"} space-y-5 `}>
                     <div>
                         {
-                            transaction.status === "PENDING"
-                            ? "Votre paiement est en attente de confirmation. Veuillez valider sur votre téléphone " : transaction.message
+                            (transaction.status === "PENDING" && !transaction.message)
+                                ? "Votre paiement est en attente de confirmation. Veuillez valider sur votre téléphone " : transaction.message
                         }
                     </div>
+
                     <div>
-                        <button onClick={handleOpenModal} className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>
-                            Consulter le reçu
-                        </button>
+                        {/*<button onClick={handleOpenModal} className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>
+                                        Consulter le reçu
+                                    </button>*/}
                     </div>
 
-                    <Modal
-                        keepMounted
-                        open={openModal}
-                        onClose={handleCloseModal}
-                        aria-labelledby="keep-mounted-modal-title"
-                        aria-describedby="keep-mounted-modal-description"
-                    >
-                        <Box sx={style}>
-                            {
+                    {/*<Modal
+                                    keepMounted
+                                    open={openModal}
+                                    onClose={handleCloseModal}
+                                    aria-labelledby="keep-mounted-modal-title"
+                                    aria-describedby="keep-mounted-modal-description"
+                                >
+                                    <Box sx={style}>
+                                        {
 
-                                <Save
-                                    tuteur={tuteur}
-                                    apprenant={tuteur.tuteur_apprenants[0]}
-                                    etablissement={tuteur.tuteur_apprenants[0].classe.etablissement}
-                                    paiements={tuteur.paiements}
-                                    nbrMois={10}
-                                    total={total}
-                                />
-                            }
-                        </Box>
-                    </Modal>
+                                            <Save
+                                                tuteur={tuteur}
+                                                apprenant={tuteur.tuteur_apprenants[0]}
+                                                etablissement={tuteur.tuteur_apprenants[0].classe.etablissement}
+                                                paiements={tuteur.paiements}
+                                                nbrMois={10}
+                                                total={total}
+                                            />
+                                        }
+                                    </Box>
+                                </Modal>*/}
 
                 </div>
             </div>
-            <SnackBar success={success}/>
+            {
+                notification && <SnackBarFinal success={notification.transaction.message}/>
+            }
+
         </Authenticated>
     );
 }

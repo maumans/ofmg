@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, {useState, useContext, Fragment} from 'react';
 import { Link } from '@inertiajs/inertia-react';
 import { Transition } from '@headlessui/react';
 
@@ -50,6 +50,7 @@ const Content = ({ align = 'right', width = '48', contentClasses = 'py-1 bg-whit
     return (
         <>
             <Transition
+                as={Fragment}
                 show={open}
                 enter="transition ease-out duration-200"
                 enterFrom="transform opacity-0 scale-95"
@@ -60,7 +61,7 @@ const Content = ({ align = 'right', width = '48', contentClasses = 'py-1 bg-whit
             >
                 {open && (
                     <div
-                        className={`absolute z-50 mt-2 rounded-md shadow-lg ${alignmentClasses} ${widthClasses}`}
+                        className={`absolute z-50 mt-5 rounded-md shadow-lg ${alignmentClasses} ${widthClasses}`}
                         onClick={() => setOpen(false)}
                     >
                         <div className={`rounded-md ring-1 border-2 hover:text-gray-500 text-white bg-black ring-black ring-opacity-5 ` + contentClasses}>

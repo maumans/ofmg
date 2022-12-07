@@ -64,4 +64,19 @@ class Salaire extends Model implements iHasTransaction
         // TODO: Implement getAddToTransactionAttribute() method.
         return [];
     }
+
+    public function getDepotNumberAttribute()
+    {
+        // TODO: Implement getDepotNumberAttribute() method.
+    }
+
+    public function getRetraitNumberAttribute()
+    {
+        // TODO: Implement getRetraitNumberAttribute() method.
+    }
+
+    public function getPosIdAttribute()
+    {
+        // TODO: Implement getPosIdAttribute() method.
+    }
 }

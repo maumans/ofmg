@@ -1,3 +1,5 @@
+import SnackBarFinal from "@/Components/SnackBarFinal";
+
 require('./bootstrap');
 
 import React from 'react';

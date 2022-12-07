@@ -121,6 +121,13 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
     function handleSubmit(e)
     {
         e.preventDefault();
+
+        /*axios.post(route("tuteur.paiement.store",[auth?.user?.id]),data,{preserveState:true,preserveScroll:true}).then((response)=>{
+            console.log(response)
+        }).catch(error=>{
+            console.log(error)
+        });*/
+
         Inertia.post(route("tuteur.paiement.store",[auth?.user?.id]),data,{preserveScroll:true})
     }
 
