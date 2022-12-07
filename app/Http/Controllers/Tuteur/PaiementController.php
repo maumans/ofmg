@@ -168,8 +168,11 @@ class PaiementController extends Controller
                 "montant" =>$request->total,
                 "numero_retrait" =>$request->numero_retrait,
                 "etablissement_id"=>2,
-                "tuteur_id"=>2
+                "tuteur_id"=>Auth::user()->id
             ]);
+
+            $idEtab=0;
+            $idTuteur=0;
 
             foreach ($request->tarifs as $key =>$value)
             {
@@ -191,6 +194,8 @@ class PaiementController extends Controller
                         "paiement_global_id"=>$paiementGlobal->id
                     ]);
 
+                    $idEtab=$tarif->etablissement_id;
+
                     $paiement->tarif()->associate(Tarif::find($tarif["id"]))->save();
                     $paiement->apprenant()->associate(Apprenant::find($apprenant["id"]))->save();
 
@@ -199,6 +204,9 @@ class PaiementController extends Controller
                     $apprenant->tarifs()->syncWithoutDetaching([$tarif->id=>["resteApayer"=>$resteApayer]]);
                 }
             }
+
+            $paiementGlobal->etablissement_id=$idEtab;
+            $paiementGlobal->save();
 
             PaiementGlobal::where("id",$paiementGlobal->id)->first()->cashout();
 
