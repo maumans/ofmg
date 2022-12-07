@@ -93,6 +93,11 @@ class Etablissement extends Model
         return $this->hasMany(Paiement::class);
     }
 
+    public function paiementGlobaux()
+    {
+        return $this->hasMany(paiementGlobal::class);
+    }
+
     public function salairesOccasionnels()
     {
         return $this->hasMany(Paiement_occasionel::class);

@@ -64,6 +64,11 @@ class Paiement extends Model implements iHasTransaction
         return $this->belongsTo(Tarif::class);
     }
 
+    public function paiementGlobal()
+    {
+        return $this->belongsTo(PaiementGlobal::class);
+    }
+
     public function getTransactionIdAttribute()
     {
         // TODO: Implement getTransactionIdAttribute() method.
@@ -99,7 +104,7 @@ class Paiement extends Model implements iHasTransaction
 
     public function getPosIdAttribute()
     {
-        return $this->etablissement->code;
+        return $this->etablissement->posId;
     }
 
     public function getOmNumberAttribute()

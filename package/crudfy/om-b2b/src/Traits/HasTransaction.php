@@ -14,7 +14,7 @@ trait HasTransaction
                     'amount' => $this->amount,
                     'transactionId' => $this->transactionId,
                     'number' => (string)$this->depotNumber,
-                    "posId" => 's1wCRuT',
+                    "posId" => $this->posId,
                 ],
             );
         }
@@ -31,7 +31,7 @@ trait HasTransaction
                     'amount' => $this->amount,
                     'transactionId' => $this->transactionId,
                     'number' => (string)$this->retraitNumber,
-                    "posId" => 's1wCRuT',
+                    "posId" => $this->posId,
                 ],
                 $this
             );

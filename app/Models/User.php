@@ -68,6 +68,8 @@ class User extends Authenticatable // implements MustVerifyEmail
      public function getUserNameAttribute(){
         return $this->login;
     }
+
+
     public function setSalairesApAttribute($salairesAp){
         $this->salairesAp = $salairesAp;
     }
@@ -121,6 +123,11 @@ class User extends Authenticatable // implements MustVerifyEmail
     public function etablissement()
     {
         return $this->belongsTo(Etablissement::class,"etablissement_id");
+    }
+
+    public function paiementGlobaux()
+    {
+        return $this->hasMany(PaiementGlobal::class,'tuteur_id');
     }
 
     public function isAdmin()

@@ -49,12 +49,10 @@ function Ok({auth,errors,success,tuteur,total,transaction}) {
         >
 
             <div className="flex">
-                <div className={`p-5 ${transaction.status === "PENDING"?"text-green-600":"text-red-600"} space-y-5 `}>
+                <div className={`p-5 space-y-5 `}>
                     <div>
-                        {
-                            (transaction.status === "PENDING" && !transaction.message)
-                                ? "Votre paiement est en attente de confirmation. Veuillez valider sur votre téléphone " : transaction.message
-                        }
+                        Votre paiement est en cours de traitement vous allez recevoir un message de confirmation sur votre téléphone!
+                        Merci de vérifier le status de la transaction sur <button  className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>Vos transaction</button>
                     </div>
 
                     <div>

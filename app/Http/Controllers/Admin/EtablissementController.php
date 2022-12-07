@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Illuminate\Validation\Rules;
 
@@ -67,12 +68,9 @@ class EtablissementController extends Controller
             "msisdn"=>"required|string|unique:etablissements",
             'login' => 'required|string|unique:users',
             'telephone' => 'required|string|unique:etablissements',
-            'telephoneAdmin' => 'required|string|unique:users',
+            'telephoneAdmin' => 'required|string|unique:users,telephone',
             'email' => 'string|email|max:255|unique:users',
             'password' => ['required', Rules\Password::defaults()],
-        ],
-        [
-            "telephoneAdmin"=>"telephone"
         ]);
 
 
@@ -90,6 +88,8 @@ class EtablissementController extends Controller
 
            $etablissement=Etablissement::create([
                "code"=>$request->code,
+               "posId"=>$request->posId,
+               "msisdn"=>$request->msisdn,
                "nom"=>$request->nomEtablissement,
                "user_id"=>$user->id,
                "telephone"=>$request->telephone,

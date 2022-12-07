@@ -27,6 +27,7 @@ class  CreatePaiementsTable extends Migration
             $table->string("transaction_status")->nullable();
             $table->string("numero_retrait")->nullable();
             $table->string("numero_depot")->nullable();
+            $table->foreignId("paiement_global_id")->nullable()->constrained("paiement_globals")->cascadeOnDelete();
             $table->timestamps();
         });
     }

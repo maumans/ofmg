@@ -232,6 +232,7 @@ class OmB2b
         $_response = collect($transactionData);
 
         $operation->transaction_status = $_response->get('status');
+        $operation->transaction_id = $transaction->id;
         $operation->save();
 
         $transaction->update(array_merge(

@@ -7,6 +7,7 @@ use App\Models\Apprenant;
 use App\Models\Code_numero;
 use App\Models\Mode_paiement;
 use App\Models\Paiement;
+use App\Models\PaiementGlobal;
 use App\Models\Tarif;
 use App\Models\Transaction;
 use App\Models\Type_paiement;
@@ -45,6 +46,9 @@ class PaiementController extends Controller
             }])->get();
         }])->first();
 
+        $transactions=Transaction::whereRelation('paiementGlobal.tuteur',"id",$tuteur->id)->orderByDesc('created_at')->get();
+
+
         foreach($tuteur->tuteurApprenants as $apprenant)
         {
             foreach($apprenant->tarifs as $tarif)
@@ -77,7 +81,7 @@ class PaiementController extends Controller
 
         //dd($donneesParFrais);
 
-        return Inertia::render("Tuteur/Paiement/Index",["tuteur"=>$tuteur,"resteApayerAll"=>$resteApayerAll,"totalAll"=>$totalAll,"payerAll"=>$payerAll,"donneesParFrais"=>$donneesParFrais,"codeNumeros"=>$codeNumeros]);
+        return Inertia::render("Tuteur/Paiement/Index",["tuteur"=>$tuteur,"resteApayerAll"=>$resteApayerAll,"totalAll"=>$totalAll,"payerAll"=>$payerAll,"donneesParFrais"=>$donneesParFrais,"codeNumeros"=>$codeNumeros,"transactions"=>$transactions]);
     }
 
     public function search($userId,$matricule)
@@ -158,6 +162,15 @@ class PaiementController extends Controller
 
         try{
 
+
+
+            $paiementGlobal=PaiementGlobal::create([
+                "montant" =>$request->total,
+                "numero_retrait" =>$request->numero_retrait,
+                "etablissement_id"=>2,
+                "tuteur_id"=>2
+            ]);
+
             foreach ($request->tarifs as $key =>$value)
             {
                 $info=explode("_",$key);
@@ -174,10 +187,9 @@ class PaiementController extends Controller
                         "type_paiement_id"=>$tarif["type_paiement_id"],
                         "mode_paiement_id"=>Mode_paiement::where("libelle","OM WEB")->first()->id,
                         "tuteur_id"=>Auth::user()->id,
-                        "etablissement_id"=>$tarif->etablissement_id
+                        "etablissement_id"=>$tarif->etablissement_id,
+                        "paiement_global_id"=>$paiementGlobal->id
                     ]);
-
-                    Paiement::where("id",$paiement->id)->first()->cashout();
 
                     $paiement->tarif()->associate(Tarif::find($tarif["id"]))->save();
                     $paiement->apprenant()->associate(Apprenant::find($apprenant["id"]))->save();
@@ -188,13 +200,14 @@ class PaiementController extends Controller
                 }
             }
 
+            PaiementGlobal::where("id",$paiementGlobal->id)->first()->cashout();
+
             DB::commit();
 
-            return redirect()->route('tuteur.paiement.ok',['total'=>$request->total,"paiementId"=>$paiement->id]);
+            return redirect()->route('tuteur.paiement.ok',['total'=>$request->total,"paiementGlobalId"=>$paiementGlobal->id]);
         }
         catch(Throwable $e){
             DB::rollback();
-            return $e;
         }
     }
 
@@ -244,10 +257,10 @@ class PaiementController extends Controller
         //
     }
 
-    public function ok($total,$paiementId)
+    public function ok($total,$paiementGlobalId)
     {
 
-        $transaction=Transaction::where('item_key',$paiementId)->first();
+        $transaction=Transaction::where('item_key',$paiementGlobalId)->first();
 
         $tuteur=User::where('id',Auth::user()->id)->with(["paiementsTuteur"=>function($query){
             $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif")->get();
@@ -256,8 +269,6 @@ class PaiementController extends Controller
                 $query->get();
             }])->get();
         }])->first();
-
-        Auth::user()->notify(New \App\Notifications\PaiementConfirme($transaction));
 
         return Inertia::render("Tuteur/Paiement/Ok",["tuteur"=>$tuteur,"total"=>$total,"transaction"=>$transaction]);
     }

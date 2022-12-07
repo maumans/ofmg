@@ -75,7 +75,7 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
     );
 });
 
-function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalAll,payerAll,resteApayerAll,donneesParFrais,codeNumeros}) {
+function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalAll,payerAll,resteApayerAll,donneesParFrais,codeNumeros,transactions}) {
 
     const [successSt, setSuccessSt]=useState();
     const [codeNumerosSt, setCodeNumerosSt]=useState();
@@ -224,6 +224,32 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
         return undefined;
     }
 
+    const columnsTransactions = [
+        { field: 'date', headerName: "DATE",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold", renderCell:(cellValues)=>(
+                cellValues.row.created_at.split('T')[0]+" à "+cellValues.row.created_at.split('T')[1].split(".")[0]
+            ) },
+        { field: 'peerId', headerName: "TELEPHONE",headerClassName:"header", flex: 1, minWidth: 100, fontWeight:"bold"},
+        { field: 'amount', headerName: "MONTANT",headerClassName:"header", flex: 1, minWidth: 100, fontWeight:"bold", renderCell:(cellValues)=>(
+                    formatNumber(cellValues.row.amount)+" FG"
+            )},
+        { field: 'status', headerName: "STATUS",headerClassName:"header", flex: 1, minWidth: 150, fontWeight:"bold", renderCell:(cellValues)=>(
+                cellValues.row.status==="SUCCESS"?"Succés":cellValues.row.status==="PENDING"?"EN ATTENTE":cellValues.row.status==="FAILED" && "ECHEC"
+            )},
+        { field: 'message', headerName: "MESSAGE",headerClassName:"header", flex: 1, minWidth: 300, fontWeight:"bold",renderCell:(cellValues)=>(
+                cellValues.row.status==="PENDING"?"En attente de confirmation":cellValues.row.message
+            )},
+        { field: 'action', headerName: 'ACTION',width:100,
+            renderCell:(cellValues)=>(
+                <div className={"space-x-2"}>
+                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground orangeBlueBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
+                        <VisibilityIcon/>
+                    </button>
+                </div>
+            )
+        },
+
+    ];
+
     const columns = [
         { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'Nom_complet', headerName: "NOM COMPLET DE L'APPRENANT",headerClassName:"header", flex: 1, minWidth: 300, fontWeight:"bold", renderCell:(cellValues)=>(
@@ -283,8 +309,8 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                         value={value} onChange={handleChange} aria-label="basic tabs example" centered>
                         <Tab
                             label="PAIEMENT" {...a11yProps(0)} />
-                        <Tab label="APERCU DU RECU" {...a11yProps(1)}/>
-                        <Tab label="HISTORIQUE DE PAIEMENT" {...a11yProps(2)}/>
+                        <Tab label="HISTORIQUE DE PAIEMENT" {...a11yProps(1)}/>
+                        <Tab label="TRANSACTIONS" {...a11yProps(1)}/>
                     </Tabs>
                 </Box>
                 <TabPanel value={value} index={0}>
@@ -583,7 +609,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
 
                 </TabPanel>
 
-                <TabPanel value={value} index={1}>
+                {/*<TabPanel value={value} index={1}>
                     <Box sx={style}>
                         {
 
@@ -597,8 +623,9 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                             />
                         }
                     </Box>
-                </TabPanel>
-                <TabPanel value={value} index={2}>
+                </TabPanel>*/}
+
+                <TabPanel value={value} index={1}>
 
                     <div className={"flex justify-center"}>
                         {
@@ -620,6 +647,39 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                     }}
                                     rows={tuteur.paiements_tuteur}
                                     columns={columns}
+                                    pageSize={5}
+                                    rowsPerPageOptions={[5]}
+                                    checkboxSelection
+                                    autoHeight
+
+
+                                />
+                            </motion.div>
+                        }
+                    </div>
+                </TabPanel>
+                <TabPanel value={value} index={2}>
+
+                    <div className={"flex justify-center"}>
+                        {
+                            tuteur &&
+                            <motion.div
+                                initial={{y:-10,opacity:0}}
+                                animate={{y:0,opacity:1}}
+                                transition={{
+                                    duration:0.5,
+                                }}
+                                style={{width:1200,minWidth:400}}>
+                                <DataGrid
+                                    componentsProps={{
+                                        columnMenu:{backgroundColor:"red",background:"yellow"},
+                                    }}
+
+                                    components={{
+                                        Toolbar:GridToolbar,
+                                    }}
+                                    rows={transactions}
+                                    columns={columnsTransactions}
                                     pageSize={5}
                                     rowsPerPageOptions={[5]}
                                     checkboxSelection

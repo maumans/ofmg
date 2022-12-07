@@ -128,6 +128,7 @@ class PaiementController extends Controller
             "tarifs"=>"required",
             "montants.*"=>"required",
             "total"=>"required",
+            "et"
         ],
         [
             "tuteurSelectedId.required"=>"Veuillez selectionner un tuteur",
