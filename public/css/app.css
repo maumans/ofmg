@@ -1866,10 +1866,6 @@ select {
     margin-left: 1.5rem;
   }
 
-  .sm\:ml-16 {
-    margin-left: 4rem;
-  }
-
   .sm\:block {
     display: block;
   }
