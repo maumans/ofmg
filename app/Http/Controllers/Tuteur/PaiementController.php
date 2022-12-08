@@ -161,23 +161,19 @@ class PaiementController extends Controller
         DB::beginTransaction();
 
         try{
-
-
-
             $paiementGlobal=PaiementGlobal::create([
                 "montant" =>$request->total,
                 "numero_retrait" =>$request->numero_retrait,
-                "etablissement_id"=>2,
+                "etablissement_id"=>$request->etablissement["id"],
                 "tuteur_id"=>Auth::user()->id
             ]);
 
-            $idEtab=0;
-            $idTuteur=0;
-
             foreach ($request->tarifs as $key =>$value)
             {
+
                 $info=explode("_",$key);
                 $apprenant=Apprenant::find($info[0]);
+
                 $tarif=Tarif::where("id",$info[1])->first();
 
                 if($value)
@@ -194,19 +190,14 @@ class PaiementController extends Controller
                         "paiement_global_id"=>$paiementGlobal->id
                     ]);
 
-                    $idEtab=$tarif->etablissement_id;
-
                     $paiement->tarif()->associate(Tarif::find($tarif["id"]))->save();
                     $paiement->apprenant()->associate(Apprenant::find($apprenant["id"]))->save();
 
-                    $resteApayer=$tarif["montant"]-$apprenant->paiements->where("type_paiement_id",$tarif["type_paiement_id"])->sum("montant");
+                    //$resteApayer=$tarif["montant"]-$apprenant->paiements->where("type_paiement_id",$tarif["type_paiement_id"])->sum("montant");
 
-                    $apprenant->tarifs()->syncWithoutDetaching([$tarif->id=>["resteApayer"=>$resteApayer]]);
+                    //$apprenant->tarifs()->syncWithoutDetaching([$tarif->id=>["resteApayer"=>$resteApayer]]);
                 }
             }
-
-            $paiementGlobal->etablissement_id=$idEtab;
-            $paiementGlobal->save();
 
             PaiementGlobal::where("id",$paiementGlobal->id)->first()->cashout();
 

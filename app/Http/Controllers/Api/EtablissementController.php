@@ -344,7 +344,7 @@ class EtablissementController extends Controller
 
                     $payeParTarif=$apprenant->paiements->where("tarif_id",$tarif->id)->sum("montant");
 
-                    $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin);
+                    $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin)->roundMonth();
 
                     $nombreMois=$intervalle->count();
 

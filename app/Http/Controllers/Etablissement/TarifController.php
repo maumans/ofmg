@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Classe;
 use App\Models\Tarif;
 use App\Models\Type_paiement;
+use Carbon\CarbonInterface;
+use Carbon\CarbonInterval;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -63,13 +66,19 @@ class TarifController extends Controller
 
         try{
 
+            $anneeEnCours=Auth::user()->etablissementAdmin->anneeEnCours;
+
+            $intervalle=CarbonPeriod::create($anneeEnCours->dateDebut,"1 month",$anneeEnCours->dateFin)->roundMonth();
+
+            $nombreMois=$intervalle->count();
+
             foreach($request->classes as $classe)
             {
                 $tarif=Tarif::create([
-                    "montant"=>$request->montant,
+                    "montant"=>$request->frequence==="MENSUELLE"?$request->montant*$nombreMois :$request->montant,
                     "obligatoire"=>$request->obligatoire,
-                    "frequence"=>$request->typePaiement["libelle"]=="INSCRIPTION"?"ANNUELLE":$request->frequence,
-                    "echeance"=>$request->typePaiement["libelle"]=="INSCRIPTION"?null:$request->echeance,
+                    "frequence"=>$request->frequence,
+                    "echeance"=>$request->echeance,
                 ]);
 
                 $tarif->etablissement()->associate(Auth::user()->etablissementAdmin)->save();

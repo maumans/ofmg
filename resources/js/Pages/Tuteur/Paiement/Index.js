@@ -95,7 +95,8 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
         "tarifs":"",
         "montants":[],
         "total":montantTotal?montantTotal:0,
-        "numero_retrait":""
+        "numero_retrait":"",
+        "etablissement":""
     });
 
     function handleClose()
@@ -160,11 +161,11 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
     useEffect(() => {
         let list=null
        tuteur?.tuteur_apprenants.map((apprenant)=>(
-           apprenant?.tarifs.map((tarif)=>(
+           (apprenant?.classe.etablissement === data.etablissement?.id) && apprenant?.tarifs.map((tarif)=>(
                list={...list,[apprenant.id+"_"+tarif.id]:false}
            ))))
         setTarifs(list)
-    },[])
+    },[data.etablissement])
 
     useEffect(() => {
 
@@ -213,8 +214,6 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
             setCodeNumerosSt(st)
         }
     },[])
-
-
 
 
     //////TAB 2 CODES
@@ -282,6 +281,32 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
 
     ];
 
+
+    /// TAB ETAB
+
+    const [valueEt, setValueEt] = useState(0);
+
+    const handleChangeEt = (event, newValue) => {
+        setValueEt(newValue);
+    };
+
+    const [etablissements,setEtablissements]=useState(null)
+
+    useEffect(() => {
+
+        let et=[]
+
+        tuteur?.tuteur_apprenants.map(ap=>(
+
+            et=[...et.filter(e=>e.id!==ap.classe.etablissement.id),ap.classe.etablissement]
+        ))
+        setEtablissements(et)
+    },[])
+
+    useEffect(() => {
+        setData("etablissement",etablissements?.find((et,i) => i===valueEt))
+    },[valueEt,etablissements])
+
     return (
         <Authenticated
             auth={auth}
@@ -310,14 +335,33 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                         <Tab
                             label="PAIEMENT" {...a11yProps(0)} />
                         <Tab label="HISTORIQUE DE PAIEMENT" {...a11yProps(1)}/>
-                        <Tab label="TRANSACTIONS" {...a11yProps(1)}/>
+                        <Tab label="TRANSACTIONS" {...a11yProps(2)}/>
                     </Tabs>
                 </Box>
                 <TabPanel value={value} index={0}>
                     <div className="py-12">
-                        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-5">
+
+                            <Box sx={{bgcolor: 'background.paper' }}>
+                                <Tabs
+                                    value={valueEt}
+                                    onChange={handleChangeEt}
+                                    variant="scrollable"
+                                    scrollButtons="auto"
+                                    aria-label="scrollable auto tabs example"
+                                >
+                                    {
+                                        etablissements?.map(etablissement=>(
+                                            <Tab key={etablissement.id} label={etablissement.nom} />
+                                        ))
+                                    }
+
+                                </Tabs>
+                            </Box>
                             <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                            {/*
                                 <h1 className="p-6 bg-white border-b border-gray-200 text-xl p-2 text-white" style={{backgroundColor:'#fb923c'}}>PAIEMENT</h1>
+                            */}
 
                                 {
                                     tuteur?.tuteur_apprenants?.length > 0 &&
@@ -406,8 +450,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 "}>
                                         {
                                             tuteur?.tuteur_apprenants.map((apprenant,i)=>(
-
-
+                                                (apprenant?.classe?.etablissement?.id===data.etablissement?.id) &&
                                                 <motion.div
                                                     initial={{y:-100,opacity:0}}
                                                     animate={{y:0,opacity:1}}

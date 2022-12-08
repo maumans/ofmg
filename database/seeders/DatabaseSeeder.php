@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
         $this->call(TypeEtablissementSeeder::class);
         $this->call(AdresseSeeder::class);
+        $this->call(CycleSeeder::class);
         //$this->call(EtablissementSeeder::class);
         $this->call(TypePaiementSeeder::class);
         $this->call(MoisSeeder::class);

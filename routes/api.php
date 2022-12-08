@@ -74,7 +74,7 @@ Route::middleware("auth.basic")->any('orange/notifications', function (Request $
                     {
                         $payeParTarif=$paiement->apprenant->paiements->where("tarif_id",$tarif->id)->sum("montant");
 
-                        $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin);
+                        $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin)->roundMonth();
 
                         $nombreMois=$intervalle->count();
 

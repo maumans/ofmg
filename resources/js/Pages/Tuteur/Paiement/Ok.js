@@ -7,6 +7,7 @@ import {LinearProgress, Modal} from "@mui/material";
 import {useRemember} from "@inertiajs/inertia-react";
 import SnackBarFinal from "@/Components/SnackBarFinal";
 import {Inertia} from "@inertiajs/inertia";
+import EastIcon from '@mui/icons-material/East';
 
 const style = {
     position: 'absolute',
@@ -53,7 +54,11 @@ function Ok({auth,errors,success,tuteur,total,transaction}) {
                 <div className={`p-5 space-y-5 `}>
                     <div>
                         Votre paiement est en cours de traitement vous allez recevoir un message de confirmation sur votre téléphone!
-                        Merci de vérifier vos transactions <button onClick={()=>Inertia.get(route('tuteur.paiement.index',[auth.user]))}  className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>Vos transaction</button>
+                        Merci de vérifier vos transactions
+                    </div>
+
+                    <div>
+                        <button onClick={()=>Inertia.get(route('tuteur.paiement.index',[auth.user]))}  className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>Cliquez ici <EastIcon/></button>
                     </div>
 
                     <div>

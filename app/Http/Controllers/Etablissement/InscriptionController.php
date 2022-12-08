@@ -273,7 +273,7 @@ class InscriptionController extends Controller
                {
                    $tarif=Tarif::find($key);
 
-                   $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin);
+                   $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin)->roundMonth();
 
 
                    $anneeScolaire=$tarif->anneeScolaire;
@@ -364,7 +364,7 @@ class InscriptionController extends Controller
 
                     //////////////////
 
-                    $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin);
+                    $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin)->roundMonth();
 
 
                     $anneeScolaire=$tarif->anneeScolaire;
@@ -501,7 +501,7 @@ class InscriptionController extends Controller
                                     foreach($apprenant->tarifs as $tarif){
                                         if($tarif)
                                         {
-                                            $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin);
+                                            $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin)->roundMonth();
 
                                             $anneeScolaire=$tarif->anneeScolaire;
 

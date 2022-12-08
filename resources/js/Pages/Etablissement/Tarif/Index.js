@@ -245,8 +245,8 @@ function Index(props) {
                                     onChange={(e)=>setData("frequence",e.target.value)}
                                 >
                                     <MenuItem value={"MENSUELLE"}>MENSUELLE</MenuItem>
-                                    <MenuItem value={"TRIMESTRIELLE"}>TRIMESTRIELLE</MenuItem>
-                                    <MenuItem value={"SEMESTRIELLE"}>SEMESTRIELLE</MenuItem>
+                                   {/* <MenuItem value={"TRIMESTRIELLE"}>TRIMESTRIELLE</MenuItem>
+                                    <MenuItem value={"SEMESTRIELLE"}>SEMESTRIELLE</MenuItem>*/}
                                     <MenuItem value={"ANNUELLE"}>ANNUELLE</MenuItem>
 
                                 </Select>
