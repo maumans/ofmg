@@ -10,7 +10,7 @@ use App\Models\Fonction;
 use App\Models\Mois;
 use App\Models\Mois_Paye;
 use App\Models\Paiement;
-use App\Models\Paiement_occasionel;
+use App\Models\Paiement_occasionnel;
 use App\Models\Personnel;
 use App\Models\Salaire;
 use App\Models\User;
@@ -199,7 +199,7 @@ class PersonnelController extends Controller
     public function validationSalaire()
     {
         $salaires=Salaire::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->where("niveauValidation",1)->where("annee_scolaire_id",Auth::user()->etablissementAdmin->anneeEnCours->id)->with("personnel","mois","anneeScolaire")->where("status","<>","ANNULE")->orderByDesc('id')->get();
-        $paiementsOccasionnels=Paiement_occasionel::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->where("annee_scolaire_id",Auth::user()->etablissementAdmin->anneeEnCours->id)->where("niveauValidation",1)->with("anneeScolaire")->where("status","<>","ANNULE")->orderByDesc('id')->get();
+        $paiementsOccasionnels=Paiement_occasionnel::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->where("annee_scolaire_id",Auth::user()->etablissementAdmin->anneeEnCours->id)->where("niveauValidation",1)->with("anneeScolaire")->where("status","<>","ANNULE")->orderByDesc('id')->get();
 
         return Inertia::render('Etablissement/Personnel/Validation',["salaires"=>$salaires,"paiementsOccasionnels"=>$paiementsOccasionnels]);
     }
@@ -268,7 +268,7 @@ class PersonnelController extends Controller
         DB::beginTransaction();
 
         try{
-            $paiementOccasionnel=Paiement_occasionel::create([
+            $paiementOccasionnel=Paiement_occasionnel::create([
                 "nom"=>$request->nom,
                 "prenom"=>$request->prenom,
                 "motif"=>$request->motif,
@@ -296,7 +296,7 @@ class PersonnelController extends Controller
         try{
             foreach($request->all() as $paiementOccasionnel)
             {
-                $p=Paiement_occasionel::where("id",$paiementOccasionnel["id"])->first();
+                $p=Paiement_occasionnel::where("id",$paiementOccasionnel["id"])->first();
 
 
                 $p->update([
@@ -304,7 +304,7 @@ class PersonnelController extends Controller
                     "status"=>"VALIDE",
                 ]);
 
-                Paiement_occasionel::where("id",$p->id)->first()->cashin();
+                Paiement_occasionnel::where("id",$p->id)->first()->cashin();
 
             }
             DB::commit();
@@ -323,7 +323,7 @@ class PersonnelController extends Controller
         DB::beginTransaction();
 
         try{
-            $paiementOccasionnel=Paiement_occasionel::find($request->paiementOccasionnelId);
+            $paiementOccasionnel=Paiement_occasionnel::find($request->paiementOccasionnelId);
             $paiementOccasionnel->motifAnnulation=$request->motifAnnulation;
             $paiementOccasionnel->status="ANNULE";
             $paiementOccasionnel->niveauValidation=1;
@@ -343,7 +343,7 @@ class PersonnelController extends Controller
     {
         $salaires=Salaire::where('status',"VALIDE")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with("personnel","mois","anneeScolaire")->orderByDesc('id')->get();
 
-        $paiementOccasionnel=Paiement_occasionel::where('status',"VALIDE")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with("anneeScolaire")->orderByDesc('id')->get();
+        $paiementOccasionnel=Paiement_occasionnel::where('status',"VALIDE")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with("anneeScolaire")->orderByDesc('id')->get();
 
         return Inertia::render('Etablissement/Personnel/Historique',["salaires"=>$salaires,"paiementOccasionnel"=>$paiementOccasionnel,]);
     }

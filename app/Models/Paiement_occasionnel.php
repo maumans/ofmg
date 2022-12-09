@@ -7,7 +7,7 @@ use Crudfy\OmB2b\Traits\HasTransaction;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Paiement_occasionel extends Model implements iHasTransaction
+class Paiement_occasionnel extends Model implements iHasTransaction
 {
     use HasFactory,HasTransaction;
 

@@ -25,6 +25,6 @@ class Transaction extends Model
 
     public function paiementOccasionnel()
     {
-        return $this->hasOne(Paiement_occasionel::class);
+        return $this->hasOne(Paiement_occasionnel::class);
     }
 }

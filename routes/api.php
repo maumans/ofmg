@@ -3,7 +3,10 @@
 use App\Http\Controllers\AuthController;
 use App\Models\Mois;
 use App\Models\Mois_Paye;
+use App\Models\Paiement;
+use App\Models\Paiement_occasionnel;
 use App\Models\PaiementGlobal;
+use App\Models\Salaire;
 use App\Models\Transaction;
 use App\Models\User;
 use Carbon\CarbonPeriod;
@@ -129,12 +132,30 @@ Route::middleware("auth.basic")->any('orange/notifications', function (Request $
             }
         }
 
-        if($transaction->type == "CASHIN")
+        if($transaction->item_model === "App\Models\Paiement")
         {
-
+            $paiement=Paiement::where("transaction_id",$transaction->id)->first();
+            $paiement->transaction_status=$transaction->status;
+            $paiement->save();
         }
-
-
+        else if($transaction->item_model === "App\Models\PaiementGlobal")
+        {
+            $paiementGlobal=PaiementGlobal::where("transaction_id",$transaction->id)->first();
+            $paiementGlobal->transaction_status=$transaction->status;
+            $paiementGlobal->save();
+        }
+        else if($transaction->item_model === "App\Models\Salaire")
+        {
+            $salaire=Salaire::where("transaction_id",$transaction->id)->first();
+            $salaire->transaction_status=$transaction->status;
+            $salaire->save();
+        }
+        else if($transaction->item_model === "App\Models\Paiement_occasionnel")
+        {
+            $paiementOccasionnel=Paiement_occasionnel::where("transaction_id",$transaction->id)->first();
+            $paiementOccasionnel->transaction_status=$transaction->status;
+            $paiementOccasionnel->save();
+        }
 
         \Illuminate\Support\Facades\Log::info($request->all());
 
