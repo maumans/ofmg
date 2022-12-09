@@ -33,6 +33,11 @@ class Salaire extends Model implements iHasTransaction
         return $this->belongsTo(Mois::class);
     }
 
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class);
+    }
+
     public function getTransactionIdAttribute()
     {
         // TODO: Implement getTransactionIdAttribute() method.

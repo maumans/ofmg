@@ -17,4 +17,14 @@ class Transaction extends Model
     {
         return $this->hasOne(PaiementGlobal::class);
     }
+
+    public function salaire()
+    {
+        return $this->hasOne(Salaire::class);
+    }
+
+    public function paiementOccasionnel()
+    {
+        return $this->hasOne(Paiement_occasionel::class);
+    }
 }

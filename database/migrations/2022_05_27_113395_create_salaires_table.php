@@ -27,6 +27,8 @@ class CreateSalairesTable extends Migration
             $table->foreignId("validateur2_id")->nullable()->constrained("users")->cascadeOnDelete();
             $table->string("numero_retrait")->nullable();
             $table->string("numero_depot")->nullable();
+            $table->string("transaction_status")->nullable();
+            $table->foreignId("transaction_id")->nullable()->constrained("transactions")->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -13,7 +13,7 @@ class CreatePaiementOccasionelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('paiement_occasionels', function (Blueprint $table) {
+        Schema::create('paiement_occasionnels', function (Blueprint $table) {
             $table->id();
             $table->string("nom")->nullable();
             $table->string("prenom")->nullable();
@@ -31,6 +31,10 @@ class CreatePaiementOccasionelsTable extends Migration
             $table->string("numero_retrait")->nullable();
 
             $table->string("numero_depot")->nullable();
+
+            $table->string("transaction_status")->nullable();
+
+            $table->foreignId("transaction_id")->nullable()->constrained("transactions")->cascadeOnDelete();
 
             $table->timestamps();
         });

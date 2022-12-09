@@ -23,6 +23,11 @@ class Paiement_occasionel extends Model implements iHasTransaction
         return $this->belongsTo(Annee_scolaire::class);
     }
 
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class);
+    }
+
     public function getTransactionIdAttribute()
     {
         // TODO: Implement getTransactionIdAttribute() method.

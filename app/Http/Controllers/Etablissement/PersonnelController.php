@@ -174,17 +174,14 @@ class PersonnelController extends Controller
 
             foreach($request->all() as $key => $value)
             {
-                $salaire=Salaire::create([
+               Salaire::create([
                     "numero_depot"=>User::find($key)->telephone,
-                    "numero_retrait"=>"",
                     "montant"=>$value,
                     "mois_id"=>$mois,
                     "etablissement_id"=>Auth::user()->etablissementAdmin->id,
                     "annee_scolaire_id"=>Auth::user()->etablissementAdmin->anneeEnCours->id,
                     "personnel_id"=>$key
                 ]);
-
-                Salaire::where("id",$salaire->id)->first()->cashin();
             }
 
             DB::commit();
@@ -222,6 +219,9 @@ class PersonnelController extends Controller
                     "niveauValidation"=>2,
                     "status"=>"VALIDE",
                 ]);
+
+                Salaire::where("id",$s->id)->first()->cashin();
+
             }
             DB::commit();
 
@@ -278,8 +278,6 @@ class PersonnelController extends Controller
                 "annee_scolaire_id"=>Auth::user()->etablissementAdmin->anneeEnCours->id,
             ]);
 
-            Paiement_occasionel::where("id",$paiementOccasionnel->id)->first()->cashin();
-
             DB::commit();
 
             return redirect()->back()->with("success","Paiements mis en attentes de validation");
@@ -287,7 +285,7 @@ class PersonnelController extends Controller
         catch(\Exception $e){
             DB::rollback();
         }
-        
+
     }
 
     public function validationOccasionnelStore(Request $request,$user)
@@ -305,6 +303,9 @@ class PersonnelController extends Controller
                     "niveauValidation"=>2,
                     "status"=>"VALIDE",
                 ]);
+
+                Paiement_occasionel::where("id",$p->id)->first()->cashin();
+
             }
             DB::commit();
 

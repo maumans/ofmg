@@ -61,7 +61,9 @@ Route::middleware("auth.basic")->any('orange/notifications', function (Request $
 
         $paiementGlobal->transaction()->associate($transaction)->save();
 
-        if($transaction->status=="SUCCESS")
+        if($transaction->type == "CASHOUT")
+        {
+            if($transaction->status=="SUCCESS")
             {
 
                 foreach ($paiementGlobal->paiements as $paiement)
@@ -125,6 +127,14 @@ Route::middleware("auth.basic")->any('orange/notifications', function (Request $
                     }
                 }
             }
+        }
+
+        if($transaction->type == "CASHIN")
+        {
+
+        }
+
+
 
         \Illuminate\Support\Facades\Log::info($request->all());
 
