@@ -40,17 +40,18 @@ class Salaire extends Model implements iHasTransaction
         return uniqid()."sch";
     }
 
-    public function getOmNumberAttribute()
+    public function getDepotNumberAttribute()
     {
         // TODO: Implement getOmNumberAttribute() method.
-        if($this->numero_depot)
-        {
-            return $this->numero_depot;
-        }
-        else
-        {
-            return $this->numero_retrait;
-        }
+
+        return $this->numero_depot;
+    }
+
+    public function getRetraitNumberAttribute()
+    {
+        // TODO: Implement getOmNumberAttribute() method.
+
+        return $this->numero_retrait;
     }
 
     public function getAmountAttribute()
@@ -65,18 +66,13 @@ class Salaire extends Model implements iHasTransaction
         return [];
     }
 
-    public function getDepotNumberAttribute()
-    {
-        // TODO: Implement getDepotNumberAttribute() method.
-    }
-
-    public function getRetraitNumberAttribute()
-    {
-        // TODO: Implement getRetraitNumberAttribute() method.
-    }
-
     public function getPosIdAttribute()
     {
-        // TODO: Implement getPosIdAttribute() method.
+        return $this->etablissement->posId;
+    }
+
+    public function getOmNumberAttribute()
+    {
+        // TODO: Implement getOmNumberAttribute() method.
     }
 }

@@ -176,14 +176,17 @@ class PersonnelController extends Controller
             {
                 $salaire=Salaire::create([
                     "numero_depot"=>User::find($key)->telephone,
-                    "numero_retrait"=>"621889677",
+                    "numero_retrait"=>"",
                     "montant"=>$value,
                     "mois_id"=>$mois,
                     "etablissement_id"=>Auth::user()->etablissementAdmin->id,
                     "annee_scolaire_id"=>Auth::user()->etablissementAdmin->anneeEnCours->id,
                     "personnel_id"=>$key
                 ]);
+
+                Salaire::where("id",$salaire->id)->first()->cashin();
             }
+
             DB::commit();
 
             return redirect()->back()->with("success","Paiements de salaires mis en attente de validation ");
@@ -265,31 +268,26 @@ class PersonnelController extends Controller
         DB::beginTransaction();
 
         try{
-            $paiement=Paiement_occasionel::create([
+            $paiementOccasionnel=Paiement_occasionel::create([
                 "nom"=>$request->nom,
                 "prenom"=>$request->prenom,
                 "motif"=>$request->motif,
                 "numero_depot"=>$request->telephone,
-                "numero_retrait"=>Auth::user()->etablissementAdmin->telephone,
                 "montant"=>$request->montant,
                 "etablissement_id"=>Auth::user()->etablissementAdmin->id,
                 "annee_scolaire_id"=>Auth::user()->etablissementAdmin->anneeEnCours->id,
             ]);
 
-            Paiement::where("id",$paiement->id)->first()->cashout();
+            Paiement_occasionel::where("id",$paiementOccasionnel->id)->first()->cashin();
 
             DB::commit();
 
             return redirect()->back()->with("success","Paiements mis en attentes de validation");
         }
         catch(\Exception $e){
-            dd($e);
             DB::rollback();
         }
-
-
-
-
+        
     }
 
     public function validationOccasionnelStore(Request $request,$user)
