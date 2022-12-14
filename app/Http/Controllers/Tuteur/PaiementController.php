@@ -198,7 +198,7 @@ class PaiementController extends Controller
                 }
             }
 
-            PaiementGlobal::where("id",$paiementGlobal->id)->first()->cashin();
+            PaiementGlobal::where("id",$paiementGlobal->id)->first()->cashout();
 
             DB::commit();
 
