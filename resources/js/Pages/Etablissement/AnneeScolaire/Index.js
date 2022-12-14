@@ -74,11 +74,13 @@ function Index(props) {
         { field: 'dateFin', headerName: 'DATE DE FIN', width: 200 },
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues)=>(
-                <div className={"space-x-2"}>
-                    <button onClick={()=>handleOpen(cellValues.row)} className={"p-2 text-white orangeBlueBackground rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
-                        <EditIcon/>
-                    </button>
-                </div>
+               cellValues.row.actif ?
+               <div className={"space-x-2"}>
+                   <button onClick={()=>handleOpen(cellValues.row)} className={"p-2 text-white orangeBlueBackground rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
+                       <EditIcon/>
+                   </button>
+               </div>
+                   :''
             )
         },
 
@@ -167,7 +169,6 @@ function Index(props) {
                                         className={"w-full"}
                                         inputProps={{
                                             type:"date",
-                                            min:props.aujourdhui
                                         }}  name={"dateDebut"} onChange={(e)=>setData("dateDebut",e.target.value)}/>
                                     <div className={"flex my-2 text-red-600"}>{props.errors?.dateDebut}</div>
                                 </div>
@@ -177,7 +178,6 @@ function Index(props) {
                                         className={"w-full"}
                                         inputProps={{
                                             type:"date",
-                                            min:props.aujourdhui
                                         }}
                                         name={"dateFin"} onChange={(e)=>setData("dateFin",e.target.value)}/>
                                     <div className={"flex my-2 text-red-600"}>{props.errors?.dateFin}</div>
@@ -283,6 +283,7 @@ function Index(props) {
                                 pageSize={5}
                                 rowsPerPageOptions={[5]}
                                 autoHeight
+                                pa
                             />
                         }
                     </motion.div>

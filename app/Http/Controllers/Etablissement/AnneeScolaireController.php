@@ -18,7 +18,7 @@ class AnneeScolaireController extends Controller
      */
     public function index()
     {
-        $anneeScolaires=Auth::user()->etablissementAdmin->anneeScolaires;
+        $anneeScolaires=Auth::user()->etablissementAdmin->anneeScolaires()->orderByDesc('created_at')->get();
 
         $anneeEnCoursFinie=Auth::user()->etablissementAdmin->anneeEnCours ==null;
 

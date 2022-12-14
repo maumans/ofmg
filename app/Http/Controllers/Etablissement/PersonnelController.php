@@ -214,14 +214,7 @@ class PersonnelController extends Controller
             {
                 $s=Salaire::where("id",$salaire["id"])->first();
 
-
-                $s->update([
-                    "niveauValidation"=>2,
-                    "status"=>"VALIDE",
-                ]);
-
                 Salaire::where("id",$s->id)->first()->cashin();
-
             }
             DB::commit();
 
@@ -297,12 +290,6 @@ class PersonnelController extends Controller
             foreach($request->all() as $paiementOccasionnel)
             {
                 $p=Paiement_occasionnel::where("id",$paiementOccasionnel["id"])->first();
-
-
-                $p->update([
-                    "niveauValidation"=>2,
-                    "status"=>"VALIDE",
-                ]);
 
                 Paiement_occasionnel::where("id",$p->id)->first()->cashin();
 

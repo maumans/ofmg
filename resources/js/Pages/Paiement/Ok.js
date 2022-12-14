@@ -5,6 +5,8 @@ import Box from "@mui/material/Box";
 import Save from "@/Components/RecuHorsConnexion";
 import {Modal} from "@mui/material";
 import {useRemember} from "@inertiajs/inertia-react";
+import {Inertia} from "@inertiajs/inertia";
+import EastIcon from "@mui/icons-material/East";
 
 const style = {
     position: 'absolute',
@@ -35,11 +37,12 @@ function Ok({auth,errors,success,total,apprenant}) {
             errors={errors}
         >
             <div className="flex justify-center">
-                <div className={"p-5 text-green-600 space-y-5 "}>
+                <div className={"p-5 space-y-5 "}>
                     <div>
-                        Le paiement a été effectué avec succès cliquez sur le button ci-dessous pour consulter le reçu du paiement
+                        Votre paiement est en cours de traitement vous allez recevoir un message de confirmation sur votre téléphone!
                     </div>
-                    <div>
+
+                    {/*<div>
                         <button onClick={handleOpenModal} className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>
                             Consulter le reçu
                         </button>
@@ -61,7 +64,7 @@ function Ok({auth,errors,success,total,apprenant}) {
                                 />
                             }
                         </Box>
-                    </Modal>
+                    </Modal>*/}
 
                 </div>
             </div>

@@ -182,7 +182,6 @@ class PaiementController extends Controller
                     $paiement=Paiement::create([
                         "montant"=>$request->montants[$info[0]."_".$info[1]],
                         "numero_retrait"=>$request->numero_retrait,
-                        "numero_depot"=>$tarif->etablissement->telephone,
                         "type_paiement_id"=>$tarif["type_paiement_id"],
                         "mode_paiement_id"=>Mode_paiement::where("libelle","OM WEB")->first()->id,
                         "tuteur_id"=>Auth::user()->id,
@@ -199,7 +198,7 @@ class PaiementController extends Controller
                 }
             }
 
-            PaiementGlobal::where("id",$paiementGlobal->id)->first()->cashout();
+            PaiementGlobal::where("id",$paiementGlobal->id)->first()->cashin();
 
             DB::commit();
 

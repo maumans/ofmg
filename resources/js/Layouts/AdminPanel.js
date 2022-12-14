@@ -41,7 +41,7 @@ function ResponsiveDrawer(props) {
 
     const drawerEtablissementUser = (
         <List
-            className={"orangeOrangeBackground"}
+            className={"orangeOrangeBackground h-full overflow-y-auto"}
             sx={{width: '100%',color:"white",paddingTop:8,backgroundColor:"#FF7900" }}
             component="nav"
         >
@@ -56,6 +56,14 @@ function ResponsiveDrawer(props) {
                 (props.auth.etablissement || props.auth.directeur)
                     &&
                     <>
+                        <Link href={route("etablissement.anneeScolaire.index",props.auth.user.id)}>
+                            <ListItemButton sx={props.active==="anneeScolaire"?{backgroundColor:"#bc5610",color:"white"}:null}>
+                                <ListItemText primary="Annees Scolaires" />
+                            </ListItemButton>
+                        </Link>
+
+                        <Divider component="li" />
+
                         <ListItemButton sx={props.active==="contrat" ?{backgroundColor:"#bc5610",color:"white"}:null} onClick={()=>handleClick("contrat")}>
                             <ListItemText primary="Contrats"/>
                             {(open==="contrat" || props.active==="contrat") ? <ExpandLess /> : <ExpandMore />}
@@ -80,13 +88,7 @@ function ResponsiveDrawer(props) {
                         </Collapse>
 
                         <Divider component="li" />
-                        <Link href={route("etablissement.anneeScolaire.index",props.auth.user.id)}>
-                            <ListItemButton sx={props.active==="anneeScolaire"?{backgroundColor:"#bc5610",color:"white"}:null}>
-                                <ListItemText primary="Annees Scolaires" />
-                            </ListItemButton>
-                        </Link>
 
-                        <Divider component="li" />
                         <Link href={route("etablissement.classe.index",props.auth.user.id)}>
                             <ListItemButton sx={props.active==="classe"?{backgroundColor:"#bc5610",color:"white"}:null}>
                                 <ListItemText primary="Classes"/>
@@ -230,12 +232,12 @@ function ResponsiveDrawer(props) {
 
     const drawer = (
             <List
-                className={"orangeOrangeBackground"}
-                sx={{width: '100%',color:"white",bgColor:"#ff7900",paddingTop:8 }}
+                className={"orangeOrangeBackground h-full overflow-y-auto"}
+                sx={{color:"white",paddingTop:8 }}
                 component="nav"
             >
                 <Link href={route("admin.user.index",props.auth.user.id)}>
-                    <ListItemButton sx={props.active==="utilisateur" ?{backgroundColor:"#bc5610",color:"white"}:null}>
+                    <ListItemButton sx={props.active==="utilisateur" ?{backgroundColor:"#bc5610",color:"white"}:{backgroundColor:"#bc5610"}}>
                         <ListItemText primary="Utilisateurs" />
                     </ListItemButton>
                 </Link>

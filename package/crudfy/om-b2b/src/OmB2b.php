@@ -233,7 +233,6 @@ class OmB2b
 
         $operation->transaction_status = $_response->get('status');
         $operation->transaction_id = $transaction->id;
-        dd($_response['transactionData']);
 
         $operation->save();
 
@@ -265,12 +264,12 @@ class OmB2b
         return $this->makeTransactionAndSave('cashout', $props, $operation);
     }
 
-    public function getTransaction($service, $tansactionId) {
+    public function getTransaction($service, $transactionId) {
         $request = Http::withHeaders([
             'Authorization' => $this->getAuthToken(),
             'Content-Type' => 'application/json',
             'service' => $service
-        ])->get($this->url("transactions/{$tansactionId}"));
+        ])->get($this->url("transactions/{$transactionId}"));
         $data = json_decode($request->body(), true);
         return $data;
     }

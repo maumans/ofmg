@@ -45,7 +45,7 @@ Route::post('register',[App\Http\Controllers\Api\AuthController::class,"register
 
 
 
-Route::middleware("auth.basic")->any('orange/notifications', function (Request $request) {
+Route::middleware("auth.basic")->post('orange/notifications', function (Request $request) {
 
 
     DB::beginTransaction();
@@ -148,12 +148,18 @@ Route::middleware("auth.basic")->any('orange/notifications', function (Request $
         {
             $salaire=Salaire::where("transaction_id",$transaction->id)->first();
             $salaire->transaction_status=$transaction->status;
+            $salaire->niveauValidation=2;
+            $salaire->status="VALIDE";
             $salaire->save();
         }
         else if($transaction->item_model === "App\Models\Paiement_occasionnel")
         {
             $paiementOccasionnel=Paiement_occasionnel::where("transaction_id",$transaction->id)->first();
             $paiementOccasionnel->transaction_status=$transaction->status;
+
+            $paiementOccasionnel->niveauValidation=2;
+            $paiementOccasionnel->status="VALIDE";
+
             $paiementOccasionnel->save();
         }
 
@@ -162,8 +168,10 @@ Route::middleware("auth.basic")->any('orange/notifications', function (Request $
         Auth::user()->notify(New \App\Notifications\PaiementConfirme($transaction));
 
         DB::commit();
+
+        return response()->json(['message' => $transaction->message]);
     }
     catch(Throwable $e){
         DB::rollback();
     }
-});
+})->name("url.callback");

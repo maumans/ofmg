@@ -9,6 +9,7 @@ use App\Models\Mode_paiement;
 use App\Models\Mois;
 use App\Models\Mois_Paye;
 use App\Models\Paiement;
+use App\Models\PaiementGlobal;
 use App\Models\Tarif;
 use App\Models\Type_paiement;
 use App\Models\User;
@@ -114,10 +115,18 @@ class PaiementController extends Controller
 
         try{
 
+            $paiementGlobal=PaiementGlobal::create([
+                "montant" =>$request->total,
+                "numero_retrait" =>$request->numero_retrait,
+                "etablissement_id"=>$request->etablissement["id"],
+                "tuteur_id"=>Auth::user()->id
+            ]);
+
             foreach ($request->tarifs as $key =>$value)
             {
                 $info=explode("_",$key);
                 $apprenant=Apprenant::find($info[0]);
+
                 $tarif=Tarif::where("id",$info[1])->first();
 
                 if($value)
@@ -126,76 +135,22 @@ class PaiementController extends Controller
                     $paiement=Paiement::create([
                         "montant"=>$request->montants[$info[0]."_".$info[1]],
                         "numero_retrait"=>$request->numero_retrait,
-                        "numero_depot"=>$tarif->etablissement->telephone,
                         "type_paiement_id"=>$tarif["type_paiement_id"],
                         "mode_paiement_id"=>Mode_paiement::where("libelle","OM WEB")->first()->id,
-                        "etablissement_id"=>$tarif->etablissement_id
+                        "etablissement_id"=>$tarif->etablissement_id,
+                        "paiement_global_id"=>$paiementGlobal->id
                     ]);
-
-                    Paiement::where("id",$paiement->id)->first()->cashout();
 
                     $paiement->tarif()->associate(Tarif::find($tarif["id"]))->save();
                     $paiement->apprenant()->associate(Apprenant::find($apprenant["id"]))->save();
 
-                    $resteApayer=$tarif["montant"]-$apprenant->paiements->where("type_paiement_id",$tarif["type_paiement_id"])->sum("montant");
+                   /* $resteApayer=$tarif["montant"]-$apprenant->paiements->where("type_paiement_id",$tarif["type_paiement_id"])->sum("montant");
 
-                    $apprenant->tarifs()->syncWithoutDetaching([$tarif->id=>["resteApayer"=>$resteApayer]]);
+                    $apprenant->tarifs()->syncWithoutDetaching([$tarif->id=>["resteApayer"=>$resteApayer]]);*/
                 }
             }
 
-            foreach($apprenant->tarifs as $tarif)
-            {
-                $payeParTarif=$apprenant->paiements->where("tarif_id",$tarif->id)->sum("montant");
-
-                $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin)->roundMonth();
-
-                $nombreMois=$intervalle->count();
-
-                $sommeMensuelle=$tarif->montant/$nombreMois;
-
-                $repartition=$payeParTarif;
-
-                //dd($payeParTarif,$sommeMensuelle,$tarif->montant);
-
-
-                foreach($intervalle as $date)
-                {
-
-
-                    $moisId=Mois::where("position",$date->month)->first()->id;
-
-
-
-                    $moisPaye=Mois_Paye::where("apprenant_tarif_id",$tarif->pivot->id)->where("mois_id",$moisId)->first();
-
-
-                    if($repartition>=$sommeMensuelle)
-                    {
-                        $moisPaye->montant=$sommeMensuelle;
-                        $moisPaye->save();
-                        $repartition=$repartition-$sommeMensuelle;
-
-                    }
-                    else
-                    {
-                        if($repartition==0)
-                        {
-                            $moisPaye->montant=0;
-                            $moisPaye->save();
-
-
-                        }
-                        else
-                        {
-                            $moisPaye->montant=$repartition;
-                            $moisPaye->save();
-                            $repartition=0;
-                        }
-                    }
-
-                }
-
-            }
+            PaiementGlobal::where("id",$paiementGlobal->id)->first()->cashout();
 
             DB::commit();
 
