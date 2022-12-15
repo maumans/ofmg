@@ -59,35 +59,24 @@ function Ok({auth,errors,success,tuteur,total,transaction}) {
             setNotification={setNotification}
         >
 
-            {
-                open ?
+            <div className="flex">
+                <div className={`p-5 space-y-5 `}>
+                    <div>
+                        Votre paiement est en cours de traitement vous allez recevoir un message de confirmation sur votre téléphone!
+                        Merci de vérifier vos transactions
+                    </div>
 
-                    <Backdrop
-                        sx={{color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1}}
-                        open={open}
-                        onClick={handleClose}
-                    >
-                        <CircularProgress color="inherit"/>
-                    </Backdrop>
-                    :
-                    <div className="flex">
-                        <div className={`p-5 space-y-5 `}>
-                            <div>
-                                Votre paiement est en cours de traitement vous allez recevoir un message de confirmation sur votre téléphone!
-                                Merci de vérifier vos transactions
-                            </div>
+                    <div>
+                        <button onClick={()=>Inertia.get(route('tuteur.paiement.index',[auth.user]))}  className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>Cliquez ici <EastIcon/></button>
+                    </div>
 
-                            <div>
-                                <button onClick={()=>Inertia.get(route('tuteur.paiement.index',[auth.user]))}  className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>Cliquez ici <EastIcon/></button>
-                            </div>
-
-                            <div>
-                                {/*<button onClick={handleOpenModal} className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>
+                    <div>
+                        {/*<button onClick={handleOpenModal} className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>
                                         Consulter le reçu
                                     </button>*/}
-                            </div>
+                    </div>
 
-                            {/*<Modal
+                    {/*<Modal
                                     keepMounted
                                     open={openModal}
                                     onClose={handleCloseModal}
@@ -109,10 +98,8 @@ function Ok({auth,errors,success,tuteur,total,transaction}) {
                                     </Box>
                                 </Modal>*/}
 
-                        </div>
-                    </div>
-
-            }
+                </div>
+            </div>
 
             {
                 notification && <SnackBarFinal success={notification.transaction.message}/>

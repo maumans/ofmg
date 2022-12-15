@@ -8,13 +8,13 @@ function ValidationOk({auth,error}) {
 
     const [open,setOpen]=useState(true)
 
-    axios.post(route("url.callback")).then((response)=>{
+    /*axios.post(route("url.callback")).then((response)=>{
         console.log(response)
         setOpen(false)
     })
     .catch(function (error) {
         console.log(error);
-    });
+    });*/
 
     const handleClose = () => {
         setOpen(false);
@@ -22,8 +22,19 @@ function ValidationOk({auth,error}) {
 
     return (
         <AdminPanel auth={auth} error={error} active={"salaire"} sousActive={"validationSalaire"}>
+            <div className="space-y-4 p-5">
+                <div className={"text-blue-600"}>
+                    Paiement des salaires effectués avec succès
+                </div>
 
-            {
+                <div>
+                    <button onClick={()=>Inertia.get(route("etablissement.personnel.paiement.historique",auth.user.id))} className={"my-4 p-2 text-white orangeVertBackground rounded hover:text-green-700 hover:bg-white transition duration-500"}>
+                        Consulter l'historique
+                    </button>
+                </div>
+            </div>
+
+            {/*{
                 open ?
 
                     <Backdrop
@@ -45,7 +56,7 @@ function ValidationOk({auth,error}) {
                             </button>
                         </div>
                     </div>
-            }
+            }*/}
 
         </AdminPanel>
 
