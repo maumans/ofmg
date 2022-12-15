@@ -203,6 +203,8 @@ class OmB2b
             'x-omr-forms-version' => $this->configDB("{$service}_version")
         ])->post($this->url("transactions/$service"), $body);
 
+        Log::info($request);
+
         $status = $request->status();
         $data = json_decode($request->body(), true);
         return $data;

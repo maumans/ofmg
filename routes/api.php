@@ -188,7 +188,7 @@ Route::middleware("auth.basic")->any('orange/notifications', function (Request $
         DB::commit();
     }
     catch(Exception $e){
-        \Illuminate\Support\Facades\Log::alert($e);
+        \Illuminate\Support\Facades\Log::alert($request->all());
         DB::rollback();
     }
 });
