@@ -168,7 +168,7 @@ Route::middleware("auth.basic")->post('orange/notifications', function (Request 
             $salaire->save();
         }
 
-        if($transaction->item_model === "App\Models\Paiement_occasionnel")
+        if($transaction->item_model == "App\Models\Paiement_occasionnel")
         {
             $paiementOccasionnel = Paiement_occasionnel::where("id",$transaction->item_key)->first();
 
