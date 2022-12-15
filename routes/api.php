@@ -93,6 +93,8 @@ Route::middleware("auth.basic")->post('orange/notifications', function (Request 
                         $resteApayer=$paiement->tarif["montant"]-$paiement->apprenant->paiements->where("type_paiement_id",$paiement["type_paiement_id"])->sum("montant");
                         $paiement->apprenant->tarifs()->syncWithoutDetaching([$paiement->tarif->id=>["resteApayer"=>$resteApayer]]);
 
+                        $paiement->transaction_status=$transaction->status;
+                        $paiement->save();
 
                         foreach($paiement->apprenant->tarifs as $tarif)
                         {
