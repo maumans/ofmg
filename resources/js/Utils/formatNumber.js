@@ -4,6 +4,6 @@ export default function formatNumber(inputNumber) {
     if (splitArray.length > 1) {
         formetedNumber = splitArray[0];
     }
-    return (formetedNumber);
+    return (formetedNumber.replace(',','.'));
 }
 

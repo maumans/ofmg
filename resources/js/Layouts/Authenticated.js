@@ -69,7 +69,7 @@ export default function Authenticated({auth, children}) {
                                         </NavLink>
                                         {
                                             (auth?.tuteur || !auth?.user) &&
-                                            <NavLink href={auth?.tuteur?route('tuteur.paiement.index',[auth?.user.id]):route('paiement.create')} active={route().current('tuteur.paiement.index') || route().current('tuteur.paiement.search') || route().current('paiement.create') || route().current('paiement.search')}>
+                                            <NavLink href={auth?.tuteur?route('tuteur.paiement.index',[auth?.user.id]):route('paiement.create')} active={route().current('tuteur.paiement.index') || route().current('tuteur.paiement.search') || route().current('paiement.create') || route().current('paiement.search') || route().current('paiement.ok') || route().current('tuteur.paiement.ok')}>
                                                 Paiement
                                             </NavLink>
                                         }

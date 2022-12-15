@@ -1,30 +1,38 @@
 import React, {useEffect, useState} from 'react';
 import AdminPanel from "@/Layouts/AdminPanel";
 import {Inertia} from "@inertiajs/inertia";
-import {CircularProgress} from "@mui/material";
+import {Backdrop, CircularProgress} from "@mui/material";
 import Box from "@mui/material/Box";
 
 function ValidationOk({auth,error}) {
 
-    const [loader,setLoader]=useState(true)
+    const [open,setOpen]=useState(true)
 
     axios.post(route("url.callback")).then((response)=>{
         console.log(response)
-        setLoader(false)
+        setOpen(false)
     })
     .catch(function (error) {
         console.log(error);
     });
 
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     return (
         <AdminPanel auth={auth} error={error} active={"salaire"} sousActive={"validationSalaire"}>
 
             {
-                loader ?
+                open ?
 
-                    <Box sx={{ display: 'flex' }}>
-                        <CircularProgress />
-                    </Box>
+                    <Backdrop
+                        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                        open={open}
+                        onClick={handleClose}
+                    >
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
                     :
                     <div className="space-y-4 p-5">
                         <div className={"text-blue-600"}>

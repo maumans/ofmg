@@ -119,7 +119,7 @@ class PaiementController extends Controller
                 "montant" =>$request->total,
                 "numero_retrait" =>$request->numero_retrait,
                 "etablissement_id"=>$request->etablissement["id"],
-                "tuteur_id"=>Auth::user()->id
+                //"tuteur_id"=>Auth::user()->id
             ]);
 
             foreach ($request->tarifs as $key =>$value)
@@ -156,7 +156,7 @@ class PaiementController extends Controller
 
             return redirect()->route('paiement.ok',["apprenantId"=>$apprenant->id,'total'=>$request->total]);
         }
-        catch(Throwable $e){
+        catch(Exception $e){
             DB::rollback();
             return $e;
         }
