@@ -63,7 +63,7 @@ Route::middleware("auth.basic")->post('orange/notifications', function (Request 
         $transaction->save();
 
 
-        if($transaction->item_model === "App\Models\Paiement")
+        if($transaction->item_model == "App\Models\Paiement")
         {
 
             $paiement = Paiement::where("id",$transaction->item_key)->first();
@@ -74,7 +74,8 @@ Route::middleware("auth.basic")->post('orange/notifications', function (Request 
 
             $paiement->save();
         }
-        else if($transaction->item_model === "App\Models\PaiementGlobal")
+
+        if($transaction->item_model == "App\Models\PaiementGlobal")
         {
             $paiementGlobal = PaiementGlobal::where("id",$transaction->item_key)->first();
 
@@ -151,7 +152,8 @@ Route::middleware("auth.basic")->post('orange/notifications', function (Request 
                 }
             }
         }
-        else if($transaction->item_model === "App\Models\Salaire")
+
+        if($transaction->item_model == "App\Models\Salaire")
         {
             $salaire = Salaire::where("id",$transaction->item_key)->first();
             $salaire->transaction()->associate($transaction)->save();
@@ -165,7 +167,8 @@ Route::middleware("auth.basic")->post('orange/notifications', function (Request 
 
             $salaire->save();
         }
-        else if($transaction->item_model === "App\Models\Paiement_occasionnel")
+
+        if($transaction->item_model === "App\Models\Paiement_occasionnel")
         {
             $paiementOccasionnel = Paiement_occasionnel::where("id",$transaction->item_key)->first();
 
@@ -182,7 +185,7 @@ Route::middleware("auth.basic")->post('orange/notifications', function (Request 
             $paiementOccasionnel->save();
         }
 
-        Auth::user()->notify(New \App\Notifications\PaiementConfirme($transaction));
+        //Auth::user()->notify(New \App\Notifications\PaiementConfirme($transaction));
 
         DB::commit();
     }
