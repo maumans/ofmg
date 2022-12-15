@@ -8,14 +8,6 @@ function ValidationOk({auth,error}) {
 
     const [open,setOpen]=useState(true)
 
-    /*axios.post(route("url.callback")).then((response)=>{
-        console.log(response)
-        setOpen(false)
-    })
-    .catch(function (error) {
-        console.log(error);
-    });*/
-
     const handleClose = () => {
         setOpen(false);
     };

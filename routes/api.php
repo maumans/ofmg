@@ -45,12 +45,11 @@ Route::post('register',[App\Http\Controllers\Api\AuthController::class,"register
 
 
 
-Route::middleware("auth.basic")->post('orange/notifications', function (Request $request) {
+Route::middleware("auth.basic")->any('orange/notifications', function (Request $request) {
 
+    \Illuminate\Support\Facades\Log::alert($request->all());
 
     DB::beginTransaction();
-
-    \Illuminate\Support\Facades\Log::info($request->all());
 
     try{
 
@@ -62,6 +61,7 @@ Route::middleware("auth.basic")->post('orange/notifications', function (Request 
 
         $transaction->save();
 
+        Auth::user()->notify(New \App\Notifications\PaiementConfirme($transaction));
 
         if($transaction->item_model == "App\Models\Paiement")
         {
@@ -185,11 +185,10 @@ Route::middleware("auth.basic")->post('orange/notifications', function (Request 
             $paiementOccasionnel->save();
         }
 
-        //Auth::user()->notify(New \App\Notifications\PaiementConfirme($transaction));
-
         DB::commit();
     }
-    catch(Throwable $e){
+    catch(Exception $e){
+        \Illuminate\Support\Facades\Log::alert($e);
         DB::rollback();
     }
 });

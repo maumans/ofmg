@@ -57,7 +57,7 @@ class PaiementConfirme extends Notification
      */
     public function toArray($notifiable)
     {
-        return $this->transaction->id;
+        return $this->transaction;
     }
 
     public function toBroadcast($notifiable)

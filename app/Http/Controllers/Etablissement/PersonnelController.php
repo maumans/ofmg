@@ -261,14 +261,14 @@ class PersonnelController extends Controller
         DB::beginTransaction();
 
         try{
-            $paiementOccasionnel=Paiement_occasionnel::create([
-                "nom"=>$request->nom,
-                "prenom"=>$request->prenom,
-                "motif"=>$request->motif,
-                "numero_depot"=>$request->telephone,
-                "montant"=>$request->montant,
-                "etablissement_id"=>Auth::user()->etablissementAdmin->id,
-                "annee_scolaire_id"=>Auth::user()->etablissementAdmin->anneeEnCours->id,
+                Paiement_occasionnel::create([
+                    "nom"=>$request->nom,
+                    "prenom"=>$request->prenom,
+                    "motif"=>$request->motif,
+                    "numero_depot"=>$request->telephone,
+                    "montant"=>$request->montant,
+                    "etablissement_id"=>Auth::user()->etablissementAdmin->id,
+                    "annee_scolaire_id"=>Auth::user()->etablissementAdmin->anneeEnCours->id,
             ]);
 
             DB::commit();

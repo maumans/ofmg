@@ -48,7 +48,6 @@ class PaiementController extends Controller
 
         $transactions=Transaction::whereRelation('paiementGlobal.tuteur',"id",$tuteur->id)->orderByDesc('created_at')->get();
 
-
         foreach($tuteur->tuteurApprenants as $apprenant)
         {
             foreach($apprenant->tarifs as $tarif)

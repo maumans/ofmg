@@ -36,21 +36,13 @@ function Ok({auth,errors,success,tuteur,total,transaction}) {
     Echo.private(`App.Models.User.2`)
         .notification((notif) => {
             setNotification(notif)
-            //notify.show('Toasty!');
+            console.log(notif);
         });
 
     const [open,setOpen]=useState(true)
     const handleClose = () => {
         setOpen(false);
     };
-
-    /*axios.post(route("url.callback")).then((response)=>{
-        console.log(response)
-        setOpen(false)
-    })
-        .catch(function (error) {
-            console.log(error);
-        });*/
 
     return (
         <Authenticated
