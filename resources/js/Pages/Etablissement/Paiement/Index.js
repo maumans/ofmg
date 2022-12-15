@@ -34,6 +34,9 @@ function Index({auth,error,paiements,success}) {
         { field: 'montant', headerName: "MONTANT", flex: 1, minWidth: 150,  renderCell:(cellValues)=>(
                 formatNumber(cellValues.row.montant)+" FG"
             ) },
+        { field: 'status', headerName: "STATUS", flex: 1, minWidth: 150,  renderCell:(cellValues)=>(
+                formatNumber(cellValues.row.transaction_status)+" FG"
+            ) },
         { field: 'mode_paiement', headerName: "MODE DE PAIEMENT", flex: 1, minWidth: 250,  renderCell:(cellValues)=>(
                 cellValues.row.mode_paiement?.libelle
             ) },
