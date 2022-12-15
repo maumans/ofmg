@@ -50,6 +50,8 @@ Route::middleware("auth.basic")->post('orange/notifications', function (Request 
 
     DB::beginTransaction();
 
+    \Illuminate\Support\Facades\Log::info($request->all());
+
     try{
 
         $transaction=Transaction::where("transactionId",$request->transactionData['transactionId'])->first();
@@ -180,15 +182,11 @@ Route::middleware("auth.basic")->post('orange/notifications', function (Request 
             $paiementOccasionnel->save();
         }
 
-        \Illuminate\Support\Facades\Log::info($request->all());
-
         Auth::user()->notify(New \App\Notifications\PaiementConfirme($transaction));
 
         DB::commit();
-
-        return response()->json(['message' => $transaction->message]);
     }
     catch(Throwable $e){
         DB::rollback();
     }
-})->name("url.callback");
+});
