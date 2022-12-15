@@ -44,13 +44,13 @@ function Ok({auth,errors,success,tuteur,total,transaction}) {
         setOpen(false);
     };
 
-    axios.post(route("url.callback")).then((response)=>{
+    /*axios.post(route("url.callback")).then((response)=>{
         console.log(response)
         setOpen(false)
     })
         .catch(function (error) {
             console.log(error);
-        });
+        });*/
 
     return (
         <Authenticated
