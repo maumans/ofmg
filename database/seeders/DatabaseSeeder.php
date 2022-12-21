@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call(RoleSeeder::class);
         $this->call(ModePaiementSeeder::class);
-        //$this->call(PassportUserSeeder::class);
+        $this->call(PassportUserSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(TypeEtablissementSeeder::class);
         $this->call(AdresseSeeder::class);
