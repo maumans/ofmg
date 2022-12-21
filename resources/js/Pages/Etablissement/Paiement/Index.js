@@ -34,9 +34,22 @@ function Index({auth,error,paiements,success}) {
         { field: 'montant', headerName: "MONTANT", flex: 1, minWidth: 150,  renderCell:(cellValues)=>(
                 formatNumber(cellValues.row.montant)+" FG"
             ) },
-        { field: 'status', headerName: "STATUS",headerClassName:"header", flex: 1, minWidth: 150, fontWeight:"bold", renderCell:(cellValues)=>(
-                cellValues.row.transaction_status==="SUCCESS"?"Succés":cellValues.row.transaction_status==="PENDING"?"EN ATTENTE":cellValues.row.transaction_status==="FAILED" && "ECHEC"
-            )},
+        { field: 'status', headerName: "STATUS",headerClassName:"header", flex: 1, minWidth: 150, fontWeight:"bold", renderCell:(cellValues)=> {
+
+            if (cellValues.row.paiement_global) {
+                    return cellValues.row.paiement_global.transaction_status==="SUCCESS"?"Succès":cellValues.row.paiement_global.transaction_status==="PENDING"?"EN ATTENTE":cellValues.row.paiement_global.transaction_status==="FAILED" && "ECHEC"
+                } else {
+                    if (cellValues.row.paiement.mode_paiement==="OM USSD")
+                    {
+                        return cellValues.row.transaction_status==="SUCCESS"?"Succès":cellValues.row.transaction_status==="FAILED" && "ECHEC"
+                    }
+                    else
+                    {
+                        "Succès"
+                    }
+                    //return cellValues.row.paiementGlobal.transaction_status==="SUCCESS"?"Succès":cellValues.row.transaction_status==="PENDING"?"EN ATTENTE":cellValues.row.transaction_status==="FAILED" && "ECHEC"
+                }
+            }},
         { field: 'mode_paiement', headerName: "MODE DE PAIEMENT", flex: 1, minWidth: 250,  renderCell:(cellValues)=>(
                 cellValues.row.mode_paiement?.libelle
             ) },

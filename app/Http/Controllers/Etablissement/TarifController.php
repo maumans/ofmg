@@ -62,6 +62,7 @@ class TarifController extends Controller
             "montant" =>"required",
         ]);
 
+
         DB::beginTransaction();
 
         try{

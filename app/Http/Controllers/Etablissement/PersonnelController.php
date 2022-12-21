@@ -328,9 +328,15 @@ class PersonnelController extends Controller
 
     public function historique($user,$ok=null)
     {
-        $salaires=Salaire::where('status',"VALIDE")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with("personnel","mois","anneeScolaire")->orderByDesc('id')->get();
+        //$salaires=Salaire::where('status',"VALIDE")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with("personnel","mois","anneeScolaire")->orderByDesc('id')->get();
 
-        $paiementOccasionnel=Paiement_occasionnel::where('status',"VALIDE")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with("anneeScolaire")->orderByDesc('id')->get();
+        //$paiementOccasionnel=Paiement_occasionnel::where('status',"VALIDE")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with("anneeScolaire")->orderByDesc('id')->get();
+
+        $salaires=Salaire::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with("personnel","mois","anneeScolaire")->orderByDesc('id')->get();
+
+        $paiementOccasionnel=Paiement_occasionnel::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with("anneeScolaire")->orderByDesc('id')->get();
+
+        //dd($salaires);
 
         return Inertia::render('Etablissement/Personnel/Historique',["salaires"=>$salaires,"paiementOccasionnel"=>$paiementOccasionnel,]);
     }

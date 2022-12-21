@@ -45,150 +45,155 @@ Route::post('register',[App\Http\Controllers\Api\AuthController::class,"register
 
 
 
-Route::middleware("auth.basic")->any('orange/notifications', function (Request $request) {
+Route::any('orange/notifications', function (Request $request) {
 
     \Illuminate\Support\Facades\Log::alert($request->all());
 
     DB::beginTransaction();
 
     try{
+            $transaction=Transaction::where("transactionId",$request->transactionData['transactionId'])->first();
 
-        $transaction=Transaction::where("transactionId",$request->transactionData['transactionId'])->first();
+            $transaction->status = $request["status"];
 
-        $transaction->status = $request["status"];
+            $transaction->message = $request['message'];
 
-        $transaction->message = $request['message'];
+            $transaction->save();
 
-        $transaction->save();
+            Auth::user()->notify(New \App\Notifications\PaiementConfirme($transaction));
 
-        Auth::user()->notify(New \App\Notifications\PaiementConfirme($transaction));
-
-        if($transaction->item_model == "App\Models\Paiement")
-        {
-
-            $paiement = Paiement::where("id",$transaction->item_key)->first();
-
-            $paiement->transaction()->associate($transaction)->save();
-
-            $paiement->transaction_status=$transaction->status;
-
-            $paiement->save();
-        }
-
-        if($transaction->item_model == "App\Models\PaiementGlobal")
-        {
-            $paiementGlobal = PaiementGlobal::where("id",$transaction->item_key)->first();
-
-            $paiementGlobal->transaction()->associate($transaction)->save();
-
-            $paiementGlobal->transaction_status=$transaction->status;
-
-            $paiementGlobal->save();
-
-            if($transaction->type == "CASHOUT")
+            if($transaction->item_model == "App\Models\Paiement")
             {
 
-                if($transaction->status=="SUCCESS")
+                $paiement = Paiement::where("id",$transaction->item_key)->first();
+
+                $paiement->transaction()->associate($transaction)->save();
+
+                $paiement->transaction_status=$transaction->status;
+
+                $paiement->save();
+            }
+
+            if($transaction->item_model == "App\Models\PaiementGlobal")
+            {
+                $paiementGlobal = PaiementGlobal::where("id",$transaction->item_key)->first();
+
+                $paiementGlobal->transaction()->associate($transaction)->save();
+
+                $paiementGlobal->transaction_status=$transaction->status;
+
+                $paiementGlobal->save();
+
+                if($transaction->type == "CASHOUT")
                 {
 
-                    foreach ($paiementGlobal->paiements as $paiement)
+                    if($transaction->status=="SUCCESS")
                     {
-                        $resteApayer=$paiement->tarif["montant"]-$paiement->apprenant->paiements->where("type_paiement_id",$paiement["type_paiement_id"])->sum("montant");
-                        $paiement->apprenant->tarifs()->syncWithoutDetaching([$paiement->tarif->id=>["resteApayer"=>$resteApayer]]);
 
-                        $paiement->transaction_status=$transaction->status;
-                        $paiement->save();
-
-                        foreach($paiement->apprenant->tarifs as $tarif)
+                        foreach ($paiementGlobal->paiements as $paiement)
                         {
-                            $payeParTarif=$paiement->apprenant->paiements->where("tarif_id",$tarif->id)->sum("montant");
+                            $resteApayer=$paiement->tarif["montant"]-$paiement->apprenant->paiements->where("type_paiement_id",$paiement["type_paiement_id"])->sum("montant");
+                            $paiement->apprenant->tarifs()->syncWithoutDetaching([$paiement->tarif->id=>["resteApayer"=>$resteApayer]]);
 
-                            $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin)->roundMonth();
+                            $paiement->transaction_status=$transaction->status;
+                            $paiement->save();
 
-                            $nombreMois=$intervalle->count();
-
-                            $sommeMensuelle=$tarif->montant/$nombreMois;
-
-                            $repartition=$payeParTarif;
-
-                            //dd($payeParTarif,$sommeMensuelle,$tarif->montant);
-
-
-                            foreach($intervalle as $date)
+                            foreach($paiement->apprenant->tarifs as $tarif)
                             {
-                                $moisId=Mois::where("position",$date->month)->first()->id;
+                                $payeParTarif=$paiement->apprenant->paiements->where("tarif_id",$tarif->id)->sum("montant");
 
-                                $moisPaye=Mois_Paye::where("apprenant_tarif_id",$tarif->pivot->id)->where("mois_id",$moisId)->first();
+                                $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin)->roundMonth();
+
+                                $nombreMois=$intervalle->count();
+
+                                $sommeMensuelle=$tarif->montant/$nombreMois;
+
+                                $repartition=$payeParTarif;
+
+                                //dd($payeParTarif,$sommeMensuelle,$tarif->montant);
 
 
-                                if($repartition>=$sommeMensuelle)
+                                foreach($intervalle as $date)
                                 {
-                                    $moisPaye->montant=$sommeMensuelle;
-                                    $moisPaye->save();
-                                    $repartition=$repartition-$sommeMensuelle;
+                                    $moisId=Mois::where("position",$date->month)->first()->id;
 
-                                }
-                                else
-                                {
-                                    if($repartition==0)
+                                    $moisPaye=Mois_Paye::where("apprenant_tarif_id",$tarif->pivot->id)->where("mois_id",$moisId)->first();
+
+
+                                    if($repartition>=$sommeMensuelle)
                                     {
-                                        $moisPaye->montant=0;
+                                        $moisPaye->montant=$sommeMensuelle;
                                         $moisPaye->save();
-
+                                        $repartition=$repartition-$sommeMensuelle;
 
                                     }
                                     else
                                     {
-                                        $moisPaye->montant=$repartition;
-                                        $moisPaye->save();
-                                        $repartition=0;
+                                        if($repartition==0)
+                                        {
+                                            $moisPaye->montant=0;
+                                            $moisPaye->save();
+
+
+                                        }
+                                        else
+                                        {
+                                            $moisPaye->montant=$repartition;
+                                            $moisPaye->save();
+                                            $repartition=0;
+                                        }
                                     }
+
                                 }
 
                             }
-
                         }
                     }
                 }
             }
-        }
 
-        if($transaction->item_model == "App\Models\Salaire")
-        {
-            $salaire = Salaire::where("id",$transaction->item_key)->first();
-            $salaire->transaction()->associate($transaction)->save();
-            $salaire->transaction_status=$transaction->status;
-
-            if($transaction->status =="SUCCESS")
+            if($transaction->item_model == "App\Models\Salaire")
             {
-                $salaire->niveauValidation=2;
-                $salaire->status="VALIDE";
+                $salaire = Salaire::where("id",$transaction->item_key)->first();
+                $salaire->transaction()->associate($transaction)->save();
+                $salaire->transaction_status=$transaction->status;
+
+                if($transaction->status =="SUCCESS")
+                {
+                    $salaire->niveauValidation=2;
+                    $salaire->status="VALIDE";
+                }
+
+                $salaire->save();
             }
 
-            $salaire->save();
-        }
-
-        if($transaction->item_model == "App\Models\Paiement_occasionnel")
-        {
-            $paiementOccasionnel = Paiement_occasionnel::where("id",$transaction->item_key)->first();
-
-            $paiementOccasionnel->transaction()->associate($transaction)->save();
-
-            $paiementOccasionnel->transaction_status=$transaction->status;
-
-            if($transaction->status =="SUCCESS")
+            if($transaction->item_model == "App\Models\Paiement_occasionnel")
             {
-                $paiementOccasionnel->niveauValidation=2;
-                $paiementOccasionnel->status="VALIDE";
+                $paiementOccasionnel = Paiement_occasionnel::where("id",$transaction->item_key)->first();
+
+                $paiementOccasionnel->transaction()->associate($transaction)->save();
+
+                $paiementOccasionnel->transaction_status=$transaction->status;
+
+                if($transaction->status =="SUCCESS")
+                {
+                    $paiementOccasionnel->niveauValidation=2;
+                    $paiementOccasionnel->status="VALIDE";
+                }
+
+                $paiementOccasionnel->save();
             }
 
-            $paiementOccasionnel->save();
-        }
+
 
         DB::commit();
     }
     catch(Exception $e){
-        \Illuminate\Support\Facades\Log::alert($request->all());
+        if(empty($request)){
+            \Illuminate\Support\Facades\Log::alert("Pas de parametre");
+        }else{
+            \Illuminate\Support\Facades\Log::alert($request->all());
+        }
         DB::rollback();
     }
 });

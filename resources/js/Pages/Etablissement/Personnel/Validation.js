@@ -99,7 +99,7 @@ function Validation({auth,error,salaires,paiementsOccasionnels,success}) {
         { field: 'id', headerName: 'ID', width: 70 },
         { field: 'prenom', headerName: 'PRENOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.prenom) },
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
-        { field: 'telephone', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.numero_retrait) },
+        { field: 'numero_depot', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.numero_retrait) },
         { field: 'montant', headerName: 'MONTANT', width: 130, renderCell:(cellValues)=>(formatNumber(cellValues.row.montant)+" FG")  },
         { field: 'action', headerName: 'ACTION',width:200,
             renderCell:(cellValues)=>(

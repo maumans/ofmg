@@ -85,7 +85,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
     const [open, setOpen] = useState(false);
     const [openModal, setOpenModal] = useState(false);
 
-    const [value, setValue] = React.useState(0);
+    const [value, setValue] = React.useState(2);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -224,15 +224,16 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
     }
 
     const columnsTransactions = [
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'date', headerName: "DATE",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold", renderCell:(cellValues)=>(
                 cellValues.row.created_at.split('T')[0]+" à "+cellValues.row.created_at.split('T')[1].split(".")[0]
             ) },
-        { field: 'peerId', headerName: "TELEPHONE",headerClassName:"header", flex: 1, minWidth: 100, fontWeight:"bold"},
-        { field: 'amount', headerName: "MONTANT",headerClassName:"header", flex: 1, minWidth: 100, fontWeight:"bold", renderCell:(cellValues)=>(
+        { field: 'peerId', headerName: "TELEPHONE",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold"},
+        { field: 'amount', headerName: "MONTANT",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold", renderCell:(cellValues)=>(
                     formatNumber(cellValues.row.amount)+" FG"
             )},
         { field: 'status', headerName: "STATUS",headerClassName:"header", flex: 1, minWidth: 150, fontWeight:"bold", renderCell:(cellValues)=>(
-                cellValues.row.status==="SUCCESS"?"Succés":cellValues.row.status==="PENDING"?"EN ATTENTE":cellValues.row.status==="FAILED" && "ECHEC"
+                cellValues.row.status==="SUCCESS"?"Succès":cellValues.row.status==="PENDING"?"EN ATTENTE":cellValues.row.status==="FAILED" && "ECHEC"
             )},
         { field: 'message', headerName: "MESSAGE",headerClassName:"header", flex: 1, minWidth: 300, fontWeight:"bold",renderCell:(cellValues)=>(
                 cellValues.row.status==="PENDING"?"En attente de confirmation":cellValues.row.message
@@ -240,6 +241,10 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
         { field: 'action', headerName: 'ACTION',width:100,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
+                    <button onClick={handleOpenModal} className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>
+                        Reçu
+                    </button>
+
                     <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground orangeBlueBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
                         <VisibilityIcon/>
                     </button>
@@ -251,17 +256,20 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
 
     const columns = [
         { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
-        { field: 'Nom_complet', headerName: "NOM COMPLET DE L'APPRENANT",headerClassName:"header", flex: 1, minWidth: 300, fontWeight:"bold", renderCell:(cellValues)=>(
+        { field: 'Nom_complet', headerName: "APPRENANT",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold", renderCell:(cellValues)=>(
                 cellValues.row.apprenant.prenom+" "+cellValues.row.apprenant.nom
             ) },
-        { field: 'etablissement', headerName: "ETABLISSEMENT",headerClassName:"header", flex: 1, minWidth: 300, fontWeight:"bold", renderCell:(cellValues)=>(
+        { field: 'etablissement', headerName: "ETABLISSEMENT",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold", renderCell:(cellValues)=>(
                 cellValues.row?.etablissement?.nom
             ) },
-        { field: 'code', headerName: "CODE",headerClassName:"header", flex: 1, minWidth: 300, fontWeight:"bold", renderCell:(cellValues)=>(
+        { field: 'code', headerName: "CODE",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold", renderCell:(cellValues)=>(
                 cellValues.row?.etablissement?.code
             ) },
         { field: 'type_paiement', headerName: "TYPE DE FRAIS", flex: 1, minWidth: 150,  renderCell:(cellValues)=>(
                 cellValues.row.type_paiement?.libelle
+            ) },
+        { field: 'montant', headerName: "MONTANT", flex: 1, minWidth: 250,  renderCell:(cellValues)=>(
+                formatNumber(cellValues.row.montant)+" FG"
             ) },
         { field: 'mode_paiement', headerName: "MODE DE PAIEMENT", flex: 1, minWidth: 250,  renderCell:(cellValues)=>(
                 cellValues.row.mode_paiement?.libelle
@@ -652,22 +660,6 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
 
                 </TabPanel>
 
-                {/*<TabPanel value={value} index={1}>
-                    <Box sx={style}>
-                        {
-
-                            <Save
-                                tuteur={tuteur}
-                                apprenant={tuteur.tuteur_apprenants[0]}
-                                etablissement={tuteur.tuteur_apprenants[0]?.classe?.etablissement}
-                                paiements={tuteur?.paiements}
-                                nbrMois={10}
-                                total={data?.total}
-                            />
-                        }
-                    </Box>
-                </TabPanel>*/}
-
                 <TabPanel value={value} index={1}>
 
                     <div className={"flex justify-center"}>
@@ -692,7 +684,6 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                     columns={columns}
                                     pageSize={5}
                                     rowsPerPageOptions={[5]}
-                                    checkboxSelection
                                     autoHeight
 
 
@@ -725,7 +716,6 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                     columns={columnsTransactions}
                                     pageSize={5}
                                     rowsPerPageOptions={[5]}
-                                    checkboxSelection
                                     autoHeight
 
 
@@ -733,6 +723,27 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                             </motion.div>
                         }
                     </div>
+
+                    <Modal
+                        keepMounted
+                        open={openModal}
+                        onClose={handleCloseModal}
+                        aria-labelledby="keep-mounted-modal-title"
+                        aria-describedby="keep-mounted-modal-description"
+                    >
+                        <Box sx={style}>
+                            {
+
+                                <Save
+                                    tuteur={tuteur}
+                                    apprenant={tuteur.tuteur_apprenants[0]}
+                                    etablissement={tuteur.tuteur_apprenants[0].classe.etablissement}
+                                    paiements={tuteur.paiements}
+                                    nbrMois={10}
+                                />
+                            }
+                        </Box>
+                    </Modal>
                 </TabPanel>
 
             </Box>

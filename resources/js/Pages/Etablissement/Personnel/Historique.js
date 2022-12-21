@@ -60,8 +60,11 @@ function Historique({auth,error,salaires,paiementOccasionnel,success,mois}) {
         { field: 'prenom', headerName: 'PRENOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.prenom) },
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
         { field: 'telephone', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.telephone) },
-        { field: 'mois', headerName: 'MOIS', width: 130, renderCell:(cellValues)=>(cellValues.row.mois?.libelle)  },
         { field: 'montant', headerName: 'MONTANT', width: 130, renderCell:(cellValues)=>(formatNumber(cellValues.row.montant)+" FG")  },
+        { field: 'status', headerName: 'STATUS', width: 130, renderCell:(cellValues)=>(
+            cellValues.row.transaction_status==="SUCCESS"?"Succès":cellValues.row.transaction_status==="PENDING"?"EN ATTENTE":cellValues.row.transaction_status==="FAILED" && "ECHEC"
+        ) },
+        { field: 'mois', headerName: 'MOIS', width: 130, renderCell:(cellValues)=>(cellValues.row.mois?.libelle)  },
     ];
 
     const columnsOccasionnel = [
@@ -69,8 +72,11 @@ function Historique({auth,error,salaires,paiementOccasionnel,success,mois}) {
         { field: 'prenom', headerName: 'PRENOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.prenom) },
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
         { field: 'telephone', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.numero_retrait) },
-        { field: 'motif', headerName: 'MOTIF', width: 300, renderCell:(cellValues)=>(cellValues.row.motif) },
+        { field: 'status', headerName: 'STATUS', width: 130, renderCell:(cellValues)=>(
+                cellValues.row.transaction_status==="SUCCESS"?"Succès":cellValues.row.transaction_status==="PENDING"?"EN ATTENTE":cellValues.row.transaction_status==="FAILED" && "ECHEC"
+            ) },
         { field: 'montant', headerName: 'MONTANT', width: 130, renderCell:(cellValues)=>(formatNumber(cellValues.row.montant)+" FG")  },
+        { field: 'motif', headerName: 'MOTIF', width: 300, renderCell:(cellValues)=>(cellValues.row.motif) },
     ];
 
 

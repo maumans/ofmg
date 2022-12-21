@@ -27,7 +27,7 @@ class PaiementController extends Controller
      */
     public function index()
     {
-        $paiements=Paiement::whereRelation("tarif.etablissement","id",Auth::user()->etablissementAdmin->id)->with("apprenant","typePaiement","modePaiement")->orderByDesc('created_at')->get();
+        $paiements=Paiement::whereRelation("tarif.etablissement","id",Auth::user()->etablissementAdmin->id)->with("apprenant","typePaiement","modePaiement",'paiementGlobal')->orderByDesc('created_at')->get();
 
         return Inertia::render('Etablissement/Paiement/Index',["paiements"=>$paiements]);
     }

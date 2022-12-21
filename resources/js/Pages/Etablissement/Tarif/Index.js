@@ -183,12 +183,6 @@ function Index(props) {
         setTarifs(props.tarifs);
     },[props.tarifs]);
 
-    useEffect(() => {
-        if(data.typePaiement?.concerne!=="APPRENANT")
-        {
-            setData("obligatoire",true)
-        }
-    },[data.typePaiement])
 
     return (
         <AdminPanel auth={props.auth} error={props.error} active={"Service"}>
@@ -218,10 +212,10 @@ function Index(props) {
                         <div>
                             <Autocomplete
                                 multiple
-                                filterOptions={(options)=>[{libelle:"Tout selectionner" }, ...options]}
+                                //filterOptions={(options)=>[{libelle:"Tout selectionner" }, ...options]}
                                 disabled={data.typePaiement?.concerne!=="APPRENANT"}
                                 id="tags-standard"
-                                groupBy={(option) => option.libelle !=="Tout selectionner" && option.niveau.libelle}
+                                groupBy={(option) => option.niveau.libelle}
                                 onChange={(e,val)=> setData("classes",val)}
                                 isOptionEqualToValue={(option, value) => value.libelle==="Tout selectionner" && setData("classes",props.classes.filter((classe)=>(data.typePaiement?data.typePaiement?.tarifs.find(tarif=>tarif.classe_id===classe.id)===undefined:1)))}
                                 disablePortal={true}

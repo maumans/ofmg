@@ -19,16 +19,23 @@ const styles = StyleSheet.create({
 // Create Document Component
 function MyDocument(props){
 
+    useEffect(() => {
+        console.log(props.etablissement)
+    })
+
     let auj=new Date().toLocaleDateString();
            return (
                <Document style={styles.page}>
                    <Page size={"A6"} orientation="landscape">
-                       <View style={{flex:2,flexDirection:"row",justifyContent:"between",marginTop:"10px"}} >
-                           <View style={{flex:1,marginLeft:10}}>
-                               <View style={{flexDirection:"row"}}>
-                                   <Image src={logo} style={{width:200,height:"auto"}} alt=""/>
-                               </View>
+                       <View style={{flex:1,flexDirection:"row",marginHorizontal:10,justifyContent:'space-between',alignItems:'center'}}>
+                           <View>
+                               <Image src={logo} style={{width:150,height:"auto"}} alt=""/>
                            </View>
+
+                           <View>
+                               <Text style={{fontSize:15}} >{props.etablissement.nom}</Text>
+                           </View>
+
                        </View>
                        <View style={{flex:1,flexDirection: 'row',justifyContent: 'center',marginTop:5}}>
                            <Text>Reçu de paiement</Text>
@@ -41,7 +48,7 @@ function MyDocument(props){
                            </View>
 
                            <View style={{flex:1,flexDirection: 'column'}}>
-                               <Text style={styles.pp}>Client: <Text style={{textTransform:"capitalize"}}>{props.tuteur.prenom}</Text> <Text style={{textTransform:"uppercase"}}>{props.tuteur.nom}</Text></Text>
+                               <Text style={styles.pp}>Tuteur: <Text style={{textTransform:"capitalize"}}>{props.tuteur.prenom}</Text> <Text style={{textTransform:"uppercase"}}>{props.tuteur.nom}</Text></Text>
 
                                <Text style={styles.pp}>Tel: {props.tuteur.telephone}</Text>
                                {

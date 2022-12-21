@@ -203,7 +203,7 @@ class OmB2b
             'x-omr-forms-version' => $this->configDB("{$service}_version")
         ])->post($this->url("transactions/$service"), $body);
 
-        Log::info($request);
+        //Log::info($request);
 
         $status = $request->status();
         $data = json_decode($request->body(), true);
@@ -220,6 +220,8 @@ class OmB2b
 
 
     public function makeTransactionAndSave($service, $props, $operation) {
+        //Log::info("operation",$operation);
+        //Log::info("service",$service);
         $props['peerId'] = $props['number'];
         unset($props['number']);
         $data = ['item_model' => get_class($operation), 'item_key' => $operation->id];
@@ -229,9 +231,13 @@ class OmB2b
             $data
         ));
         $transactionData = $this->{$service}($props);
+       // Log::info("transactionData",$transactionData);
         $this->addOperationColumnToTransaction($transaction, $operation);
         $transactionResponse = $this->makeTransaction('cashin', $props);
+        //Log::info("transactionResponse",$transactionResponse);
         $_response = collect($transactionData);
+
+        //Log::info("_response",$_response);
 
         $operation->transaction_status = $_response->get('status');
         $operation->transaction_id = $transaction->id;
