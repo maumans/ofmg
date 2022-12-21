@@ -16,7 +16,7 @@ function ValidationOk({auth,error}) {
         <AdminPanel auth={auth} error={error} active={"salaire"} sousActive={"validationSalaire"}>
             <div className="space-y-4 p-5">
                 <div className={"text-blue-600"}>
-                    Paiement de salaires effectué veuillez consulter l'historique 
+                    Paiement de salaires effectué veuillez consulter l'historique
                 </div>
 
                 <div>
