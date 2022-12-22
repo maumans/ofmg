@@ -45,7 +45,7 @@ Route::post('register',[App\Http\Controllers\Api\AuthController::class,"register
 
 
 
-Route::any('orange/notifications', function (Request $request) {
+Route::middleware("auth.basic")->any('orange/notifications', function (Request $request) {
 
     \Illuminate\Support\Facades\Log::alert($request->all());
 
