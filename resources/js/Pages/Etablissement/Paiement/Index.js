@@ -74,6 +74,8 @@ function Index({auth,error,paiements,success}) {
                <div className="text-xl my-5 font-bold">
                    Liste des paiements
                </div>
+
+               Te
                <div>
                    {
                        <motion.div
