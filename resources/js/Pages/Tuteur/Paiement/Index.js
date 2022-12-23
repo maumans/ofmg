@@ -4,8 +4,8 @@ import Authenticated from "@/Layouts/Authenticated";
 import {
     Accordion, AccordionDetails, AccordionSummary,
     Alert,
-    Autocomplete, Avatar,
-    Checkbox,
+    Autocomplete, Avatar, Backdrop,
+    Checkbox, CircularProgress,
     Divider,
     FormControl,
     FormControlLabel, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemText,
@@ -314,6 +314,15 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
     useEffect(() => {
         setData("etablissement",etablissements?.find((et,i) => i===valueEt))
     },[valueEt,etablissements])
+
+
+    const [openBackdrop, setOpenBackdrop] = useState(false);
+    const handleCloseBackdrop = () => {
+        setOpenBackdrop(false);
+    };
+    const handleToggleBackdrop = () => {
+        setOpenBackdrop(!openBackdrop);
+    };
 
     return (
         <Authenticated
@@ -746,7 +755,14 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                     </Modal>
                 </TabPanel>
 
-                
+                <button onClick={handleToggleBackdrop}>Show backdrop</button>
+                <Backdrop
+                    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                    open={openBackdrop}
+                    onClick={handleCloseBackdrop}
+                >
+                    <CircularProgress color="inherit" />
+                </Backdrop>
             </Box>
 
 
