@@ -244,6 +244,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
 
     const columns = [
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'matricule', headerName: 'MATRICULE',flex:1,minWidth: 130 },
 
         { field: 'prenom', headerName: 'PRENOM' ,flex:1,minWidth: 130 },
@@ -358,10 +359,13 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                     {
 
                                         <DataGrid
+                                            components={{
+                                                Toolbar:GridToolbar,
+                                            }}
                                             rows={apprenantsSt}
                                             columns={columns}
-                                            pageSize={7}
-                                            rowsPerPageOptions={[7]}
+                                            pageSize={10}
+                                            rowsPerPageOptions={[10,20,100]}
                                             autoHeight
                                         />
                                     }

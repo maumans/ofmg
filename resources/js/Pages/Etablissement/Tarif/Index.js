@@ -186,7 +186,7 @@ function Index(props) {
 
     return (
         <AdminPanel auth={props.auth} error={props.error} active={"Service"}>
-            <div>
+            <div className={"p-5"}>
                 <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
                     Gestion des services
                 </div>
@@ -297,14 +297,17 @@ function Index(props) {
                         type:"spring",
                     }}
 
-                    style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                    style={{width: '100%' }} className={"flex justify-center"}>
                     {
                         tarifs &&
                         <DataGrid
+                            components={{
+                                Toolbar:GridToolbar,
+                            }}
                             rows={tarifs}
                             columns={columns}
-                            pageSize={5}
-                            rowsPerPageOptions={[5]}
+                            pageSize={10}
+                            rowsPerPageOptions={[10,20,100]}
                             autoHeight
                         />
                     }

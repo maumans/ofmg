@@ -197,17 +197,19 @@ function Index(props) {
                             duration:0.5,
                             type:"spring",
                         }}
-                        style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                        style={{width: '100%' }} className={"flex justify-center"}>
                         {
                             niveaux &&
-                            <DataGrid
+                            <DataGrid components={{
+                                    Toolbar:GridToolbar,
+                                }}
                                 componentsProps={{
                                     columnMenu:{backgroundColor:"red",background:"yellow"},
                                 }}
                                 rows={niveaux}
                                 columns={columns}
-                                pageSize={5}
-                                rowsPerPageOptions={[5]}
+                                pageSize={10}
+                                rowsPerPageOptions={[10,20,100]}
                                 autoHeight
                                 onCellEditCommit={handleCellEditCommit}
                             />

@@ -45,7 +45,7 @@ function Show(props) {
                         Liste des niveaux ({props?.cycle?.libelle.toLowerCase()})
                     </div>
 
-                    <div style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                    <div style={{width: '100%' }} className={"flex justify-center"}>
                         {
                             props?.cycle?.niveaux &&
                             <DataGrid
@@ -54,8 +54,8 @@ function Show(props) {
                                 }}
                                 rows={props?.cycle?.niveaux}
                                 columns={columns}
-                                pageSize={5}
-                                rowsPerPageOptions={[5]}
+                                pageSize={10}
+                                rowsPerPageOptions={[10,20,100]}
                                 autoHeight
                             />
                         }

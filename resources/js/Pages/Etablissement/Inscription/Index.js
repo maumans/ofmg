@@ -650,7 +650,7 @@ function Index(props) {
                             type:"spring",
                         }}
 
-                        style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                        style={{width: '100%' }} className={"flex justify-center"}>
                         {
                             <DataGrid
 

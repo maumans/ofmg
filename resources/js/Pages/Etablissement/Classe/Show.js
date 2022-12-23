@@ -1,5 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {DataGrid, gridPageCountSelector, gridPageSelector, useGridApiContext, useGridSelector} from '@mui/x-data-grid';
+import {
+    DataGrid,
+    gridPageCountSelector,
+    gridPageSelector,
+    GridToolbar,
+    useGridApiContext,
+    useGridSelector
+} from '@mui/x-data-grid';
 import {Autocomplete, FormControl, InputLabel, MenuItem, Pagination, Select, TextField} from "@mui/material";
 import AdminPanel from "@/Layouts/AdminPanel";
 import {Inertia} from "@inertiajs/inertia";
@@ -71,17 +78,20 @@ function Index(props) {
                        Apprenants de la {props.classe.libelle}
                     </div>
 
-                    <div style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                    <div style={{width: '100%' }} className={"flex justify-center"}>
                         {
                             apprenants &&
                             <DataGrid
+                                components={{
+                                    Toolbar:GridToolbar,
+                                }}
                                 componentsProps={{
                                     columnMenu:{backgroundColor:"red",background:"yellow"},
                                 }}
                                 rows={apprenants}
                                 columns={columns}
-                                pageSize={5}
-                                rowsPerPageOptions={[5]}
+                                pageSize={10}
+                                rowsPerPageOptions={[10,20,100]}
                                 checkboxSelection
                                 autoHeight
                             />

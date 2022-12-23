@@ -120,7 +120,7 @@ function Index(props) {
                             type:"spring",
                         }}
 
-                        style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                        style={{width: '100%' }} className={"flex justify-center"}>
                         {
                             fonctions &&
                             <DataGrid
@@ -129,8 +129,8 @@ function Index(props) {
                                 }}
                                 rows={fonctions}
                                 columns={columns}
-                                pageSize={5}
-                                rowsPerPageOptions={[5]}
+                                pageSize={10}
+                                rowsPerPageOptions={[10,20,100]}
                                 autoHeight
                             />
                         }

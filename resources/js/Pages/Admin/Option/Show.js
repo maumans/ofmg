@@ -46,7 +46,7 @@ function Show(props) {
                         Liste des classe ({props.region.libelle.toLowerCase()})
                     </div>
 
-                    <div style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                    <div style={{width: '100%' }} className={"flex justify-center"}>
                         {
                             props?.region?.villes &&
                             <DataGrid
@@ -55,8 +55,8 @@ function Show(props) {
                                 }}
                                 rows={props.region.villes}
                                 columns={columns}
-                                pageSize={5}
-                                rowsPerPageOptions={[5]}
+                                pageSize={10}
+                                rowsPerPageOptions={[10,20,100]}
                                 autoHeight
                             />
                         }

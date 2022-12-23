@@ -1,6 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=BioRhyme&display=swap');
+
+
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
 
 @import 'global.css';
 @import 'font.css';

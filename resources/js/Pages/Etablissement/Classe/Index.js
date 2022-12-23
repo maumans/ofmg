@@ -1,5 +1,12 @@
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {DataGrid, gridPageCountSelector, gridPageSelector, useGridApiContext, useGridSelector} from '@mui/x-data-grid';
+import {
+    DataGrid,
+    gridPageCountSelector,
+    gridPageSelector,
+    GridToolbar,
+    useGridApiContext,
+    useGridSelector
+} from '@mui/x-data-grid';
 import {
     Autocomplete, Dialog, DialogContent,
     FormControl,
@@ -352,14 +359,17 @@ function Index(props) {
                             duration:0.5,
                             type:"spring",
                         }}
-                        style={{height:450, width: '100%' }} className={"flex justify-center"}>
+                        style={{width: '100%' }} className={"flex justify-center"}>
                         {
                             classes &&
                             <DataGrid
+                                components={{
+                                    Toolbar:GridToolbar,
+                                }}
                                 rows={classes}
                                 columns={columns}
-                                pageSize={5}
-                                rowsPerPageOptions={[5]}
+                                pageSize={10}
+                                rowsPerPageOptions={[10,20,100]}
                                 autoHeight
                                 //onCellEditCommit={handleCellEditCommit}
                             />

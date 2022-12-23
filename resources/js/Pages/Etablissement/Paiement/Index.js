@@ -84,6 +84,9 @@ function Index({auth,error,paiements,success}) {
                            }}
                            style={{height:450, width: '100%' }}>
                            <DataGrid
+                               components={{
+                                   Toolbar:GridToolbar,
+                               }}
                                rows={paiements}
                                columns={columns}
                                pageSize={5}
