@@ -85,7 +85,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
     const [open, setOpen] = useState(false);
     const [openModal, setOpenModal] = useState(false);
 
-    const [value, setValue] = React.useState(2);
+    const [value, setValue] = React.useState(0);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -746,6 +746,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                     </Modal>
                 </TabPanel>
 
+                
             </Box>
 
 
