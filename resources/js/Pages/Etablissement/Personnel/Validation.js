@@ -208,7 +208,11 @@ function Validation({auth,error,salaires,paiementsOccasionnels,success}) {
                                         }}
                                         rows={salaires}
                                         columns={columns}
-                                        pageSize={10}
+                                       initialState={{
+                                        pagination: {
+                                            pageSize: 10,
+                                        },
+                                    }}
                                         rowsPerPageOptions={[10]}
                                         checkboxSelection
                                         autoHeight
@@ -250,7 +254,11 @@ function Validation({auth,error,salaires,paiementsOccasionnels,success}) {
                                             }}
                                             rows={salairesSt}
                                             columns={columnsModal}
-                                            pageSize={10}
+                                           initialState={{
+                                        pagination: {
+                                            pageSize: 10,
+                                        },
+                                    }}
                                             rowsPerPageOptions={[10]}
                                             autoHeight
                                         />
@@ -333,7 +341,11 @@ function Validation({auth,error,salaires,paiementsOccasionnels,success}) {
                                         }}
                                         rows={paiementsOccasionnels}
                                         columns={columnsOccasionnel}
-                                        pageSize={10}
+                                       initialState={{
+                                        pagination: {
+                                            pageSize: 10,
+                                        },
+                                    }}
                                         rowsPerPageOptions={[10]}
                                         checkboxSelection
                                         autoHeight
@@ -375,7 +387,11 @@ function Validation({auth,error,salaires,paiementsOccasionnels,success}) {
                                             }}
                                             rows={paiementsOccasionnelsSt}
                                             columns={columnsModalOccasionnel}
-                                            pageSize={10}
+                                           initialState={{
+                                        pagination: {
+                                            pageSize: 10,
+                                        },
+                                    }}
                                             rowsPerPageOptions={[10]}
                                             autoHeight
                                         />

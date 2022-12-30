@@ -89,7 +89,11 @@ function Index(props) {
                                 }}
                                 rows={apprenants}
                                 columns={columns}
-                                pageSize={10}
+                               initialState={{
+                                        pagination: {
+                                            pageSize: 10,
+                                        },
+                                    }}
                                 rowsPerPageOptions={[10,20,100]}
                                 checkboxSelection
                                 autoHeight

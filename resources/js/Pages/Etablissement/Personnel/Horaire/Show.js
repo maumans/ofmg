@@ -71,13 +71,13 @@ function Show({auth,error,personnel,success,mois}) {
         { field: 'classe', headerName: 'CLASSE', minWidth: 250, flex: 1,renderCell:cellValues =>(
                 cellValues.row?.cours?.classe?.libelle
             )},
-        { field: 'nombreHeureActuel', headerName: "NOMBRE D'HEURES ACTUELS", minWidth: 70, flex: 1,renderCell:cellValues =>(
+        { field: 'nombreHeureActuel', headerName: "HEURES ACTUELLES", minWidth: 200, flex: 1,renderCell:cellValues =>(
                 data.mois && cellValues.row.contrat_fonction_mois.find(cfm=>cfm.mois.id===data.mois?.id)?.nombreHeures
             )},
-        { field: 'Salaire', headerName: "SALAIRE MENSUEL", minWidth: 100, flex: 1,renderCell:cellValues =>(
+        { field: 'Salaire', headerName: "SALAIRE MENSUEL", minWidth: 200, flex: 1,renderCell:cellValues =>(
                 data.mois && formatNumber(cellValues.row.contrat_fonction_mois.find(cfm=>cfm.mois.id===data.mois?.id)?.salaire)+" FG"
             )},
-        { field: 'nouveau', headerName: "NOUVEAU NOMBRE D'HEURE", minWidth: 70, flex: 1,renderCell:cellValues =>(
+        { field: 'nouveau', headerName: "NOUVELLES HEURES", minWidth: 200, flex: 1,renderCell:cellValues =>(
                 cellValues.row.contrat_fonction_mois.map(cfm=>
                     cfm.mois.id===data.mois?.id &&
                     <TextField
@@ -137,7 +137,9 @@ function Show({auth,error,personnel,success,mois}) {
                 <div>
                     <Accordion defaultExpanded={true}>
                         <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
+                            expandIcon={<button type={'button'} className="orangeOrangeBackground text-white p-2 rounded-full">
+                                <ExpandMoreIcon />
+                            </button>}
                             aria-controls="panel1a-content"
                             id="panel1a-header"
                             sx={{backgroundColor:"#f8f1eb"}}
@@ -153,8 +155,12 @@ function Show({auth,error,personnel,success,mois}) {
 
                                     rows={tabEnseignant?tabEnseignant:[]}
                                     columns={columnsEnseignant}
-                                    pageSize={5}
-                                    rowsPerPageOptions={[5]}
+                                   initialState={{
+                                        pagination: {
+                                            pageSize: 10,
+                                        },
+                                    }}
+                               rowsPerPageOptions={[10,20,100]}
                                     autoHeight
                                 />
                             </div>

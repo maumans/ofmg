@@ -11,7 +11,7 @@ import {
     FormControlLabel, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemText,
     Modal,
     Snackbar,
-    TextField
+    TextField, Tooltip
 } from "@mui/material";
 import {Inertia} from "@inertiajs/inertia";
 import NumberFormat from 'react-number-format';
@@ -31,6 +31,10 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 
 import {motion} from 'framer-motion'
+import axios from "axios";
+import {DesktopDatePicker} from "@mui/x-date-pickers/DesktopDatePicker";
+import CloseIcon from "@mui/icons-material/Close";
+import SearchIcon from "@mui/icons-material/Search";
 
 const style = {
     position: 'absolute',
@@ -129,7 +133,9 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
             console.log(error)
         });*/
 
-        Inertia.post(route("tuteur.paiement.store",[auth?.user?.id]),data,{preserveScroll:true})
+        handleToggleBackdrop()
+
+        Inertia.post(route("tuteur.paiement.store",[auth?.user?.id]),data,{preserveScroll:true,onSuccess:()=>(handleToggleBackdrop())})
     }
 
 
@@ -225,10 +231,13 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
 
     const columnsTransactions = [
         { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
+        { field: 'transactionId', headerName: "ID TRANSACTION",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold"},
+
         { field: 'date', headerName: "DATE",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold", renderCell:(cellValues)=>(
                 cellValues.row.created_at.split('T')[0]+" à "+cellValues.row.created_at.split('T')[1].split(".")[0]
             ) },
         { field: 'peerId', headerName: "TELEPHONE",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold"},
+
         { field: 'amount', headerName: "MONTANT",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold", renderCell:(cellValues)=>(
                     formatNumber(cellValues.row.amount)+" FG"
             )},
@@ -256,6 +265,9 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
 
     const columns = [
         { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
+        { field: 'created_at', headerName: "DATE", flex: 1, minWidth: 150, renderCell:(cellValues)=>(
+                cellValues.row.created_at.split("T")[0]
+            ) },
         { field: 'Nom_complet', headerName: "APPRENANT",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold", renderCell:(cellValues)=>(
                 cellValues.row.apprenant.prenom+" "+cellValues.row.apprenant.nom
             ) },
@@ -268,14 +280,13 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
         { field: 'type_paiement', headerName: "TYPE DE FRAIS", flex: 1, minWidth: 150,  renderCell:(cellValues)=>(
                 cellValues.row.type_paiement?.libelle
             ) },
+        { field: 'numero_retrait', headerName: "TELEPHONE",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold"},
+
         { field: 'montant', headerName: "MONTANT", flex: 1, minWidth: 250,  renderCell:(cellValues)=>(
                 formatNumber(cellValues.row.montant)+" FG"
             ) },
         { field: 'mode_paiement', headerName: "MODE DE PAIEMENT", flex: 1, minWidth: 250,  renderCell:(cellValues)=>(
                 cellValues.row.mode_paiement?.libelle
-            ) },
-        { field: 'created_at', headerName: "DATE", flex: 1, minWidth: 150, renderCell:(cellValues)=>(
-                cellValues.row.created_at.split("T")[0]
             ) },
         { field: 'action', headerName: 'ACTION',width:100,
             renderCell:(cellValues)=>(
@@ -317,12 +328,55 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
 
 
     const [openBackdrop, setOpenBackdrop] = useState(false);
-    const handleCloseBackdrop = () => {
-        setOpenBackdrop(false);
-    };
+
+
     const handleToggleBackdrop = () => {
         setOpenBackdrop(!openBackdrop);
     };
+
+
+
+    const [paiementsSt,setPaisementsSt] = useState([]);
+    const [transactionsSt,setTransactionsSt] = useState([]);
+
+    useEffect(()=>{
+        setPaisementsSt(tuteur.paiements_tuteur)
+    },[])
+
+    useEffect(()=>{
+        setTransactionsSt(transactions)
+    },[])
+
+    useEffect(()=>{
+        let onglet =value===1?"paiement":value===2 && "transaction"
+        setData("onglet",onglet)
+    },[value])
+
+    function handleSearch()
+    {
+        setOpenBackdrop(true)
+        axios.post(route("tuteur.paiement.filtre",auth.user.id),data)
+            .then(({data}) => {
+
+                value===1?setPaisementsSt(data):value===2 && setTransactionsSt(data);
+                setFiltre(true)
+                setOpenBackdrop(false)
+            })
+
+        /*
+                        Inertia.post(route("etablissement.personnel.historique.filter",auth.user.etablissement_admin.id),data)
+        */
+    }
+
+    function handleCloseFiltre()
+    {
+        setOpenBackdrop(true)
+        value===1?setPaisementsSt(tuteur.paiements_tuteur):value===2 && setTransactionsSt(transactions);
+        setFiltre(false)
+        setTimeout(setOpenBackdrop(false),1000)
+    }
+
+    const [filtre, setFiltre] = useState(false);
 
     return (
         <Authenticated
@@ -392,7 +446,9 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                                             className={"space-y-5 border p-2 rounded"}>
                                             <Accordion>
                                                 <AccordionSummary
-                                                    expandIcon={<ExpandMoreIcon />}
+                                                    expandIcon={<button type={'button'} className="orangeOrangeBackground text-white p-2 rounded-full">
+                                                        <ExpandMoreIcon />
+                                                    </button>}
                                                     aria-controls="panel1a-content"
                                                     id="panel1a-header"
                                                     sx={{backgroundColor:"#f8f1eb"}}
@@ -480,7 +536,11 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
 
                                                     <Accordion>
                                                         <AccordionSummary
-                                                            expandIcon={<ExpandMoreIcon />}
+                                                            expandIcon={<Tooltip title={'Payer'}>
+                                                                <button type={'button'} className="orangeOrangeBackground text-white p-2 rounded-full">
+                                                                    <ExpandMoreIcon />
+                                                                </button>
+                                                            </Tooltip>}
                                                             aria-controls="panel1a-content"
                                                             id="panel1a-header"
                                                             sx={{backgroundColor:"#f8f1eb"}}
@@ -671,66 +731,116 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
 
                 <TabPanel value={value} index={1}>
 
-                    <div className={"flex justify-center"}>
-                        {
-                            tuteur &&
-                            <motion.div
-                                initial={{y:-10,opacity:0}}
-                                animate={{y:0,opacity:1}}
-                                transition={{
-                                    duration:0.5,
+                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-5">
+
+                        <div className={"gap-3 flex flex-wrap my-5"}>
+                            <DesktopDatePicker
+                                className="sm:w-5/12 w-full"
+                                value={data.dateDebut}
+                                label="Date debut"
+                                inputFormat="dd/MM/yyyy"
+                                renderInput={(params) => <TextField {...params} />}
+                                onChange={(date)=>setData('dateDebut',date)}/>
+                            <DesktopDatePicker
+                                className="sm:w-5/12 w-full"
+                                value={data.dateFin}
+                                label="Date debut"
+                                inputFormat="dd/MM/yyyy"
+                                renderInput={(params) => <TextField {...params} />}
+                                onChange={(date)=>setData('dateFin',date)}
+                            />
+                            {
+                                filtre &&
+                                <button className={"p-2 bg-red-600 text-white rounded"} onClick={handleCloseFiltre}><CloseIcon/></button>
+                            }
+
+                            <button className={"p-2 bg-green-600 text-white rounded"} onClick={handleSearch}><SearchIcon/></button>
+                        </div>
+
+                        <motion.div
+                            initial={{y:-10,opacity:0}}
+                            animate={{y:0,opacity:1}}
+                            transition={{
+                                duration:0.5,
+                            }}>
+                            <DataGrid
+                                componentsProps={{
+                                    columnMenu:{backgroundColor:"red",background:"yellow"},
                                 }}
-                                style={{width:1200,minWidth:400}}>
-                                <DataGrid
-                                    componentsProps={{
-                                        columnMenu:{backgroundColor:"red",background:"yellow"},
-                                    }}
 
-                                    components={{
-                                        Toolbar:GridToolbar,
-                                    }}
-                                    rows={tuteur.paiements_tuteur}
-                                    columns={columns}
-                                    pageSize={5}
-                                    rowsPerPageOptions={[5]}
-                                    autoHeight
+                                components={{
+                                    Toolbar:GridToolbar,
+                                }}
+                                rows={paiementsSt}
+                                columns={columns}
+                               initialState={{
+                                    pagination: {
+                                        pageSize: 10,
+                                    },
+                                }}
+                                rowsPerPageOptions={[10,20,100]}
+                                autoHeight
 
 
-                                />
-                            </motion.div>
-                        }
+                            />
+                        </motion.div>
                     </div>
                 </TabPanel>
                 <TabPanel value={value} index={2}>
 
-                    <div className={"flex justify-center"}>
-                        {
-                            tuteur &&
-                            <motion.div
-                                initial={{y:-10,opacity:0}}
-                                animate={{y:0,opacity:1}}
-                                transition={{
-                                    duration:0.5,
+                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-5">
+
+                        <div className={"gap-3 flex flex-wrap my-5"}>
+                            <DesktopDatePicker
+                                className="sm:w-5/12 w-full"
+                                value={data.dateDebut}
+                                label="Date debut"
+                                inputFormat="dd/MM/yyyy"
+                                renderInput={(params) => <TextField {...params} />}
+                                onChange={(date)=>setData('dateDebut',date)}/>
+                            <DesktopDatePicker
+                                className="sm:w-5/12 w-full"
+                                value={data.dateFin}
+                                label="Date debut"
+                                inputFormat="dd/MM/yyyy"
+                                renderInput={(params) => <TextField {...params} />}
+                                onChange={(date)=>setData('dateFin',date)}
+                            />
+                            {
+                                filtre &&
+                                <button className={"p-2 bg-red-600 text-white rounded"} onClick={handleCloseFiltre}><CloseIcon/></button>
+                            }
+
+                            <button className={"p-2 bg-green-600 text-white rounded"} onClick={handleSearch}><SearchIcon/></button>
+                        </div>
+                        <motion.div
+                            initial={{y:-10,opacity:0}}
+                            animate={{y:0,opacity:1}}
+                            transition={{
+                                duration:0.5,
+                            }}
+                        >
+                            <DataGrid
+                                componentsProps={{
+                                    columnMenu:{backgroundColor:"red",background:"yellow"},
                                 }}
-                                style={{width:1200,minWidth:400}}>
-                                <DataGrid
-                                    componentsProps={{
-                                        columnMenu:{backgroundColor:"red",background:"yellow"},
-                                    }}
 
-                                    components={{
-                                        Toolbar:GridToolbar,
-                                    }}
-                                    rows={transactions}
-                                    columns={columnsTransactions}
-                                    pageSize={5}
-                                    rowsPerPageOptions={[5]}
-                                    autoHeight
+                                components={{
+                                    Toolbar:GridToolbar,
+                                }}
+                                rows={transactionsSt}
+                                columns={columnsTransactions}
+                                initialState={{
+                                    pagination: {
+                                        pageSize: 10,
+                                    },
+                                }}
+                                rowsPerPageOptions={[10,20,100]}
+                                autoHeight
 
 
-                                />
-                            </motion.div>
-                        }
+                            />
+                        </motion.div>
                     </div>
 
                     <Modal
@@ -754,12 +864,9 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                         </Box>
                     </Modal>
                 </TabPanel>
-
-                <button onClick={handleToggleBackdrop}>Show backdrop</button>
                 <Backdrop
                     sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                     open={openBackdrop}
-                    onClick={handleCloseBackdrop}
                 >
                     <CircularProgress color="inherit" />
                 </Backdrop>

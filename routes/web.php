@@ -51,6 +51,9 @@ Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","pa
     Route::resource('etablissement.paiement',\App\Http\Controllers\Etablissement\PaiementController::class)->middleware("anneeScolaireIsDefined");
     Route::post("etablissement/{userId}/paiement/search/{matricule?}",[\App\Http\Controllers\Etablissement\PaiementController::class,"search"])->middleware("anneeScolaireIsDefined")->name("etablissement.paiement.search");
 
+    Route::post("etablissement/{etablissementId}/paiement/filtre",[\App\Http\Controllers\Etablissement\PaiementController::class,"filtre"])->name("etablissement.paiement.filter");
+
+
     Route::resource('etablissement.anneeScolaire',\App\Http\Controllers\Etablissement\AnneeScolaireController::class);
     Route::get("etablissement/anneeScolaire/cloture",[\App\Http\Controllers\Etablissement\AnneeScolaireController::class,"cloture"])->name("etablissement.anneeScolaire.cloture")->middleware("anneeScolaireIsDefined");
 
@@ -65,6 +68,7 @@ Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","pa
     Route::get("etablissement/{userId}/personnel/horaire/index",[\App\Http\Controllers\Etablissement\Personnel\horaireController::class,"index"])->name("etablissement.personnel.horaire.index")->middleware("anneeScolaireIsDefined");
     Route::get("etablissement/{userId}/personnel/horaire/{personnelId}",[\App\Http\Controllers\Etablissement\Personnel\horaireController::class,"show"])->name("etablissement.personnel.horaire.show")->middleware("anneeScolaireIsDefined");
     Route::post("etablissement/{userId}/personnel/horaire",[\App\Http\Controllers\Etablissement\Personnel\horaireController::class,"store"])->name("etablissement.personnel.horaire.store")->middleware("anneeScolaireIsDefined");
+    Route::post("etablissement/{etablissementId}/personnel/historique/filtre",[\App\Http\Controllers\Etablissement\PersonnelController::class,"filtre"])->name("etablissement.personnel.historique.filter");
 
 
     Route::get("etablissement/{userId}/personnel/paiement/salaire",[\App\Http\Controllers\Etablissement\PersonnelController::class,"salaire"])->name("etablissement.personnel.paiement.salaire")->middleware("anneeScolaireIsDefined");
@@ -92,6 +96,8 @@ Route::middleware(['auth', 'verified',"userIsTuteur","firstConnexion"])->group(f
     Route::resource('tuteur.paiement',\App\Http\Controllers\Tuteur\PaiementController::class);
     Route::get("tuteur/paiement/ok/{total}/{paiementGlobalId}",[\App\Http\Controllers\Tuteur\PaiementController::class,"ok"])->name("tuteur.paiement.ok");
     Route::get("tuteur/{userId}/paiement/search/{matricule?}",[\App\Http\Controllers\Tuteur\PaiementController::class,"search"])->name("tuteur.paiement.search");
+    Route::post("tuteur/{userId}/paiement/filtre",[\App\Http\Controllers\Tuteur\PaiementController::class,"filtre"])->name("tuteur.paiement.filtre");
+
 });
 
 Route::resource('paiement',\App\Http\Controllers\PaiementController::class);

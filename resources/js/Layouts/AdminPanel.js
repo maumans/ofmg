@@ -14,6 +14,10 @@ import Typography from '@mui/material/Typography';
 import {Collapse, ListItemButton} from "@mui/material";
 import {ExpandLess, ExpandMore} from "@mui/icons-material";
 import {Link} from "@inertiajs/inertia-react";
+import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
+import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
+import { fr } from "date-fns/locale";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 const drawerWidth = 240;
 
@@ -411,32 +415,44 @@ function ResponsiveDrawer(props) {
                     {currentDrawer()}
                 </Drawer>
             </Box>
-            <Box component="main" sx={{ flexGrow: 1}}>
+            <Box
+                className={"bg-gray-100 min-h-screen flex flex-col justify-between"}
+                component="main"
+                sx={{flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
+                >
                 <Toolbar sx={{display: { xs: 'block', md: 'none'}}} />
                 <div>
                     {props.children}
                 </div>
+                {/*<div className={'text-center'}>
+                    <span>
+                        Copyright © 2022, by Addvalis Enterprise
+                    </span>
+                </div>*/}
             </Box>
         </Box>
     );
 }
 function AdminPanel(props) {
     return (
-       <Authenticated
-           auth={props.auth}
-           errors={props.errors}
-       >
-           <ResponsiveDrawer
-               auth={props.auth}
-               errors={props.errors}
-               active={props.active}
-               sousActive={props.sousActive}
-           >
-               {props.children}
-           </ResponsiveDrawer>
+        <LocalizationProvider adapterLocale={fr} dateAdapter={AdapterDateFns}>
+            <Authenticated
+                auth={props.auth}
+                errors={props.errors}
+            >
+                <ResponsiveDrawer
+                    auth={props.auth}
+                    errors={props.errors}
+                    active={props.active}
+                    sousActive={props.sousActive}
+                >
+                    {props.children}
+                </ResponsiveDrawer>
 
 
-       </Authenticated>
+            </Authenticated>
+        </LocalizationProvider>
+
     );
 }
 

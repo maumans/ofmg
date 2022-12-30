@@ -200,7 +200,11 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires,codeN
                 <DataGrid
                     rows={personnelsSt.filter((personnel)=>(tabPersonnelSelected?.find(t=>t===personnel.id)) && data[personnel.id]!==undefined && data[personnel.id]!=="")}
                     columns={columnsModal}
-                    pageSize={10}
+                   initialState={{
+                                        pagination: {
+                                            pageSize: 10,
+                                        },
+                                    }}
                     rowsPerPageOptions={[10]}
                     autoHeight
                 />
@@ -296,7 +300,11 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires,codeN
                                         }}
                                         rows={personnelsSt}
                                         columns={columns}
-                                        pageSize={10}
+                                       initialState={{
+                                        pagination: {
+                                            pageSize: 10,
+                                        },
+                                    }}
                                         rowsPerPageOptions={[10]}
                                         autoHeight
                                         checkboxSelection
@@ -330,7 +338,11 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires,codeN
                                             }}
                                             rows={personnelsSt.filter((personnel)=>data[personnel.id+""]!==undefined)}
                                             columns={columnsModal}
-                                            pageSize={10}
+                                           initialState={{
+                                        pagination: {
+                                            pageSize: 10,
+                                        },
+                                    }}
                                             rowsPerPageOptions={[10]}
                                             autoHeight
                                         />
@@ -414,7 +426,11 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires,codeN
                             }}
                             rows={salaires.filter(salaire=>salaire.status ==="ANNULE")}
                             columns={columnAnnuler}
-                            pageSize={10}
+                           initialState={{
+                                        pagination: {
+                                            pageSize: 10,
+                                        },
+                                    }}
                             rowsPerPageOptions={[10]}
                             autoHeight
                         />

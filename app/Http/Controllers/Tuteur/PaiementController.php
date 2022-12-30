@@ -134,6 +134,33 @@ class PaiementController extends Controller
         return Inertia::render("Tuteur/Paiement/Create",["etablissement"=>$etablissement,"apprenant"=>$apprenant,"matricule"=>$matricule,"nbrMois"=>$nbrMois,"modePaiements"=>$modePaiements,"paiements"=>$paiements,"tuteur"=>$tuteur,"codeNumeros"=>$codeNumeros]);
     }
 
+    public function filtre(Request  $request,$userId)
+    {
+
+        $date_debut = Carbon::parse($request->get('dateDebut'))->startOfDay();
+        $date_fin = Carbon::parse($request->get('dateFin'))->endOfDay();
+
+        if($request->onglet=="paiement")
+        {
+            $tuteur=User::where('id',Auth::user()->id)->with(["paiementsTuteur"=>function($query)use($date_debut,$date_fin){
+                $query->whereBetween('created_at',[$date_debut,$date_fin])->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif","etablissement")->get();
+            }])->first();
+
+            $paiements=$tuteur->paiementsTuteur;
+
+            return $paiements;
+        }
+
+        if($request->onglet=="transaction")
+        {
+            $transactions=Transaction::whereRelation('paiementGlobal.tuteur',"id",$userId)->whereBetween('created_at',[$date_debut,$date_fin])->orderByDesc('created_at')->get();
+
+            return $transactions;
+        }
+
+
+    }
+
     /**
      * Show the form for creating a new resource.
      *

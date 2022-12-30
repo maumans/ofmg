@@ -11,7 +11,7 @@ import {
     FormControlLabel, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemText,
     Modal,
     TextField,
-    Radio
+    Radio, Tooltip
 } from "@mui/material";
 import {Inertia} from "@inertiajs/inertia";
 import NumberFormat from 'react-number-format';
@@ -364,7 +364,11 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                             }}
                                             rows={apprenantsSt}
                                             columns={columns}
-                                            pageSize={10}
+                                           initialState={{
+                                        pagination: {
+                                            pageSize: 10,
+                                        },
+                                    }}
                                             rowsPerPageOptions={[10,20,100]}
                                             autoHeight
                                         />
@@ -411,7 +415,9 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                                     defaultExpanded={ apprenantsList?.length===1}
                                                                 >
                                                                     <AccordionSummary
-                                                                        expandIcon={<ExpandMoreIcon />}
+                                                                        expandIcon={<button type={'button'} className="orangeOrangeBackground text-white p-2 rounded-full">
+                                                                                <ExpandMoreIcon />
+                                                                            </button>}
                                                                         aria-controls="panel1a-content"
                                                                         id="panel1a-header"
                                                                         sx={{backgroundColor:"#f8f1eb"}}

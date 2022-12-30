@@ -13,7 +13,7 @@ class Paiement extends Model implements iHasTransaction
     use HasFactory,HasTransaction;
     protected $guarded=[];
 
-    protected $appends= ["resteApayer"];
+    protected $appends= ["resteApayer",'date'];
 
     protected $resteApayer;
 
@@ -22,6 +22,11 @@ class Paiement extends Model implements iHasTransaction
     }
     public function setResteApayerAttribute($resteApayer){
         $this->resteApayer = $resteApayer;
+    }
+
+    public function getDateAttribute()
+    {
+        return $this->created_at->format('Y-m-d');
     }
 
     public function typePaiement()

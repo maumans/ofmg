@@ -66,6 +66,7 @@ class ContratController extends Controller
 
 
         return $personnels;
+
     }
 
     /**
@@ -76,7 +77,6 @@ class ContratController extends Controller
      */
     public function store(Request $request)
     {
-
 
         if (!$request->personnel)
         {

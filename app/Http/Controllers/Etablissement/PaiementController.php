@@ -12,6 +12,7 @@ use App\Models\Classe;
 use App\Models\Paiement;
 use App\Models\Tarif;
 use App\Models\User;
+use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -95,6 +96,18 @@ class PaiementController extends Controller
 
 
         return ["apprenant"=>$apprenant,"matricule"=>$matricule,"modePaiements"=>$modePaiements,"classes"=>$classes,"apprenants"=>$apprenants,"tuteur"=>$tuteur];
+    }
+
+    public function filtre(Request $request)
+    {
+        $date_debut = Carbon::parse($request->get('dateDebut'))->startOfDay();
+        $date_fin = Carbon::parse($request->get('dateFin'))->endOfDay();
+
+        $paiements=Paiement::whereRelation("tarif.etablissement","id",Auth::user()->etablissementAdmin->id)
+            ->with("apprenant","typePaiement","modePaiement",'paiementGlobal')
+            ->whereBetween('created_at',[$date_debut,$date_fin])->orderByDesc('created_at')->get();
+
+        return $paiements;
     }
 
     /**

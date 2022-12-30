@@ -663,7 +663,11 @@ function Index(props) {
                                 }}
                                 rows={inscriptions ?inscriptions:[]}
                                 columns={columns}
-                                pageSize={10}
+                               initialState={{
+                                        pagination: {
+                                            pageSize: 10,
+                                        },
+                                    }}
                                 rowsPerPageOptions={[10]}
                                 autoHeight
                             />

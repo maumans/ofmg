@@ -306,7 +306,11 @@ function Index(props) {
                             }}
                             rows={tarifs}
                             columns={columns}
-                            pageSize={10}
+                           initialState={{
+                                        pagination: {
+                                            pageSize: 10,
+                                        },
+                                    }}
                             rowsPerPageOptions={[10,20,100]}
                             autoHeight
                         />

@@ -2,21 +2,44 @@ import React, {useEffect, useState} from 'react';
 import {motion} from "framer-motion";
 import {DataGrid, GridToolbar} from "@mui/x-data-grid";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import SearchIcon from '@mui/icons-material/Search';
+
 import AdminPanel from "@/Layouts/AdminPanel";
 import SnackBar from "@/Components/SnackBar";
 import formatNumber from "@/Utils/formatNumber";
 
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+
+import {Backdrop, CircularProgress, Stack, TextField} from "@mui/material";
+import dayjs, { Dayjs } from 'dayjs';
+import {useForm} from "@inertiajs/inertia-react";
+import axios from "axios";
+import {Inertia} from "@inertiajs/inertia";
+
 function Index({auth,error,paiements,success}) {
+
+    const {data,setData,post,reset}=useForm({
+        "dateDebut":new Date(),
+        "dateFin":new Date(),
+    });
 
     function handleShow(id) {
         return undefined;
     }
 
     const [successSt,setSuccessSt] = useState();
+    const [paiementsSt,setPaiementsSt] = useState([]);
 
     useEffect(() => {
         success && setSuccessSt(success);
     },[])
+
+    useEffect(()=>{
+        setPaiementsSt(paiements)
+    },[])
+
+
+
 
 
     const columns = [
@@ -42,13 +65,13 @@ function Index({auth,error,paiements,success}) {
             }
             else
             {
-                if(cellValues.row?.mode_paiement==="OM USSD")
+                if(cellValues.row?.mode_paiement.libelle==="OM USSD")
                 {
                     return cellValues.row.transaction_status==="SUCCESS"?"SUCCES":cellValues.row.transaction_status==="FAILED" && "ECHEC"
                 }
                 else
                 {
-                    if (cellValues.row?.mode_paiement==="CASH")
+                    if (cellValues.row?.mode_paiement.libelle==="CASH")
                     {
                         return "SUCCES"
                     }
@@ -68,39 +91,104 @@ function Index({auth,error,paiements,success}) {
         },
 
     ];
-    return (
-        <AdminPanel auth={auth} error={error} active={"fraisScolaires"} sousActive={"listePaiementFraisScolaires"}>
-           <div className={"p-5"}>
-               <div className="text-xl my-5 font-bold">
-                   Liste des paiements
-               </div>
 
-               Te
-               <div>
-                   {
-                       <motion.div
-                           initial={{y:-10,opacity:0}}
-                           animate={{y:0,opacity:1}}
-                           transition={{
-                               duration:0.5,
-                           }}
-                           style={{height:450, width: '100%' }}>
-                           <DataGrid
-                               components={{
-                                   Toolbar:GridToolbar,
-                               }}
-                               rows={paiements}
-                               columns={columns}
-                               pageSize={5}
-                               rowsPerPageOptions={[5]}
-                               autoHeight
-                           />
-                       </motion.div>
-                   }
-               </div>
-           </div>
-            <SnackBar success={successSt}/>
-        </AdminPanel>
+    function handleSearch()
+    {
+        handleToggle()
+        axios.post(route("etablissement.paiement.filter",auth.user.etablissement_admin.id),data)
+            .then(({data}) => {
+                setPaiementsSt(data);
+                setFiltre(true)
+                setOpen(false)
+            })
+
+/*
+        Inertia.post(route("etablissement.paiement.filter",auth.user.etablissement_admin.id),data)
+*/
+    }
+
+    function handleCloseFiltre()
+    {
+        setPaiementsSt(data);
+        setFiltre(false)
+    }
+
+    const [filtre, setFiltre] = useState(false);
+    const [open, setOpen] = useState(false);
+    const handleClose = () => {
+        setOpen(false);
+    };
+    const handleToggle = () => {
+        setOpen(!open);
+    };
+
+    return (
+            <AdminPanel auth={auth} error={error} active={"fraisScolaires"} sousActive={"listePaiementFraisScolaires"}>
+                <div className={"p-5"}>
+                    <div className="text-xl my-5 font-bold">
+                        Liste des paiements
+                    </div>
+
+                    <div className={"gap-3 flex flex-wrap my-5"}>
+                        <DesktopDatePicker
+                            className="sm:w-5/12 w-full"
+                            value={data.dateDebut}
+                            label="Date debut"
+                            inputFormat="dd/MM/yyyy"
+                            renderInput={(params) => <TextField {...params} />}
+                            onChange={(date)=>setData('dateDebut',date)}/>
+                        <DesktopDatePicker
+                            className="sm:w-5/12 w-full"
+                            value={data.dateFin}
+                            label="Date debut"
+                            inputFormat="dd/MM/yyyy"
+                            renderInput={(params) => <TextField {...params} />}
+                            onChange={(date)=>setData('dateFin',date)}
+                        />
+                        {
+                            filtre &&
+                            <button className={"p-2 bg-red-600 text-white rounded"} onClick={handleCloseFiltre}><CloseIcon/></button>
+                        }
+
+                        <button className={"p-2 bg-green-600 text-white rounded"} onClick={handleSearch}><SearchIcon/></button>
+                    </div>
+
+                    <Backdrop
+                        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                        open={open}
+                        onClick={handleClose}
+                    >
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
+                    <div>
+                        {
+                            <motion.div
+                                initial={{y:-10,opacity:0}}
+                                animate={{y:0,opacity:1}}
+                                transition={{
+                                    duration:0.5,
+                                }}
+                                style={{width: '100%' }}>
+                                <DataGrid
+                                    components={{
+                                        Toolbar:GridToolbar,
+                                    }}
+                                    rows={paiementsSt}
+                                    columns={columns}
+                                    initialState={{
+                                        pagination: {
+                                            pageSize: 10,
+                                        },
+                                    }}
+                                    rowsPerPageOptions={[10,20,100]}
+                                    autoHeight
+                                />
+                            </motion.div>
+                        }
+                    </div>
+                </div>
+                <SnackBar success={successSt}/>
+            </AdminPanel>
     );
 }
 

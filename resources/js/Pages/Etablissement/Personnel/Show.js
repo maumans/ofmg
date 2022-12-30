@@ -85,7 +85,9 @@ function Show({auth,error,personnel,success,mois}) {
                                        defaultExpanded={true}
                             >
                                 <AccordionSummary
-                                    expandIcon={<ExpandMoreIcon />}
+                                    expandIcon={<button type={'button'} className="orangeOrangeBackground text-white p-2 rounded-full">
+                                        <ExpandMoreIcon />
+                                    </button>}
                                     aria-controls="panel1a-content"
                                     id="panel1a-header"
                                     sx={{backgroundColor:"#f8f1eb"}}
@@ -134,7 +136,9 @@ function Show({auth,error,personnel,success,mois}) {
                     <div>
                         <Accordion defaultExpanded={true}>
                             <AccordionSummary
-                                expandIcon={<ExpandMoreIcon />}
+                                expandIcon={<button type={'button'} className="orangeOrangeBackground text-white p-2 rounded-full">
+                                    <ExpandMoreIcon />
+                                </button>}
                                 aria-controls="panel1a-content"
                                 id="panel1a-header"
                                 sx={{backgroundColor:"#f8f1eb"}}

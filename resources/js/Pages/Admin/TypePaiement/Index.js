@@ -147,7 +147,11 @@ function Index(props) {
                                 }}
                                 rows={typePaiements}
                                 columns={columns}
-                                pageSize={10}
+                               initialState={{
+                                        pagination: {
+                                            pageSize: 10,
+                                        },
+                                    }}
                                 rowsPerPageOptions={[10]}
                                 autoHeight
                             />

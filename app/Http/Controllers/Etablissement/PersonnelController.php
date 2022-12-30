@@ -14,6 +14,7 @@ use App\Models\Paiement_occasionnel;
 use App\Models\Personnel;
 use App\Models\Salaire;
 use App\Models\User;
+use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -336,9 +337,27 @@ class PersonnelController extends Controller
 
         $paiementOccasionnel=Paiement_occasionnel::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with("anneeScolaire")->orderByDesc('id')->get();
 
-        //dd($salaires);
-
         return Inertia::render('Etablissement/Personnel/Historique',["salaires"=>$salaires,"paiementOccasionnel"=>$paiementOccasionnel,]);
+    }
+
+    public function filtre(Request $request)
+    {
+        $date_debut = Carbon::parse($request->get('dateDebut'))->startOfDay();
+        $date_fin = Carbon::parse($request->get('dateFin'))->endOfDay();
+
+        if($request->onglet=="salaire")
+        {
+            $salaires=Salaire::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->whereBetween('created_at',[$date_debut,$date_fin])->with("personnel","mois","anneeScolaire")->orderByDesc('id')->get();
+            return $salaires;
+        }
+
+        if($request->onglet=="occasionnel")
+        {
+            $paiementOccasionnel=Paiement_occasionnel::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->whereBetween('created_at',[$date_debut,$date_fin])->with("anneeScolaire")->orderByDesc('id')->get();
+
+            return $paiementOccasionnel;
+        }
+
     }
 
 
