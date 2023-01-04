@@ -16,13 +16,16 @@ class PassportUserSeeder extends Seeder
      */
     public function run()
     {
-        $user=User::create([
-            'nom' => 'OFMG',
-            'prenom' => 'ORANGE',
-            'login' => 'ussd',
-            'password' => Hash::make('amadouDiallo1234')
-        ]);
-
+        $user = User::where('login','ussd')->first();
+        if(is_null($user)){
+            $user=User::create([
+                'nom' => 'OFMG',
+                'prenom' => 'ORANGE',
+                'login' => 'ussd',
+                'password' => Hash::make('amadouDiallo1234')
+            ]);
+        }
+       
         $success['token'] = $user->createToken('authToken')->accessToken;
         $user->currentToken = $success['token'];
         $user->save();
