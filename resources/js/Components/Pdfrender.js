@@ -47,7 +47,7 @@ function MyDocument(props){
                            <View style={{flex:1,flexDirection: 'column'}}>
                                <Text style={styles.pp}>Tuteur: <Text style={{textTransform:"capitalize"}}>{props.tuteur?.prenom}</Text> <Text style={{textTransform:"uppercase"}}>{props.tuteur.nom}</Text></Text>
 
-                               <Text style={styles.pp}>Tel: {props.telephone}</Text>
+                               <Text style={styles.pp}>Numero de paiement: {props.telephone}</Text>
                            </View>
                        </View>
 

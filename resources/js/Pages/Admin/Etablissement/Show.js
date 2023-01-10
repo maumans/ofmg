@@ -2,13 +2,14 @@ import React, {useEffect} from 'react';
 import AdminPanel from "@/Layouts/AdminPanel";
 import {DataGrid, GridToolbar} from "@mui/x-data-grid";
 import formatNumber from "@/Utils/formatNumber";
+import {format} from "date-fns";
 
 function Show(props) {
 
     const columns = [
         { field: 'date', headerName: 'DATE ', width: 150,renderCell:(cellValues)=>(
             <div>
-                {cellValues.row.created_at.split("T")[0]}
+                format(new Date(cellValues.row.created_at), 'dd/MM/yyyy')
             </div>
             ) },
         { field: 'matricule', headerName: 'MATRICULE', width: 200,renderCell:(cellValues)=>(

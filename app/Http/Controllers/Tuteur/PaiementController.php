@@ -126,7 +126,7 @@ class PaiementController extends Controller
             $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif")->get();
         }])->first();
 
-        $modePaiements=Mode_paiement::where("libelle","!=","OM WEB");
+        $modePaiements=Mode_paiement::where("libelle","!=","PAIEMENT WEB");
 
         return Inertia::render("Tuteur/Paiement/Create",["etablissement"=>$etablissement,"apprenant"=>$apprenant,"matricule"=>$matricule,"nbrMois"=>$nbrMois,"modePaiements"=>$modePaiements,"paiements"=>$paiements,"tuteur"=>$tuteur,"codeNumeros"=>$codeNumeros]);
     }
@@ -206,7 +206,7 @@ class PaiementController extends Controller
                         "montant"=>$request->montants[$info[0]."_".$info[1]],
                         "numero_retrait"=>$request->numero_retrait,
                         "type_paiement_id"=>$tarif["type_paiement_id"],
-                        "mode_paiement_id"=>Mode_paiement::where("libelle","OM WEB")->first()->id,
+                        "mode_paiement_id"=>Mode_paiement::where("libelle","PAIEMENT WEB")->first()->id,
                         "tuteur_id"=>Auth::user()->id,
                         "etablissement_id"=>$tarif->etablissement_id,
                         "paiement_global_id"=>$paiementGlobal->id

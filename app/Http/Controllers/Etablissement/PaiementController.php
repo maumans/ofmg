@@ -163,7 +163,7 @@ class PaiementController extends Controller
                     $paiement=Paiement::create([
                         "montant"=>$request->montants[$info[0]."_".$info[1]],
                         "type_paiement_id"=>$tarif["type_paiement_id"],
-                        "mode_paiement_id"=>Mode_paiement::where("libelle","CASH")->first()->id,
+                        "mode_paiement_id"=>Mode_paiement::where("libelle","PAIEMENT CASH")->first()->id,
                         "tuteur_id"=>$request->tuteurSelectedId,
                         "etablissement_id"=>$tarif->etablissement_id
                     ]);

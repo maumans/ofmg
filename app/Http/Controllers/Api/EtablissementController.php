@@ -329,7 +329,7 @@ class EtablissementController extends Controller
                         "numero_retrait"=>$request->numero_retrait,
                         "transaction_status"=>$request->status,
                         "type_paiement_id"=>$tarif["type_paiement_id"],
-                        "mode_paiement_id"=>Mode_paiement::where("libelle","OM USSD")->first()->id,
+                        "mode_paiement_id"=>Mode_paiement::where("libelle","PAIEMENT USSD")->first()->id,
                     ]);
 
 

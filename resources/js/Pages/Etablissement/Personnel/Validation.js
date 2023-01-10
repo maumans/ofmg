@@ -101,6 +101,7 @@ function Validation({auth,error,salaires,paiementsOccasionnels,success}) {
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
         { field: 'numero_depot', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.numero_retrait) },
         { field: 'montant', headerName: 'MONTANT', width: 130, renderCell:(cellValues)=>(formatNumber(cellValues.row.montant)+" FG")  },
+        { field: 'motif', headerName: 'MOTIF', maxWidth: 300, renderCell:(cellValues)=>(cellValues.row.motif) },
         { field: 'action', headerName: 'ACTION',width:200,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
@@ -130,6 +131,7 @@ function Validation({auth,error,salaires,paiementsOccasionnels,success}) {
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
         { field: 'telephone', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.numero_retrait) },
         { field: 'montant', headerName: 'MONTANT', width: 130, renderCell:(cellValues)=>(formatNumber(cellValues.row.montant)+" FG") },
+        { field: 'motif', headerName: 'MOTIF', maxWidth: 300, renderCell:(cellValues)=>(cellValues.row.motif) },
     ];
 
     function handleSubmit(e)

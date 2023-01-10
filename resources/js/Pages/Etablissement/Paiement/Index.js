@@ -15,6 +15,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import {useForm} from "@inertiajs/inertia-react";
 import axios from "axios";
 import {Inertia} from "@inertiajs/inertia";
+import {format} from "date-fns";
 
 function Index({auth,error,paiements,success}) {
 
@@ -46,7 +47,7 @@ function Index({auth,error,paiements,success}) {
         { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
 
         { field: 'created_at', headerName: "DATE", flex: 1, minWidth: 150, renderCell:(cellValues)=>(
-                cellValues.row.created_at.split("T")[0]
+                format(new Date(cellValues.row.created_at), 'dd/MM/yyyy')
             ) },
         { field: 'Nom_complet', headerName: "NOM COMPLET DE L'APPRENANT",headerClassName:"header", flex: 1, minWidth: 300, fontWeight:"bold", renderCell:(cellValues)=>(
                 cellValues.row.apprenant.prenom+" "+cellValues.row.apprenant.nom
@@ -65,13 +66,13 @@ function Index({auth,error,paiements,success}) {
             }
             else
             {
-                if(cellValues.row?.mode_paiement.libelle==="OM USSD")
+                if(cellValues.row?.mode_paiement.libelle==="PAIEMENT USSD")
                 {
                     return cellValues.row.transaction_status==="SUCCESS"?"SUCCES":cellValues.row.transaction_status==="FAILED" && "ECHEC"
                 }
                 else
                 {
-                    if (cellValues.row?.mode_paiement.libelle==="CASH")
+                    if (cellValues.row?.mode_paiement.libelle==="PAIEMENT CASH")
                     {
                         return "SUCCES"
                     }

@@ -21,6 +21,7 @@ import axios from "axios";
 import {DesktopDatePicker} from "@mui/x-date-pickers/DesktopDatePicker";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from '@mui/icons-material/Close';
+import {format} from "date-fns";
 
 const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, ref) {
     const { onChange, ...other } = props;
@@ -62,7 +63,7 @@ function Historique({auth,error,salaires,paiementOccasionnel,success,mois}) {
     const columns = [
         { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'transaction_id', headerName: 'ID TRANSACTION', minWidth: 250},
-        { field: 'created_at', headerName: 'DATE', width: 130, renderCell:(cellValues)=>(cellValues.row?.created_at.split('T')[0]) },
+        { field: 'created_at', headerName: 'DATE', width: 130, renderCell:(cellValues)=>(format(new Date(cellValues.row.created_at), 'dd/MM/yyyy')) },
         { field: 'prenom', headerName: 'PRENOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.prenom) },
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
         { field: 'telephone', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.telephone) },
@@ -75,7 +76,8 @@ function Historique({auth,error,salaires,paiementOccasionnel,success,mois}) {
 
     const columnsOccasionnel = [
         { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
-        { field: 'created_at', headerName: 'DATE', width: 130, renderCell:(cellValues)=>(cellValues.row?.created_at.split('T')[0]) },
+        { field: 'transaction_id', headerName: 'ID TRANSACTION', minWidth: 250},
+        { field: 'created_at', headerName: 'DATE', width: 130, renderCell:(cellValues)=>format(new Date(cellValues.row.created_at), 'dd/MM/yyyy') },
         { field: 'prenom', headerName: 'PRENOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.prenom) },
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
         { field: 'telephone', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.numero_depot) },
@@ -83,7 +85,7 @@ function Historique({auth,error,salaires,paiementOccasionnel,success,mois}) {
                 cellValues.row.transaction_status==="SUCCESS"?"SUCCES":cellValues.row.transaction_status==="PENDING"?"EN ATTENTE":cellValues.row.transaction_status==="FAILED" && "ECHEC"
             ) },
         { field: 'montant', headerName: 'MONTANT', width: 130, renderCell:(cellValues)=>(formatNumber(cellValues.row.montant)+" FG")  },
-        { field: 'motif', headerName: 'MOTIF', width: 300, renderCell:(cellValues)=>(cellValues.row.motif) },
+        { field: 'motif', headerName: 'MOTIF', maxWidth: 300, renderCell:(cellValues)=>(cellValues.row.motif) },
     ];
 
 

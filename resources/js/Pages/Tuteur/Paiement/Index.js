@@ -35,6 +35,7 @@ import axios from "axios";
 import {DesktopDatePicker} from "@mui/x-date-pickers/DesktopDatePicker";
 import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
+import {format} from "date-fns";
 
 const style = {
     position: 'absolute',
@@ -235,7 +236,7 @@ function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAl
         { field: 'transactionId', headerName: "ID TRANSACTION",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold"},
 
         { field: 'date', headerName: "DATE",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold", renderCell:(cellValues)=>(
-                cellValues.row.created_at.split('T')[0]+" à "+cellValues.row.created_at.split('T')[1].split(".")[0]
+                format(new Date(cellValues.row.created_at), 'dd/MM/yyyy')+" à "+cellValues.row.created_at.split('T')[1].split(".")[0]
             ) },
         { field: 'peerId', headerName: "TELEPHONE",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold"},
 
@@ -268,8 +269,9 @@ function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAl
 
     const columns = [
         { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
+        { field: 'transactionId', headerName: "ID TRANSACTION",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold"},
         { field: 'created_at', headerName: "DATE", flex: 1, minWidth: 150, renderCell:(cellValues)=>(
-                cellValues.row.created_at.split("T")[0]
+                format(new Date(cellValues.row.created_at), 'dd/MM/yyyy')
             ) },
         { field: 'Nom_complet', headerName: "APPRENANT",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold", renderCell:(cellValues)=>(
                 cellValues.row.apprenant.prenom+" "+cellValues.row.apprenant.nom

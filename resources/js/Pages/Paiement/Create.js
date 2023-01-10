@@ -26,6 +26,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {DataGrid, GridToolbar} from "@mui/x-data-grid";
+import {format} from "date-fns";
 
 const style = {
     position: 'absolute',
@@ -234,7 +235,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                 formatNumber(cellValues.row.montant)+" FG"
             ) },
         { field: 'created_at', headerName: "DATE", width: 150, renderCell:(cellValues)=>(
-                cellValues.row.created_at.split("T")[0]
+                format(new Date(cellValues.row.created_at), 'dd/MM/yyyy')
             ) },
 
         { field: 'action', headerName: 'ACTION',width:100,
