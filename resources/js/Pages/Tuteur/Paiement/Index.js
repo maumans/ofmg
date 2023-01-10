@@ -79,7 +79,7 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
     );
 });
 
-function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalAll,payerAll,resteApayerAll,donneesParFrais,codeNumeros,transactions}) {
+function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAll,resteApayerAll,donneesParFrais,codeNumeros,transactions}) {
 
     const [successSt, setSuccessSt]=useState();
     const [codeNumerosSt, setCodeNumerosSt]=useState();
@@ -108,9 +108,10 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
         setOpen(false);
     }
 
-    const handleOpenModal = () => {
+    const handleOpenModal = (transaction) => {
 
         setOpenModal(true);
+        setTransaction(transaction)
     }
     const handleCloseModal = () => setOpenModal(false);
 
@@ -250,7 +251,7 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
         { field: 'action', headerName: 'ACTION',width:100,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={handleOpenModal} className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>
+                    <button onClick={()=>handleOpenModal(cellValues.row)} className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>
                         Reçu
                     </button>
 
@@ -262,6 +263,8 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
         },
 
     ];
+
+    const [transaction,setTransaction]=useState(null);
 
     const columns = [
         { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
@@ -852,13 +855,12 @@ function Index({auth,nbrMois,success,montantTotal,paiements,errors,tuteur,totalA
                     >
                         <Box sx={style}>
                             {
-
+                                transaction &&
                                 <Save
-                                    tuteur={tuteur}
-                                    apprenant={tuteur.tuteur_apprenants[0]}
-                                    etablissement={tuteur.tuteur_apprenants[0].classe.etablissement}
-                                    paiements={tuteur.paiements}
-                                    nbrMois={10}
+                                    tuteur={transaction?.paiement_global.tuteur}
+                                    etablissement={transaction?.paiement_global.etablissement}
+                                    total={transaction?.amount}
+                                    telephone={transaction?.paiement_global.numero_retrait}
                                 />
                             }
                         </Box>

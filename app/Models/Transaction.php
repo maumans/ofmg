@@ -15,7 +15,7 @@ class Transaction extends Model
 
     public function paiementGlobal()
     {
-        return $this->hasOne(PaiementGlobal::class);
+        return $this->belongsTo(PaiementGlobal::class,'item_key');
     }
 
     public function salaire()

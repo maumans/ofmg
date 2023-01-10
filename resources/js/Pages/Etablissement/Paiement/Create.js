@@ -293,10 +293,6 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         }
     },[])
 
-    useEffect(() => {
-        console.log(data)
-    },[data])
-
 
     //////TAB 2 CODES
 

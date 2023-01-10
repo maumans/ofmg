@@ -46,7 +46,7 @@ class PaiementController extends Controller
             }])->get();
         }])->first();
 
-        $transactions=Transaction::whereRelation('paiementGlobal.tuteur',"id",$tuteur->id)->orderByDesc('created_at')->get();
+        $transactions=Transaction::whereRelation('paiementGlobal.tuteur',"id",$tuteur->id)->with('paiementGlobal.tuteur',"paiementGlobal.etablissement")->orderByDesc('created_at')->get();
 
         foreach($tuteur->tuteurApprenants as $apprenant)
         {
@@ -71,14 +71,11 @@ class PaiementController extends Controller
                 return $apprenant->tarifs()->where("type_paiement_id",$typePaiement->id)->first()?$apprenant->tarifs()->where("type_paiement_id",$typePaiement->id)->first()->pivot->resteApayer:0;
             });
 
-
             if($montant)
             {
                 $donneesParFrais->push(["libelle"=>$typePaiement->libelle,"montant"=>$montant,"resteApayer"=>$resteApayer,"payer"=>$montant-$resteApayer]);
             }
         }
-
-        //dd($donneesParFrais);
 
         return Inertia::render("Tuteur/Paiement/Index",["tuteur"=>$tuteur,"resteApayerAll"=>$resteApayerAll,"totalAll"=>$totalAll,"payerAll"=>$payerAll,"donneesParFrais"=>$donneesParFrais,"codeNumeros"=>$codeNumeros,"transactions"=>$transactions]);
     }

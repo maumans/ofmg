@@ -36,7 +36,6 @@ function Ok({auth,errors,success,tuteur,total,transaction}) {
     Echo.private(`App.Models.User.2`)
         .notification((notif) => {
             setNotification(notif)
-            console.log(notif);
         });
 
     const [open,setOpen]=useState(true)

@@ -3,6 +3,7 @@ import ReactPDF, { PDFViewer } from '@react-pdf/renderer';
 import {PDFDownloadLink, Page, Text, View, Document, StyleSheet,Image } from '@react-pdf/renderer';
 
 import logo from "../img/logo.png"
+import formatNumber from "@/Utils/formatNumber";
 
 
 // Create styles
@@ -18,10 +19,6 @@ const styles = StyleSheet.create({
 
 // Create Document Component
 function MyDocument(props){
-
-    useEffect(() => {
-        console.log(props.etablissement)
-    })
 
     let auj=new Date().toLocaleDateString();
            return (
@@ -48,23 +45,15 @@ function MyDocument(props){
                            </View>
 
                            <View style={{flex:1,flexDirection: 'column'}}>
-                               <Text style={styles.pp}>Tuteur: <Text style={{textTransform:"capitalize"}}>{props.tuteur.prenom}</Text> <Text style={{textTransform:"uppercase"}}>{props.tuteur.nom}</Text></Text>
+                               <Text style={styles.pp}>Tuteur: <Text style={{textTransform:"capitalize"}}>{props.tuteur?.prenom}</Text> <Text style={{textTransform:"uppercase"}}>{props.tuteur.nom}</Text></Text>
 
-                               <Text style={styles.pp}>Tel: {props.tuteur.telephone}</Text>
-                               {
-                                   props.tuteur.telephone2 &&
-                                   <Text style={styles.pp}>Tel 2: {props.tuteur.telephone2}</Text>
-                               }
-                               {
-                                   props.tuteur.telephone3 &&
-                                   <Text style={styles.pp}>Tel 3: {props.tuteur.telephone3}</Text>
-                               }
+                               <Text style={styles.pp}>Tel: {props.telephone}</Text>
                            </View>
                        </View>
 
                        <View style={{flex:1,flexDirection:"row",justifyContent:"end"}}>
                            <View style={{left:20}}>
-                               <Text style={{padding:"5px",backgroundColor:"#ff7900",color:"white"}}>Total payé: {props.total} FG</Text>
+                               <Text style={{padding:"5px",backgroundColor:"#ff7900",color:"white"}}>Total payé: {formatNumber(props.total)} FG</Text>
                            </View>
                        </View>
                    </Page>
@@ -72,8 +61,7 @@ function MyDocument(props){
            )
 }
 
-function Save({tuteur,apprenant,etablissement,nbrMois,total,paiements}) {
-
+function Save({tuteur,etablissement,total,telephone}) {
 
     return (
 
@@ -81,11 +69,11 @@ function Save({tuteur,apprenant,etablissement,nbrMois,total,paiements}) {
            {
 
                 <PDFViewer height={600} className={"flex w-full justify-center"}>
-                    <MyDocument tuteur={tuteur} apprenant={apprenant} etablissement={etablissement} nbrMois={nbrMois} total={total} paiements={paiements}/>
+                    <MyDocument tuteur={tuteur} etablissement={etablissement} telephone={telephone} total={total}/>
                 </PDFViewer>
             }
 
-           <PDFDownloadLink  document={<MyDocument tuteur={tuteur} apprenant={apprenant} etablissement={etablissement } nbrMois={nbrMois} total={total} paiements={paiements}/>} fileName={"reçu.pdf"}>
+           <PDFDownloadLink  document={<MyDocument tuteur={tuteur} etablissement={etablissement } telephone={telephone} total={total}/>} fileName={"reçu.pdf"}>
                {({blob,url,loading, error})=>(loading?"loading": <button className={"p-2 text-white orangeVertBackground rounded mt-5"}>Telecharger</button>)}
            </PDFDownloadLink>
        </Fragment>

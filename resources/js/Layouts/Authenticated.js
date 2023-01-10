@@ -42,12 +42,6 @@ export default function Authenticated({auth, children}) {
 
     const [notification,setNotification]=useState(null)
 
-
-
-    useEffect(() => {
-        console.log(notification)
-    },[notification])
-
     return (
         <ThemeProvider theme={theme}>
             <LocalizationProvider adapterLocale={fr} dateAdapter={AdapterDateFns}>
