@@ -255,10 +255,6 @@ function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAl
                     <button onClick={()=>handleOpenModal(cellValues.row)} className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>
                         Reçu
                     </button>
-
-                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground orangeBlueBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
-                        <VisibilityIcon/>
-                    </button>
                 </div>
             )
         },
@@ -269,7 +265,9 @@ function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAl
 
     const columns = [
         { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
+/*
         { field: 'transactionId', headerName: "ID TRANSACTION",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold"},
+*/
         { field: 'created_at', headerName: "DATE", flex: 1, minWidth: 150, renderCell:(cellValues)=>(
                 format(new Date(cellValues.row.created_at), 'dd/MM/yyyy')
             ) },
@@ -293,15 +291,6 @@ function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAl
         { field: 'mode_paiement', headerName: "MODE DE PAIEMENT", flex: 1, minWidth: 250,  renderCell:(cellValues)=>(
                 cellValues.row.mode_paiement?.libelle
             ) },
-        { field: 'action', headerName: 'ACTION',width:100,
-            renderCell:(cellValues)=>(
-                <div className={"space-x-2"}>
-                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground orangeBlueBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
-                        <VisibilityIcon/>
-                    </button>
-                </div>
-            )
-        },
 
     ];
 
