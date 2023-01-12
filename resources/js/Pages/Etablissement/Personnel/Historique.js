@@ -60,9 +60,11 @@ function Historique({auth,error,salaires,paiementOccasionnel,success,mois}) {
 
     const [moisSt,setMoisSt]=useState("");
 
+    console.log(salaires)
+
     const columns = [
         { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
-        { field: 'transaction_id', headerName: 'ID TRANSACTION', minWidth: 250},
+        { field: 'transactionCurrentId', headerName: 'ID TRANSACTION', minWidth: 250,},
         { field: 'created_at', headerName: 'DATE', width: 130, renderCell:(cellValues)=>(format(new Date(cellValues.row.created_at), 'dd/MM/yyyy')) },
         { field: 'prenom', headerName: 'PRENOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.prenom) },
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
@@ -76,7 +78,7 @@ function Historique({auth,error,salaires,paiementOccasionnel,success,mois}) {
 
     const columnsOccasionnel = [
         { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
-        { field: 'transaction_id', headerName: 'ID TRANSACTION', minWidth: 250},
+        { field: 'transactionCurrentId', headerName: 'ID TRANSACTION', minWidth: 250},
         { field: 'created_at', headerName: 'DATE', width: 130, renderCell:(cellValues)=>format(new Date(cellValues.row.created_at), 'dd/MM/yyyy') },
         { field: 'prenom', headerName: 'PRENOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.prenom) },
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },

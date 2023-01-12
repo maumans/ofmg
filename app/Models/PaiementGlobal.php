@@ -12,6 +12,14 @@ class PaiementGlobal extends Model
 
     protected $guarded=[];
 
+    protected $appends= ['transactionCurrentId'];
+
+    protected $transactionCurrentId;
+
+    public function getTransactionCurrentIdAttribute(){
+        return Transaction::where('item_key', $this->id)->where('item_model', get_class($this))->first()? Transaction::where('item_key', $this->id)->where('item_model', get_class($this))->first()->transactionId : null;
+    }
+
     public function paiements()
     {
         return $this->hasMany(Paiement::class);

@@ -13,9 +13,14 @@ class Paiement extends Model implements iHasTransaction
     use HasFactory,HasTransaction;
     protected $guarded=[];
 
-    protected $appends= ["resteApayer",'date'];
+    protected $appends= ["resteApayer",'date','transactionCurrentId'];
 
     protected $resteApayer;
+    protected $transactionCurrentId;
+
+    public function getTransactionCurrentIdAttribute(){
+        return Transaction::where('item_key', $this->id)->where('item_model', get_class($this))->first()? Transaction::where('item_key', $this->id)->where('item_model', get_class($this))->first()->transactionId : null;
+    }
 
     public function getResteApayerAttribute(){
         return $this->resteApayer;

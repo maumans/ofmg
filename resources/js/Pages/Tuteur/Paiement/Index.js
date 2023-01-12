@@ -265,9 +265,7 @@ function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAl
 
     const columns = [
         { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
-/*
-        { field: 'transactionId', headerName: "ID TRANSACTION",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold"},
-*/
+        { field: 'transactionCurrentId', headerName: "ID TRANSACTION",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold",renderCell:(cellValues)=>cellValues.row?.paiement_global?.transactionCurrentId},
         { field: 'created_at', headerName: "DATE", flex: 1, minWidth: 150, renderCell:(cellValues)=>(
                 format(new Date(cellValues.row.created_at), 'dd/MM/yyyy')
             ) },

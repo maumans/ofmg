@@ -39,12 +39,14 @@ class PaiementController extends Controller
         $payerAll=0;
 
         $tuteur=User::where('id',Auth::user()->id)->with(["paiementsTuteur"=>function($query){
-            $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif","etablissement")->get();
+            $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif","etablissement",'paiementGlobal')->get();
         },"tuteurApprenants"=>function($query){
             $query->whereHas("classe.etablissement.anneeEnCours")->with(["classe.etablissement.anneeEnCours","tarifs.typePaiement","tarifs"=>function($query){
                 $query->get();
             }])->get();
         }])->first();
+
+        //dd(User::where('id',Auth::user()->id)->first()->paiementsTuteur()->with('paiementGlobal')->get()->last());
 
         $transactions=Transaction::whereRelation('paiementGlobal.tuteur',"id",$tuteur->id)->with('paiementGlobal.tuteur',"paiementGlobal.etablissement")->orderByDesc('created_at')->get();
 
