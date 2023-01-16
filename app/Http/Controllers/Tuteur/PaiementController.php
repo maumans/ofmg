@@ -48,7 +48,7 @@ class PaiementController extends Controller
 
         //dd(User::where('id',Auth::user()->id)->first()->paiementsTuteur()->with('paiementGlobal')->get()->last());
 
-        $transactions=Transaction::whereRelation('paiementGlobal.tuteur',"id",$tuteur->id)->with('paiementGlobal.tuteur',"paiementGlobal.etablissement")->orderByDesc('created_at')->get();
+        $transactions=Transaction::whereRelation('paiementGlobal.tuteur',"id",$tuteur->id)->with('paiementGlobal.tuteur',"paiementGlobal.etablissement","paiementGlobal.paiements.apprenant","paiementGlobal.paiements.typePaiement")->orderByDesc('created_at')->get();
 
         foreach($tuteur->tuteurApprenants as $apprenant)
         {

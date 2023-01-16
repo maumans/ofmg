@@ -846,10 +846,13 @@ function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAl
                             {
                                 transaction &&
                                 <Save
+                                    date={transaction?.paiement_global.created_at}
                                     tuteur={transaction?.paiement_global.tuteur}
                                     etablissement={transaction?.paiement_global.etablissement}
                                     total={transaction?.amount}
                                     telephone={transaction?.paiement_global.numero_retrait}
+                                    paiements={transaction?.paiement_global.paiements}
+                                    transactionCurrentId={transaction?.paiement_global.transactionCurrentId}
                                 />
                             }
                         </Box>
