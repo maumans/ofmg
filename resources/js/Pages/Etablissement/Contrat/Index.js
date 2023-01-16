@@ -95,7 +95,7 @@ function Index({auth,error,users,success}) {
 
 
     return (
-        <AdminPanel auth={auth} error={error} active={"contrat"} sousActive={"listeContrat"}>
+        <AdminPanel auth={auth} error={error} active={"personnel"} sousActive={"listeContrat"}>
             {
                 userContrat ?
                     <div className={"p-5"}>

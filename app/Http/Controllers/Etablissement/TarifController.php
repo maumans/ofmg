@@ -46,7 +46,19 @@ class TarifController extends Controller
      */
     public function create()
     {
-        //
+        $etablissement=Auth::user()->etablissementAdmin;
+
+        $tarifs=$etablissement->tarifs()->with("classe","typePaiement")->orderByDesc('created_at')->get();
+
+        $typePaiements=Type_paiement::with(["tarifs"=>function($query){
+            $query->where('etablissement_id',Auth::user()->etablissementAdmin->id)->get();
+        }])->get();
+
+        $classes=$etablissement->classes()->with("niveau")->orderByDesc('niveau_id')->get();
+
+        $anneeScolaire=$etablissement->anneeEnCours;
+
+        return Inertia::render("Etablissement/Tarif/Create",["tarifs"=>$tarifs,"typePaiements"=>$typePaiements,"classes"=>$classes,"anneeScolaire"=>$anneeScolaire,"etablissementId"=>$etablissement->id]);
     }
 
     /**
@@ -90,7 +102,7 @@ class TarifController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with("success","Service(s) crée(s) avec succès");
+            return redirect()->route("etablissement.tarif.index")->with("success","Service(s) crée(s) avec succès");
         }
         catch(Exception $e){
 

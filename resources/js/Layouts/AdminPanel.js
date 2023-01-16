@@ -39,9 +39,9 @@ function ResponsiveDrawer(props) {
         open===id?setOpen(""):setOpen(id)
     };
 
-    useEffect(() => {
+    /*useEffect(() => {
         (props.sousActive==="liste" || props.sousActive==="inscrire") && handleClick("inscription")
-    },[props.sousActive])
+    },[props.sousActive])*/
 
     const drawerEtablissementUser = (
         <List
@@ -66,7 +66,7 @@ function ResponsiveDrawer(props) {
                             </ListItemButton>
                         </Link>
 
-                        <Divider component="li" />
+                        {/*<Divider component="li" />
 
                         <ListItemButton sx={props.active==="contrat" ?{backgroundColor:"#bc5610",color:"white"}:null} onClick={()=>handleClick("contrat")}>
                             <ListItemText primary="Contrats"/>
@@ -89,24 +89,23 @@ function ResponsiveDrawer(props) {
                                     </ListItemButton>
                                 </Link>
                             </List>
-                        </Collapse>
+                        </Collapse>*/}
 
-                        <Divider component="li" />
+                        {/*<Divider component="li" />
 
                         <Link href={route("etablissement.classe.index",props.auth.user.id)}>
                             <ListItemButton sx={props.active==="classe"?{backgroundColor:"#bc5610",color:"white"}:null}>
                                 <ListItemText primary="Classes"/>
                             </ListItemButton>
-                        </Link>
+                        </Link>*/}
 
-                        <Divider component="li" />
+                        {/*<Divider component="li" />
                         <Link href={route("etablissement.tarif.index",props.auth.user.id)}>
                             <ListItemButton sx={props.active==="Service" ?{backgroundColor:"#bc5610",color:"white"}:null}>
                                 <ListItemText primary="Services"/>
                             </ListItemButton>
-                        </Link>
+                        </Link>*/}
 
-                        <Divider component="li" />
                     </>
             }
 
@@ -120,10 +119,18 @@ function ResponsiveDrawer(props) {
                         </ListItemButton>
 
                         <Collapse in={open==="fraisScolaires"}>
+
+                            <Link href={route("etablissement.tarif.create",props.auth.user.id)}>
+                                <ListItemButton sx={props.sousActive==="typeFraisAjout" ?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                    <ListItemText primary="Ajout type de frais"/>
+                                </ListItemButton>
+                            </Link>
+                            <Divider component="li" />
+
                             <List component="div" disablePadding>
                                 <Link href={route("etablissement.paiement.create",props.auth.user.id)}>
                                     <ListItemButton sx={props.sousActive==="paiementFraisScolaires"?{color:"#e1c9bd",pl:4}:{pl:4}}>
-                                        <ListItemText primary="Paiement des frais scolaires" />
+                                        <ListItemText primary="Déclaration paiement cash" />
                                     </ListItemButton>
                                 </Link>
 
@@ -131,7 +138,7 @@ function ResponsiveDrawer(props) {
 
                                 <Link href={route("etablissement.paiement.index",props.auth.user.id)}>
                                     <ListItemButton sx={props.sousActive==="listePaiementFraisScolaires"?{color:"#e1c9bd",pl:4}:{pl:4}}>
-                                        <ListItemText primary="Liste" />
+                                        <ListItemText primary="Historique des paiements" />
                                     </ListItemButton>
                                 </Link>
                             </List>
@@ -139,7 +146,7 @@ function ResponsiveDrawer(props) {
 
                         <Divider component="li" />
 
-                        <ListItemButton sx={props.active==="inscription" ?{backgroundColor:"#bc5610",color:"white"}:null} onClick={()=>handleClick("inscription")}>
+                        {/*<ListItemButton sx={props.active==="inscription" ?{backgroundColor:"#bc5610",color:"white"}:null} onClick={()=>handleClick("inscription")}>
                             <ListItemText primary="Inscriptions"/>
                             {(open==="inscription" || props.active==="inscription") ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
@@ -162,10 +169,44 @@ function ResponsiveDrawer(props) {
                             </List>
                         </Collapse>
 
+                        <Divider component="li"/>*/}
+
+                        <ListItemButton sx={props.active==="gestionCursus" ?{backgroundColor:"#bc5610",color:"white"}:null} onClick={()=>handleClick("gestionCursus")}>
+                            <ListItemText primary="Gestion du cursus"/>
+                            {(open==="gestionCursus" || props.active==="gestionCursus") ? <ExpandLess /> : <ExpandMore />}
+                        </ListItemButton>
+
+                        <Collapse in={open==="gestionCursus"}>
+                            <List component="div" disablePadding>
+
+                                <Link href={route("etablissement.inscription.create",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="inscrire"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Inscription" />
+                                    </ListItemButton>
+                                </Link>
+
+                                <Divider component="li"/>
+
+                                <Link href={route("etablissement.inscription.index",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="listeInscripton"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Liste des apprenants" />
+                                    </ListItemButton>
+                                </Link>
+
+                                <Divider component="li"/>
+
+                                <Link href={route("etablissement.classe.index",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="classe"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Classe"/>
+                                    </ListItemButton>
+                                </Link>
+                            </List>
+                        </Collapse>
+
                         <Divider component="li"/>
 
                         <ListItemButton sx={props.active==="personnel" ?{backgroundColor:"#bc5610",color:"white"}:null} onClick={()=>handleClick("personnel")}>
-                            <ListItemText primary="Personnel"/>
+                            <ListItemText primary="Gestion du personnel"/>
                             {(open==="personnel" || props.active==="personnel") ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
 
@@ -174,10 +215,20 @@ function ResponsiveDrawer(props) {
 
                                 <Link href={route("etablissement.personnel.index",props.auth.user.id)}>
                                     <ListItemButton sx={props.sousActive==="listePersonnel"?{color:"#e1c9bd",pl:4}:{pl:4}}>
-                                        <ListItemText primary="Liste" />
+                                        <ListItemText primary="Employés" />
                                     </ListItemButton>
                                 </Link>
                             </List>
+
+                            <Divider component="li"/>
+
+                            <Link href={route("etablissement.contrat.create",props.auth.user.id)}>
+                                <ListItemButton sx={props.sousActive==="creerContrat"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                    <ListItemText primary="Ajout employé" />
+                                </ListItemButton>
+                            </Link>
+
+                            <Divider component="li"/>
 
                             <List component="div" disablePadding>
 
@@ -187,6 +238,8 @@ function ResponsiveDrawer(props) {
                                     </ListItemButton>
                                 </Link>
                             </List>
+
+
                         </Collapse>
 
 
@@ -227,7 +280,33 @@ function ResponsiveDrawer(props) {
                                 </Link>
                             </List>
                         </Collapse>
+
+                        <Divider component="li"/>
+
+                        <ListItemButton sx={props.active==="rapport" ?{backgroundColor:"#bc5610",color:"white"}:null} onClick={()=>handleClick("rapport")}>
+                            <ListItemText primary="Rapport"/>
+                            {(open==="rapport" || props.active==="rapport") ? <ExpandLess /> : <ExpandMore />}
+                        </ListItemButton>
+
+                        <Collapse in={open==="rapport"}>
+                            <List component="div" disablePadding>
+                                <Link href={route("etablissement.tarif.index",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="typeFraisListe"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Liste frais scolaire" />
+                                    </ListItemButton>
+                                </Link>
+
+                                <Divider component="li"/>
+
+                                <Link href={route("etablissement.scolarite.index",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="listePaiementScolarite"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Liste paiement scolarité" />
+                                    </ListItemButton>
+                                </Link>
+                            </List>
+                        </Collapse>
                     </>
+
             }
 
 

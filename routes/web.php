@@ -63,6 +63,9 @@ Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","pa
     Route::resource('etablissement.contrat',\App\Http\Controllers\Etablissement\ContratController::class)->middleware("anneeScolaireIsDefined");
     Route::resource('etablissement.personnel',\App\Http\Controllers\Etablissement\PersonnelController::class)->middleware("anneeScolaireIsDefined");
 
+
+    Route::resource('etablissement.scolarite',\App\Http\Controllers\Etablissement\ScolariteController::class)->middleware("anneeScolaireIsDefined");
+
     //Route::resource('etablissement.personnel.horaire',\App\Http\Controllers\Etablissement\PersonnelController::class)->middleware("anneeScolaireIsDefined");
     /////
     Route::get("etablissement/{userId}/personnel/horaire/index",[\App\Http\Controllers\Etablissement\Personnel\horaireController::class,"index"])->name("etablissement.personnel.horaire.index")->middleware("anneeScolaireIsDefined");

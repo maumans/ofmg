@@ -188,7 +188,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
     },[coursList])
 
     return (
-        <AdminPanel auth={auth} error={errors} active={"contrat"} sousActive={"creerContrat"}>
+        <AdminPanel auth={auth} error={errors} active={"personnel"} sousActive={"creerContrat"}>
             <div className={"p-5"}>
                 <div>
                     <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
