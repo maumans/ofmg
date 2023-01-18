@@ -8,15 +8,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
-class scolariteController extends Controller
+class ScolariteController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Inertia\Response
      */
     public function index()
     {
+
         $paiements=Paiement::whereRelation("typePaiement","libelle","Scolarité")->whereRelation("tarif.etablissement","id",Auth::user()->etablissementAdmin->id)->with("apprenant","typePaiement","modePaiement",'paiementGlobal')->orderByDesc('created_at')->get();
 
         return Inertia::render('Etablissement/Scolarite/Index',["paiements"=>$paiements]);
