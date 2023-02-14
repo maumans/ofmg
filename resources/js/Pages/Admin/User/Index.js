@@ -209,14 +209,13 @@ function Index(props) {
                                <div className={"w-full"}>
                                    <Autocomplete
                                        className={"w-full"}
-                                       id="tags-standard"
                                        onChange={(e,val)=>setData("role",val)}
                                        disablePortal={true}
                                        id={"combo-box-demo"}
                                        options={props.roles}
                                        getOptionLabel={option=>option.libelle}
                                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                                       renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Role"} label={params.libelle}/>}
+                                       renderInput={(params)=><TextField  fullWidth {...params} placeholder={"Role"} label={params.libelle} required/>}
                                    />
                                    <div className={"text-red-600"}>{props.errors?.role}</div>
                                </div>

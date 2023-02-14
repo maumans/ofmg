@@ -245,7 +245,7 @@ function Index(props) {
 
                                 </Select>
                             </FormControl>
-                            <div className={"flex my-2 text-red-600"}>{props.errors?.situation_matrimoniale}</div>
+                            <div className={"flex my-2 text-red-600"}>{props.errors?.frequence}</div>
                         </div>
 
                         <div>

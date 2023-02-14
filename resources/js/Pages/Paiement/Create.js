@@ -426,7 +426,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
 
                                                     pattern:"(^"+codeNumerosSt+")[0-9]{6}"
                                                 }}
-                                                className={"w-6/12"}  name={"numero_retrait"} label={"Entrez votre numero OM"} onChange={(e)=>setData("numero_retrait",e.target.value)}
+                                                className={"w-6/12"}  name={"numero_retrait"} label={"Entrez le numéro à débiter"} onChange={(e)=>setData("numero_retrait",e.target.value)}
                                                 required
                                             />
                                         </div>

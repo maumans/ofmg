@@ -80,6 +80,20 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
     );
 });
 
+const styles = theme => ({
+    dropdown: {
+        transition: theme.transitions.create(["transform"], {
+            duration: theme.transitions.duration.short
+        })
+    },
+    dropdownOpen: {
+        transform: "rotate(-180deg)"
+    },
+    dropdownClosed: {
+        transform: "rotate(0)"
+    }
+})
+
 function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAll,resteApayerAll,donneesParFrais,codeNumeros,transactions}) {
 
     const [successSt, setSuccessSt]=useState();
@@ -270,7 +284,7 @@ function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAl
                 format(new Date(cellValues.row.created_at), 'dd/MM/yyyy')
             ) },
         { field: 'Nom_complet', headerName: "APPRENANT",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold", renderCell:(cellValues)=>(
-                cellValues.row.apprenant.prenom+" "+cellValues.row.apprenant.nom
+                cellValues.row.apprenant?.prenom+" "+cellValues.row.apprenant?.nom
             ) },
         { field: 'etablissement', headerName: "ETABLISSEMENT",headerClassName:"header", flex: 1, minWidth: 200, fontWeight:"bold", renderCell:(cellValues)=>(
                 cellValues.row?.etablissement?.nom
@@ -528,29 +542,36 @@ function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAl
 
                                                     <Accordion>
                                                         <AccordionSummary
-                                                            expandIcon={<Tooltip title={'Payer'}>
-                                                                <button type={'button'} className="orangeOrangeBackground text-white p-2 rounded-full">
-                                                                    <ExpandMoreIcon />
+                                                           /* expandIcon={<Tooltip  title={'Payer'}>
+                                                                <button sx={styles.dropdownOpen} type={'button'} className="orangeOrangeBackground text-white p-2 rounded-full">
+                                                                    Payer
                                                                 </button>
-                                                            </Tooltip>}
+                                                            </Tooltip>}*/
                                                             aria-controls="panel1a-content"
                                                             id="panel1a-header"
                                                             sx={{backgroundColor:"#f8f1eb"}}
                                                         >
                                                             {
                                                                 apprenant &&
-                                                                <div className={"col-span-3 grid md:grid-cols-2 grid-cols-1 gap-2 p-2 rounded w-full"}>
-                                                                    <div>
-                                                                        <span className={"font-bold text-lg"}>Matricule:</span> <span>{apprenant?.matricule}</span>
+                                                                <div className={"flex justify-between items-center w-full"}>
+                                                                    <div className={"col-span-3 grid md:grid-cols-2 grid-cols-1 gap-2 p-2 rounded w-full"}>
+                                                                        <div>
+                                                                            <span className={"font-bold text-lg"}>Matricule:</span> <span>{apprenant?.matricule}</span>
+                                                                        </div>
+                                                                        <div>
+                                                                            <span className={"font-bold text-lg"}>Nom complet:</span> <span>{apprenant?.prenom} {apprenant?.nom}</span>
+                                                                        </div>
+                                                                        <div>
+                                                                            <span className={"font-bold text-lg"}>Etablissement:</span> <span>{apprenant?.classe.etablissement.nom}</span>
+                                                                        </div>
+                                                                        <div>
+                                                                            <span className={"font-bold text-lg"}>classe:</span> <span>{apprenant?.classe?.libelle}</span>
+                                                                        </div>
                                                                     </div>
                                                                     <div>
-                                                                        <span className={"font-bold text-lg"}>Nom complet:</span> <span>{apprenant?.prenom} {apprenant?.nom}</span>
-                                                                    </div>
-                                                                    <div>
-                                                                        <span className={"font-bold text-lg"}>Etablissement:</span> <span>{apprenant?.classe.etablissement.nom}</span>
-                                                                    </div>
-                                                                    <div>
-                                                                        <span className={"font-bold text-lg"}>classe:</span> <span>{apprenant?.classe?.libelle}</span>
+                                                                        <button type={'button'} className="orangeOrangeBackground text-white p-2 rounded-full w-fit">
+                                                                            Payer
+                                                                        </button>
                                                                     </div>
                                                                 </div>
                                                             }
@@ -679,7 +700,7 @@ function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAl
 
                                                         pattern:"(^"+codeNumerosSt+")[0-9]{6}"
                                                     }}
-                                                    className={"w-6/12"}  name={"numero_retrait"} label={"Entrez votre numero OM"} onChange={(e)=>setData("numero_retrait",e.target.value)}
+                                                    className={"w-6/12"}  name={"numero_retrait"} label={"Entrez le numéro à débiter"} onChange={(e)=>setData("numero_retrait",e.target.value)}
                                                     required
                                                 />
                                             </div>

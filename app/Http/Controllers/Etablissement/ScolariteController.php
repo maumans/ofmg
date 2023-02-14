@@ -17,7 +17,6 @@ class ScolariteController extends Controller
      */
     public function index()
     {
-
         $paiements=Paiement::whereRelation("typePaiement","libelle","Scolarité")->whereRelation("tarif.etablissement","id",Auth::user()->etablissementAdmin->id)->with("apprenant","typePaiement","modePaiement",'paiementGlobal')->orderByDesc('created_at')->get();
 
         return Inertia::render('Etablissement/Scolarite/Index',["paiements"=>$paiements]);

@@ -32,7 +32,7 @@ class Apprenant extends Model
 
     public function tuteurs()
     {
-        return $this->belongsToMany(User::class,"apprenant_tuteur","apprenant_id","tuteur_id");
+        return $this->belongsToMany(User::class,"apprenant_tuteur","tuteur_id","apprenant_id");
     }
 
     public function apprenantTarif()

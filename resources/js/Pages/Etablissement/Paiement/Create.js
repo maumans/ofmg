@@ -411,27 +411,34 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                                     defaultExpanded={ apprenantsList?.length===1}
                                                                 >
                                                                     <AccordionSummary
-                                                                        expandIcon={<button type={'button'} className="orangeOrangeBackground text-white p-2 rounded-full">
+                                                                        /*expandIcon={<button type={'button'} className="orangeOrangeBackground text-white p-2 rounded-full">
                                                                                 <ExpandMoreIcon />
-                                                                            </button>}
+                                                                            </button>}*/
                                                                         aria-controls="panel1a-content"
                                                                         id="panel1a-header"
                                                                         sx={{backgroundColor:"#f8f1eb"}}
                                                                     >
                                                                         {
                                                                             apprenant &&
-                                                                            <div className={"col-span-3 grid md:grid-cols-2 grid-cols-1 gap-2 p-2 rounded w-full"}>
-                                                                                <div>
-                                                                                    <span className={"font-bold text-lg"}>Matricule:</span> <span>{apprenant?.matricule}</span>
+                                                                            <div className={"flex justify-between items-center w-full"}>
+                                                                                <div className={"col-span-3 grid md:grid-cols-2 grid-cols-1 gap-2 p-2 rounded w-full"}>
+                                                                                    <div>
+                                                                                        <span className={"font-bold text-lg"}>Matricule:</span> <span>{apprenant?.matricule}</span>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <span className={"font-bold text-lg"}>Nom complet:</span> <span>{apprenant?.prenom} {apprenant?.nom}</span>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <span className={"font-bold text-lg"}>Etablissement:</span> <span>{apprenant?.classe.etablissement.nom}</span>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <span className={"font-bold text-lg"}>classe:</span> <span>{apprenant?.classe?.libelle}</span>
+                                                                                    </div>
                                                                                 </div>
                                                                                 <div>
-                                                                                    <span className={"font-bold text-lg"}>Nom complet:</span> <span>{apprenant?.prenom} {apprenant?.nom}</span>
-                                                                                </div>
-                                                                                <div>
-                                                                                    <span className={"font-bold text-lg"}>Etablissement:</span> <span>{apprenant?.classe.etablissement.nom}</span>
-                                                                                </div>
-                                                                                <div>
-                                                                                    <span className={"font-bold text-lg"}>Classe:</span> <span>{apprenant?.classe?.libelle}</span>
+                                                                                    <button type={'button'} className="orangeOrangeBackground text-white p-2 rounded-full w-fit">
+                                                                                        Payer
+                                                                                    </button>
                                                                                 </div>
                                                                             </div>
                                                                         }

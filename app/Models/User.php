@@ -205,5 +205,4 @@ class User extends Authenticatable // implements MustVerifyEmail
         return $this->hasMany(Contrat_fonction_mois::class);
     }
 
-
 }

@@ -21,7 +21,7 @@ class horaireController extends Controller
     {
         $personnels=User::has("contrats.contratFonctions")->whereRelation("contratEnCours.contratFonctions.fonction","libelle","Enseignant")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with(["contrats"=>function($query){
             $query->with("contratFonctions.fonction","anneeScolaire","user")->orderByDesc("created_at")->get();
-        }])->orderByDesc("created_at")->get();
+        }])->where('status',"Actif")->orderByDesc("created_at")->get();
 
         return Inertia::render('Etablissement/Personnel/Horaire/Index',["personnels"=>$personnels]);
     }

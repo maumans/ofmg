@@ -33,7 +33,7 @@ class PersonnelController extends Controller
     {
         $personnels=User::has("contrats.contratFonctions")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with(["contrats"=>function($query){
             $query->with("contratFonctions.fonction","anneeScolaire","user")->orderByDesc("created_at")->get();
-        }])->orderByDesc("created_at")->get();
+        }])->where('status',"Actif")->orderByDesc("created_at")->get();
 
         return Inertia::render('Etablissement/Personnel/Index',["personnels"=>$personnels]);
     }
@@ -119,9 +119,20 @@ class PersonnelController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id,User $personnel)
     {
-        //
+             if($personnel->status=="Actif")
+             {
+                 $personnel->status="Inactif";
+                 $personnel->save();
+                 return redirect()->back()->with("success","Employé bloqué avec succès");
+             }
+             else
+             {
+                 $personnel->status="Actif";
+                 $personnel->save();
+                 return redirect()->back()->with("success","Employé debloqué avec succès");
+             }
     }
 
     public function salaire()
@@ -130,7 +141,7 @@ class PersonnelController extends Controller
 
         $anneeEnCours=Auth::user()->etablissementAdmin->anneeEnCours;
 
-        $intervalle=CarbonPeriod::create($anneeEnCours->dateDebut,"1 month",$anneeEnCours->dateFin);
+        $intervalle=CarbonPeriod::create($anneeEnCours->dateDebut,"1 month",$anneeEnCours->dateFin)->roundMonth();
 
         $mois=collect();
 
@@ -139,7 +150,7 @@ class PersonnelController extends Controller
             $mois->push(Mois::where("position",$date->month)->first());
         }
 
-        $personnels=User::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->whereRelation("roles","libelle","personnel")->with("salaires.mois","contratFonctionMois.mois")->orderByDesc("created_at")->get();
+        $personnels=User::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->whereRelation("roles","libelle","personnel")->with("salaires.mois","contratFonctionMois.mois")->where('status',"Actif")->orderByDesc("created_at")->get();
 
         foreach($personnels as $personnel)
         {
@@ -199,7 +210,7 @@ class PersonnelController extends Controller
 
     public function validationSalaire()
     {
-        $salaires=Salaire::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->where("niveauValidation",1)->where("annee_scolaire_id",Auth::user()->etablissementAdmin->anneeEnCours->id)->with("personnel","mois","anneeScolaire")->where("status","<>","ANNULE")->orderByDesc('id')->get();
+        $salaires=Salaire::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->whereRelation("personnel","status","Actif")->where("niveauValidation",1)->where("annee_scolaire_id",Auth::user()->etablissementAdmin->anneeEnCours->id)->with("personnel","mois","anneeScolaire")->where("status","<>","ANNULE")->orderByDesc('id')->get();
         $paiementsOccasionnels=Paiement_occasionnel::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->where("annee_scolaire_id",Auth::user()->etablissementAdmin->anneeEnCours->id)->where("niveauValidation",1)->with("anneeScolaire")->where("status","<>","ANNULE")->orderByDesc('id')->get();
 
         return Inertia::render('Etablissement/Personnel/Validation',["salaires"=>$salaires,"paiementsOccasionnels"=>$paiementsOccasionnels]);
@@ -221,8 +232,7 @@ class PersonnelController extends Controller
 
             return Inertia::render("Etablissement/Personnel/ValidationOk");
         }
-        catch(\Exception $e){
-            echo($e);
+        catch(Exception $e){
             DB::rollback();
         }
 

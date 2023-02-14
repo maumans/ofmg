@@ -19,6 +19,6 @@ class ModePaiementSeeder extends Seeder
 
         Mode_paiement::create(["libelle"=>"PAIEMENT WEB"]);
         Mode_paiement::create(["libelle"=>"PAIEMENT CASH"]);
-        Mode_paiement::create(["libelle"=>"PAIEMENT USSD"]);
+        Mode_paiement::create(["libelle"=>"PAIEMENT USSD ET APPLI"]);
     }
 }

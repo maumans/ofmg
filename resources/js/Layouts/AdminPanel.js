@@ -303,6 +303,11 @@ function ResponsiveDrawer(props) {
                                         <ListItemText primary="Liste paiement scolarité" />
                                     </ListItemButton>
                                 </Link>
+                                <Link href={route("etablissement.personnel.paiement.historique",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="paiementHistorique"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Historique des paiements" />
+                                    </ListItemButton>
+                                </Link>
                             </List>
                         </Collapse>
                     </>

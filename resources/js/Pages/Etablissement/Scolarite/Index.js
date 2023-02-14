@@ -63,7 +63,7 @@ function Index({auth,error,paiements,success}) {
             }
             else
             {
-                if(cellValues.row?.mode_paiement.libelle==="PAIEMENT USSD")
+                if(cellValues.row?.mode_paiement.libelle==="PAIEMENT USSD ET APPLI")
                 {
                     return cellValues.row.transaction_status==="SUCCESS"?"SUCCES":cellValues.row.transaction_status==="FAILED" && "ECHEC"
                 }

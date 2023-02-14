@@ -7,6 +7,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import {Inertia} from "@inertiajs/inertia";
 import {motion} from "framer-motion";
 import ListAltIcon from "@mui/icons-material/ListAlt";
+import {Block, Check} from "@mui/icons-material";
+import MuiConfirmDialogDelete from "@/Components/MuiConfirmDialog";
 
 function Index({auth,error,personnels,success}) {
 
@@ -30,9 +32,17 @@ function Index({auth,error,personnels,success}) {
                     <button onClick={()=>handleEdit(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
                         <EditIcon/>
                     </button>
-                    <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
-                        <DeleteIcon/>
-                    </button>
+                    {/*<button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
+                        <Block/>
+                    </button>*/}
+
+                    {
+                        cellValues.row.status==="Actif" ?
+                            <MuiConfirmDialogDelete icon={<><Block/> Bloquer</>} classDelete={`p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`} message={"Voulez-vous bloquer cet utilisateur?"} handleAction={()=>handleDelete(cellValues.row.id)} />
+                            :
+                            <MuiConfirmDialogDelete icon={<><Check/> Débloquer</>} classDelete={`p-2 text-white bg-green-700 rounded hover:text-green-700 hover:bg-white transition duration-500`} message={"Voulez-vous debloquer cet utilisateur?"} handleAction={()=>handleDelete(cellValues.row.id)} />
+
+                    }
                 </div>
             )
         },
@@ -40,7 +50,7 @@ function Index({auth,error,personnels,success}) {
     ];
 
     function handleDelete(id){
-        confirm("Voulez-vous supprimer cette personnel") && Inertia.delete(route("etablissement.personnel.destroy",[auth.user.id,id]),{preserveScroll:true})
+        Inertia.delete(route("etablissement.personnel.destroy",[auth.user.id,id]),{preserveScroll:true})
     }
 
     function handleEdit(id){

@@ -85,8 +85,7 @@ function MyDocument(props){
                            </View>
                        </View>
 
-
-                       <View style={{flex:3,flexDirection: 'column',marginHorizontal:10,marginTop:20}}>
+                       {/*<View style={{flex:3,flexDirection: 'column',marginHorizontal:10,marginTop:20}}>
                            <Text style={{
                                fontSize:16,
                                paddingVertical:10,
@@ -121,9 +120,60 @@ function MyDocument(props){
                                    </View>
                                ))
                            }
+                       </View>*/}
+
+
+
+                       <View style={{flex:3,flexDirection: 'column',marginHorizontal:10,marginTop:20}}>
+                           <Text style={{
+                               fontSize:16,
+                               paddingVertical:10,
+                               fontWeight: 'bold'
+                           }}>
+                               Liste des paiements
+                           </Text>
+                           <View style={{flexDirection: 'row'}}>
+                               <View style={styles.col}>
+                                   <Text style={[styles.pp,{fontWeight:'bold'}]}>MATRICULE</Text>
+                               </View>
+                               <View style={styles.col}>
+                                   <Text style={styles.pp}>NOM</Text>
+                               </View>
+                               <View style={styles.col}>
+                                   <Text style={styles.pp}>PRENOM</Text>
+                               </View>
+                               <View style={styles.col}>
+                                   <Text style={styles.pp}>TYPE DE FRAIS</Text>
+                               </View>
+                               <View style={styles.col}>
+                                   <Text style={styles.pp}>MONTANT(GNF)</Text>
+                               </View>
+                           </View>
+
+                           {
+                               props.paiements?.map((paiement) =>(
+                                   <View key={paiement.id} style={{flexDirection: 'row'}}>
+                                       <View style={styles.col}>
+                                           <Text style={styles.pp}>{paiement.apprenant.matricule}</Text>
+                                       </View>
+                                       <View style={styles.col}>
+                                           <Text style={styles.pp}>{paiement.apprenant.nom}</Text>
+                                       </View>
+                                       <View style={styles.col}>
+                                           <Text style={styles.pp}>{paiement.apprenant.prenom}</Text>
+                                       </View>
+                                       <View style={styles.col}>
+                                           <Text style={styles.pp}>{paiement.type_paiement.libelle}</Text>
+                                       </View>
+                                       <View style={styles.col}>
+                                           <Text style={styles.pp}>{formatNumber(paiement.montant)}</Text>
+                                       </View>
+                                   </View>
+                               ))
+                           }
                        </View>
 
-                       <View style={{flex:3,flexDirection: 'column',marginHorizontal:10,marginTop:20,width:"300"}}>
+                       {/*<View style={{flex:3,flexDirection: 'column',marginHorizontal:10,marginTop:20,width:"300"}}>
                            <Text style={{
                                fontSize:16,
                                paddingVertical:10,
@@ -152,7 +202,7 @@ function MyDocument(props){
                                    </View>
                                ))
                            }
-                       </View>
+                       </View>*/}
 
                        <View style={{flex:1,flexDirection:"row",justifyContent:"end"}}>
                            <View style={{left:20}}>

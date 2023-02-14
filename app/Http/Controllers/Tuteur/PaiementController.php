@@ -38,6 +38,16 @@ class PaiementController extends Controller
         $resteApayerAll=0;
         $payerAll=0;
 
+       /* $historiquePaiement=Paiement::whereRelation('apprenant',function ($query) {
+            $query->whereRelation('tuteurs',function ($query) {
+                $query->where('id',Auth::id());
+            });
+        })->get();
+
+        dd($historiquePaiement);
+
+        //$historiquePaiement=Paiement::whereRelation('apprenant.tuteurs','id',Auth::id())->get();*/
+
         $tuteur=User::where('id',Auth::user()->id)->with(["paiementsTuteur"=>function($query){
             $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif","etablissement",'paiementGlobal')->get();
         },"tuteurApprenants"=>function($query){
