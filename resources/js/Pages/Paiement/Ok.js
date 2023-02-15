@@ -39,7 +39,7 @@ function Ok({auth,errors,success,total,apprenant}) {
             <div className="flex justify-center">
                 <div className={"p-5 space-y-5 "}>
                     <div>
-                        Votre paiement est en cours de traitement vous allez recevoir un message de confirmation sur votre téléphone!
+                        Votre paiement est en cours de traitement vous allez recevoir un message de confirmation veuillez composer *146#
                     </div>
 
                     {/*<div>
