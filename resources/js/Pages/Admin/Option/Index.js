@@ -102,7 +102,7 @@ function Index(props) {
     },[props.options])
 
     useEffect(() => {
-        if(data.cycle?.libelle!=="Université")
+        if(data.cycle?.libelle!=="UNIVERSITÉ")
         {
             setData("departement",null)
         }
@@ -142,13 +142,12 @@ function Index(props) {
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 w-full"}>
                         <div className={"grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4"}>
                             <div>
-                                <TextField name={"libelle"} label={"libelle"} value={data.libelle} onChange={(e)=>setData("libelle",e.target.value)} required/>
+                                <TextField name={"libelle"} label={"libelle"} value={data.libelle} onChange={(e)=>setData("libelle",e.target.value.toUpperCase())} required/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.libelle}</div>
                             </div>
                             <div>
                                 <FormControl  className={"w-full"}>
                                     <Autocomplete
-                                        id="tags-standard"
                                         className={"w-full"}
                                         onChange={(e,val)=>setData("cycle",val)}
                                         disablePortal={true}
@@ -162,11 +161,10 @@ function Index(props) {
                                 <div className={" flex my-2 text-red-600"}>{props.errors?.cycle}</div>
                             </div>
                             {
-                                data.cycle?.libelle==="Université" &&
+                                data.cycle?.libelle==="UNIVERSITÉ" &&
                                 <div>
                                     <FormControl  className={"w-full"}>
                                         <Autocomplete
-                                            id="tags-standard"
                                             className={"w-full"}
                                             onChange={(e,val)=>setData("departement",val)}
                                             disablePortal={true}
@@ -218,13 +216,13 @@ function Index(props) {
                                 autoFocus
                                 margin="dense"
                                 id="name"
-                                type="email"
+                                type="text"
                                 fullWidth
                                 variant={"standard"}
                                 name={"libelleEdit"}
                                 label={"libelle"}
                                 value={data.libelleEdit}
-                                onChange={(e)=>setData("libelleEdit",e.target.value)}
+                                onChange={(e)=>setData("libelleEdit",e.target.value.toUpperCase())}
                             />
                         </DialogContent>
                         <DialogActions>

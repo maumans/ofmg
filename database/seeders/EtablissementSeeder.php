@@ -37,7 +37,7 @@ class EtablissementSeeder extends Seeder
         $user->etablissementAdmin()->associate($etablissement)->save();
 
         $etablissement->commune()->associate(Commune::where("libelle", "dixinn")->first())->save();
-        $etablissement->typeEtablissement()->associate(Type_etablissement::where("libelle", "ecole")->first())->save();
+        $etablissement->typeEtablissement()->associate(Type_etablissement::where("libelle", "ÉCOLE")->first())->save();
        $etablissement->ville()->associate(Ville::where("libelle", "conakry")->first())->save();
     }
 }

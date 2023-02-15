@@ -345,7 +345,7 @@ function Create(props) {
             <div className={"p-5"}>
                 <div>
                     <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
-                        Inscrire un {props.anneeEnCours?.etablissement.type_etablissement.libelle.toLowerCase() ==="ecole"?"élève":"etudiant"}
+                        Inscrire un {props.anneeEnCours?.etablissement.type_etablissement.libelle.toLowerCase() ==="école"?"élève":"etudiant"}
                     </div>
 
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5"}>
@@ -353,7 +353,7 @@ function Create(props) {
                         <div className={"w-full border p-5 rounded space-y-5"} style={{maxWidth: 1000}}>
                             <div className={"space-y-5 p-2 border"}>
                                 <div className={"text-lg font-bold"}>
-                                    Infos de {props.anneeEnCours?.etablissement.type_etablissement.libelle.toLowerCase() ==="ecole"?"l'élève":"l'etudiant"}
+                                    Infos de {props.anneeEnCours?.etablissement.type_etablissement.libelle.toLowerCase() ==="école"?"l'élève":"l'etudiant"}
                                 </div>
                                 <div className={"grid md:grid-cols-3 grid-cols-1 items-end mb-5 gap-5"}>
                                     <div>

@@ -19,11 +19,11 @@ class TypeEtablissementSeeder extends Seeder
         DB::table("type_etablissements")->delete();
 
         Type_etablissement::create([
-            "libelle"=>"Université"
+            "libelle"=>"UNIVERSITÉ"
         ]);
 
         Type_etablissement::create([
-            "libelle"=>"Ecole"
+            "libelle"=>"ÉCOLE"
         ]);
     }
 }

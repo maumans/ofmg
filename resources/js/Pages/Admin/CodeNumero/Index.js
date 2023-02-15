@@ -167,7 +167,7 @@ function Index(props) {
                                 autoFocus
                                 margin="dense"
                                 id="name"
-                                type="email"
+                                type="text"
                                 fullWidth
                                 variant={"standard"}
                                 name={"libelleEdit"}

@@ -133,7 +133,7 @@ function Index(props) {
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5"}>
                         <div className={"space-y-5"}>
                             <div>
-                                <TextField  name={"libelle"} label={"libelle"} value={data.libelle} onChange={(e)=>setData("libelle",e.target.value)}/>
+                                <TextField  name={"libelle"} label={"libelle"} value={data.libelle} onChange={(e)=>setData("libelle",e.target.value.toUpperCase())}/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.libelle}</div>
                             </div>
                             <div>
@@ -174,13 +174,13 @@ function Index(props) {
                                 autoFocus
                                 margin="dense"
                                 id="name"
-                                type="email"
+                                type="text"
                                 fullWidth
                                 variant={"standard"}
                                 name={"libelleEdit"}
                                 label={"libelle"}
                                 value={data.libelleEdit}
-                                onChange={(e)=>setData("libelleEdit",e.target.value)}
+                                onChange={(e)=>setData("libelleEdit",e.target.value.toUpperCase())}
                             />
                         </DialogContent>
                         <DialogActions>

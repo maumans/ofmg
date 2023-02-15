@@ -1,69 +1,54 @@
 import React, {useEffect, useState} from 'react';
-import {DataGrid, gridPageCountSelector, gridPageSelector, useGridApiContext, useGridSelector} from '@mui/x-data-grid';
-import {Autocomplete, FormControl, InputLabel, MenuItem, Modal, Pagination, Select, TextField} from "@mui/material";
+import {
+    DataGrid,
+    gridPageCountSelector,
+    gridPageSelector,
+    GridToolbar,
+    useGridApiContext,
+    useGridSelector
+} from '@mui/x-data-grid';
+import {
+    Autocomplete, Button,
+    Dialog, DialogActions, DialogContent,
+    DialogTitle,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Pagination,
+    Select,
+    TextField
+} from "@mui/material";
 import AdminPanel from "@/Layouts/AdminPanel";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-react";
-
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import SnackBar from "@/Components/SnackBar";
-import {motion} from "framer-motion";
-
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    minWidth: 400,
-    bgcolor: 'background.paper',
-    borderRadius:2,
-    boxShadow: 24,
-    p: 4,
-};
+import CloseIcon from "@mui/icons-material/Close";
+import CheckIcon from "@mui/icons-material/Check";
+import DialogContentText from "@mui/material/DialogContentText";
 
 function Index(props) {
 
     const [niveaux,setNiveaux] = useState();
 
-    const {data,setData,post}=useForm({
+    const {data,setData,post,reset}=useForm({
         "libelle":"",
-        "description":"",
+        "cycle":"",
+        "libelleEdit":"",
+        "editId":""
     });
-
-    const {data:dataEdit,setData:setDataEdit}=useForm({
-        "id":null,
-        "libelle":"",
-        "description":"",
-    });
-
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = (niveau) => {
-        setDataEdit((dataEdit) => ({
-            "id":niveau.id,
-            "libelle":niveau.libelle,
-            "description":niveau.description
-        }))
-
-        setOpen(true);
-    }
-    const handleClose = () => setOpen(false);
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'libelle', headerName: 'LIBELLE', width: 130, editable: true },
-        { field: 'description', headerName: 'DESCRIPTION', width: 250, editable: true },
-        { field: 'action', headerName: 'ACTION',width:400,
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
+        { field: 'libelle', headerName: 'NIVEAU', width: 250 },
+        { field: 'cycle', headerName: 'CYCLE', width: 250,renderCell:(r)=>r.row.cycle?.libelle },
+        { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground orangeBlueBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
-                        <VisibilityIcon/>
-                    </button>
-                    <button onClick={()=>handleOpen(cellValues.row)} className={"p-2 text-white orangeBlueBackground rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
-                       <EditIcon/>
+                    <button onClick={()=>handleEdit(cellValues.row)} className={"p-2 text-white orangeBlueBackground rounded hover:text-blue-700 hover:bg-white transition duration-500"}>
+                        <EditIcon/>
                     </button>
                     <button onClick={()=>handleDelete(cellValues.row.id)} className={`bg-red-500 p-2 text-white bg-red-700 rounded hover:text-red-700 hover:bg-white transition duration-500`}>
                         <DeleteIcon/>
@@ -74,38 +59,42 @@ function Index(props) {
 
     ];
 
+    const [open, setOpen] = React.useState(false);
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     function handleDelete(id){
         confirm("Voulez-vous supprimer ce niveau") && Inertia.delete(route("etablissement.niveau.destroy",[props.auth.user.id,id]),{preserveScroll:true})
     }
 
-    function handleEdit(e){
-        e.preventDefault()
-        Inertia.post(route("etablissement.niveau.update",[props.auth.user.id,dataEdit.id]),{_method: "put",dataEdit},{preserveState:false,preserveScroll:true})
-
+    function handleEdit(row){
+        setOpen(true);
+        setData(data=>({
+            ...data,
+            editId:row.id,
+            libelleEdit:row.libelle
+        }))
     }
 
-    function handleShow(id){
-        Inertia.get(route("etablissement.niveau.show",[props.auth.user.id,id]))
+    function handleSubmitEdit(){
+        Inertia.put(route("etablissement.niveau.update",[props.auth.user.id,data.editId]),data,{preserveScroll:true});
+        setOpen(false)
     }
+
 
     function handleSubmit(e)
     {
         e.preventDefault();
 
-        post(route("etablissement.niveau.store",props.auth.user.id),data)
+        post(route("etablissement.niveau.store",props.auth.user.id),{data,onSuccess: ()=>reset("libelle")})
 
     }
 
     useEffect(() => {
         setNiveaux(props.niveaux);
-    },[props.niveaux]);
-
-    function handleCellEditCommit(params) {
-
-        setData(params.field,params.value);
-
-        Inertia.post(route("etablissement.niveau.update",[props.auth.user.id,params.id]),{_method: "put",dataEdit})
-    }
+    },[props.niveaux])
 
     ////// SnackBar
 
@@ -128,83 +117,52 @@ function Index(props) {
         success && setSuccess(null)
     }
 
+
     return (
-        <AdminPanel auth={props.auth} error={props.error} active={"niveau"}>
+        <AdminPanel auth={props.auth} error={props.error} sousActive={"niveau"} active={"paramètrage"}>
             <div className={"p-5"}>
                 <div>
-                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
+
+                    <div className={"my-5 text-2xl"}>
                         Gestion des niveaux
                     </div>
 
-                    <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 p-2 border rounded"}>
-                        <div className={"text-lg font-bold mb-5"}>
-                            Ajouter un niveau
-                        </div>
-                        <div className={"gap-4 grid md:grid-cols-3 grid-cols-1 items-center"}>
-                            <div className={"w-full"}>
-                                <TextField className={"w-full"}  name={"libelle"} label={"libelle"} value={data.libelle} onChange={(e)=>setData("libelle",e.target.value)}/>
+                    <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 "}>
+                        <div className={"gap-4 grid md:grid-cols-3 grid-cols-1"}>
+                            <div>
+                                <TextField  name={"libelle"} label={"libelle"} value={data.libelle} onChange={(e)=>setData("libelle",e.target.value.toUpperCase())} required/>
                                 <div className={"flex text-red-600"}>{props.errors?.libelle}</div>
                             </div>
-                            <div className={"w-full"}>
-                                <TextField className={"w-full"}  name={"description"} label={"description"} value={data.description} onChange={(e)=>setData("description",e.target.value)}/>
-                                <div className={"flex text-red-600"}>{props.errors?.description}</div>
-                            </div>
                             <div>
+                                <FormControl className={"w-full"}>
+                                    <Autocomplete
+                                        className={"w-full"}
+                                        onChange={(e,val)=>setData("cycle",val)}
+                                        disablePortal={true}
+                                        id={"combo-box-demo"}
+                                        options={props.cycles}
+                                        getOptionLabel={(option)=>option.libelle}
+                                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                                        renderInput={(params)=><TextField  fullWidth {...params} placeholder={"cycles"} label={params.libelle} required/>}
+                                    />
+                                </FormControl>
+                                <div className={"flex my-2 text-red-600"}>{props.errors?.cycle}</div>
+                            </div>
+                            <div className={"col-span-3"}>
                                 <button className={"p-2 text-white orangeVertBackground rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"}>
-                                    Enregister
+                                    Valider
                                 </button>
                             </div>
                         </div>
 
                     </form>
 
-                    <Modal
-                        keepMounted
-                        open={open}
-                        onClose={handleClose}
-                        aria-labelledby="keep-mounted-modal-title"
-                        aria-describedby="keep-mounted-modal-description"
-                    >
-                        <Box sx={style}>
-                            <form action="" onSubmit={handleEdit} className={"space-y-5 my-5 p-2 border rounded"}>
-                                <div className={"text-lg font-bold mb-5"}>
-                                    Modifier un niveau
-                                </div>
-                                <div className={"gap-4 grid md:grid-cols-3 grid-cols-1 items-center"}>
-                                    <div className={"w-full"}>
-                                        <TextField className={"w-full"}  name={"libelle"} label={"libelle"} value={dataEdit.libelle} onChange={(e)=>setDataEdit("libelle",e.target.value)}/>
-                                        <div className={"flex text-red-600"}>{props.errors?.libelle}</div>
-                                    </div>
-                                    <div className={"w-full"}>
-                                        <TextField className={"w-full"}  name={"description"} label={"description"} value={dataEdit.description} onChange={(e)=>setDataEdit("description",e.target.value)}/>
-                                        <div className={"flex text-red-600"}>{props.errors?.description}</div>
-                                    </div>
-                                    <div>
-                                        <button className={"p-3 text-white orangeVertBackground rounded"} type={"submit"}>
-                                            Enregister
-                                        </button>
-                                    </div>
-                                </div>
-
-                            </form>
-                        </Box>
-                    </Modal>
-
-                    <motion.div
-                        initial={{y:-100,opacity:0}}
-                        animate={{y:0,opacity:1}}
-                        transition={{
-                            duration:0.5,
-                            type:"spring",
-                        }}
-                        style={{width: '100%' }} className={"flex justify-center"}>
+                    <div style={{width: '100%' }} className={"flex justify-center"}>
                         {
                             niveaux &&
-                            <DataGrid components={{
+                            <DataGrid
+                                components={{
                                     Toolbar:GridToolbar,
-                                }}
-                                componentsProps={{
-                                    columnMenu:{backgroundColor:"red",background:"yellow"},
                                 }}
                                 rows={niveaux}
                                 columns={columns}
@@ -213,12 +171,35 @@ function Index(props) {
                                             pageSize: 10,
                                         },
                                     }}
-                                rowsPerPageOptions={[10,20,100]}
+                                rowsPerPageOptions={[10]}
                                 autoHeight
-                                onCellEditCommit={handleCellEditCommit}
                             />
                         }
-                    </motion.div>
+                    </div>
+                    <Dialog open={open} onClose={handleClose}>
+                        <DialogTitle>Modification</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                Modification du libelle de la commune
+                            </DialogContentText>
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                id="name"
+                                type="text"
+                                fullWidth
+                                variant={"standard"}
+                                name={"libelleEdit"}
+                                label={"libelle"}
+                                value={data.libelleEdit}
+                                onChange={(e)=>setData("libelleEdit",e.target.value.toUpperCase())}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose}>Annuler</Button>
+                            <Button onClick={handleSubmitEdit}>Enregistrer</Button>
+                        </DialogActions>
+                    </Dialog>
 
                     <SnackBar error={error} update={update} success={success} />                </div>
             </div>

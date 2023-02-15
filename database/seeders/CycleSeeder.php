@@ -22,23 +22,23 @@ class CycleSeeder extends Seeder
         ]);
 
         Cycle::create([
-            "libelle" =>"Maternelle",
+            "libelle" =>"MATERNELLE",
         ]);
 
         Cycle::create([
-            "libelle" =>"Primaire",
+            "libelle" =>"PRIMAIRE",
         ]);
 
         Cycle::create([
-            "libelle" =>"Collège",
+            "libelle" =>"COLLÈGE",
         ]);
 
         Cycle::create([
-            "libelle" =>"Lycée",
+            "libelle" =>"LYCÉE",
         ]);
 
         Cycle::create([
-            "libelle" =>"Université",
+            "libelle" =>"UNIVERSITÉ",
         ]);
     }
 }

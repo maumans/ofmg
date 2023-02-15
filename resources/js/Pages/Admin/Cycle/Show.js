@@ -32,7 +32,7 @@ function Show(props) {
     ];
 
     function handleDelete(id){
-        confirm("Voulez-vous supprimer cette niveau") && Inertia.delete(route("admin.niveau.destroy",[props.auth.user.id,id]),{preserveScroll:true})
+        confirm("Voulez-vous supprimer ce niveau") && Inertia.delete(route("admin.niveau.destroy",[props.auth.user.id,id]),{preserveScroll:true})
     }
 
 

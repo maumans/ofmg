@@ -130,14 +130,13 @@ function Index(props) {
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 "}>
                         <div className={"gap-4 grid md:grid-cols-3 grid-cols-1"}>
                             <div>
-                                <TextField  name={"libelle"} label={"libelle"} value={data.libelle} onChange={(e)=>setData("libelle",e.target.value)} required/>
+                                <TextField  name={"libelle"} label={"libelle"} value={data.libelle} onChange={(e)=>setData("libelle",e.target.value.toUpperCase())} required/>
                                 <div className={"flex text-red-600"}>{props.errors?.libelle}</div>
                             </div>
                             <div>
                                 <FormControl className={"w-full"}>
                                     <Autocomplete
                                         className={"w-full"}
-                                        id="tags-standard"
                                         onChange={(e,val)=>setData("cycle",val)}
                                         disablePortal={true}
                                         id={"combo-box-demo"}
@@ -187,13 +186,13 @@ function Index(props) {
                                 autoFocus
                                 margin="dense"
                                 id="name"
-                                type="email"
+                                type="text"
                                 fullWidth
                                 variant={"standard"}
                                 name={"libelleEdit"}
                                 label={"libelle"}
                                 value={data.libelleEdit}
-                                onChange={(e)=>setData("libelleEdit",e.target.value)}
+                                onChange={(e)=>setData("libelleEdit",e.target.value.toUpperCase())}
                             />
                         </DialogContent>
                         <DialogActions>

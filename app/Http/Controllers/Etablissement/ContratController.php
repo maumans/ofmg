@@ -90,7 +90,7 @@ class ContratController extends Controller
                     "email" =>"nullable|email|unique:users",
                     "login" =>"required|min:1|unique:users",
                     "password" =>"required",
-                    "niveauValidation"=>strtolower($request->fonction["libelle"])=="comptable" ?"required":""
+                    "niveauValidation"=>strtolower($request->fonction["libelle"])=="COMPTABLE" ?"required":""
                 ]);
             }
             else
@@ -138,7 +138,7 @@ class ContratController extends Controller
                 $user->email=$request->email;
                 $user->password=$request->password;
 
-                if(strtolower($request->fonction["libelle"])=="comptable")
+                if(strtolower($request->fonction["libelle"])=="COMPTABLE")
                 {
                     $user->niveauValidation=$request->niveauValidation;
                 }
@@ -169,7 +169,7 @@ class ContratController extends Controller
                 $user->contratEnCours()->associate($contrat)->save();
             }
 
-            if(strtolower($request->fonction["libelle"])==="comptable")
+            if(strtolower($request->fonction["libelle"])==="COMPTABLE")
             {
                 $user->update([
                     'niveauValidation'=>$request->niveauValidation

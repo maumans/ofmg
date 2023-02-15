@@ -148,14 +148,14 @@ class User extends Authenticatable // implements MustVerifyEmail
 
     public function isComptable()
     {
-        if($this->contrats()->whereRelation("contratFonctions.fonction","libelle","comptable")->first())
+        if($this->contrats()->whereRelation("contratFonctions.fonction","libelle","COMPTABLE")->first())
             return true;
         else return false;
 
     }
     public function isDirecteur()
     {
-        if($this->contrats()->whereRelation("contratFonctions.fonction","libelle","directeur")->first())
+        if($this->contrats()->whereRelation("contratFonctions.fonction","libelle","DIRECTEUR")->first())
             return true;
         else return false;
 

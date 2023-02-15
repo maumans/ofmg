@@ -350,6 +350,19 @@ class PersonnelController extends Controller
         return Inertia::render('Etablissement/Personnel/Historique',["salaires"=>$salaires,"paiementOccasionnel"=>$paiementOccasionnel,]);
     }
 
+    public function listePaiementRapport($user,$ok=null)
+    {
+        //$salaires=Salaire::where('status',"VALIDE")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with("personnel","mois","anneeScolaire")->orderByDesc('id')->get();
+
+        //$paiementOccasionnel=Paiement_occasionnel::where('status',"VALIDE")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with("anneeScolaire")->orderByDesc('id')->get();
+
+        $salaires=Salaire::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with("personnel","mois","anneeScolaire")->orderByDesc('id')->get();
+
+        $paiementOccasionnel=Paiement_occasionnel::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with("anneeScolaire")->orderByDesc('id')->get();
+
+        return Inertia::render('Etablissement/Personnel/ListePaiementRapport',["salaires"=>$salaires,"paiementOccasionnel"=>$paiementOccasionnel,]);
+    }
+
     public function filtre(Request $request)
     {
         $date_debut = Carbon::parse($request->get('dateDebut'))->startOfDay();

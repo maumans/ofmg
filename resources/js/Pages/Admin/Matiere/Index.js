@@ -126,11 +126,11 @@ function Index(props) {
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5"}>
                         <div className={"space-x-5 flex"}>
                             <div>
-                                <TextField value={data.libelle}  name={"libelle"} label={"libelle"} value={data.libelle} onChange={(e)=>setData("libelle",e.target.value)} required/>
+                                <TextField value={data.libelle}  name={"libelle"} label={"libelle"} onChange={(e)=>setData("libelle",e.target.value.toUpperCase())} required/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.libelle}</div>
                             </div>
                             <div>
-                                <button className={"p-2 text-white orangeVertBackground rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"} style={{height:56}}>
+                                <button className={"p-2 text-white orangeVertBackground rounded hover:text-green-600 hover:bg-white hover:border hover:border-green-600 transition duration-500"} style={{height: 56}} type={"submit"}>
                                     Valider
                                 </button>
                             </div>
@@ -184,7 +184,7 @@ function Index(props) {
                         name={"libelleEdit"}
                         label={"libelle"}
                         value={data.libelleEdit}
-                        onChange={(e)=>setData("libelleEdit",e.target.value)}
+                        onChange={(e)=>setData("libelleEdit",e.target.value.toUpperCase())}
                     />
                 </DialogContent>
                 <DialogActions>

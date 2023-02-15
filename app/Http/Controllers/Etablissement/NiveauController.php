@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Etablissement;
 use App\Http\Controllers\Controller;
 use App\Models\Inscription;
 use App\Models\Niveau;
+use App\Models\Cycle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -19,8 +20,10 @@ class NiveauController extends Controller
      */
     public function index()
     {
-        $niveaux=Auth::user()->etablissementAdmin->niveaux;
-        return Inertia::render('Etablissement/Niveau/Index',["niveaux"=>$niveaux]);
+        $niveaux=Niveau::with("cycle","classes")->orderByDesc('created_at')->get();
+        $cycles=Cycle::all();
+
+        return Inertia::render('Etablissement/Niveau/Index',["niveaux"=>$niveaux,"cycles"=>$cycles]);
     }
 
     /**
@@ -37,25 +40,22 @@ class NiveauController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
         $request->validate([
-            "libelle"=>["required",Rule::unique("niveaux")->where(function($query) use ($request) {
-                return $query->where("etablissement_id",Auth::user()->etablissementAdmin->id)->where("libelle",$request->libelle);
-            })],
-            "description"=>"required"
+            "libelle"=>"required|unique:niveaux",
+            "cycle"=>"required"
         ]);
 
-        $niveau=Niveau::create([
-            "libelle"=>$request->libelle,
-            "description"=>$request->description,
-        ]);
+        $niveau=Niveau::create($request->validate([
+            "libelle"=>"required"
+        ]));
 
-        $niveau->etablissement()->associate(Auth::user()->etablissementAdmin)->save();
+        $niveau->cycle()->associate(Cycle::find($request->cycle["id"]))->save();
 
-        return redirect()->back();
+        return redirect()->back()->with("success", "Niveau créé avec succès");
     }
 
     /**
@@ -64,12 +64,9 @@ class NiveauController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id,Niveau $niveau)
+    public function show($id)
     {
-        $niveau=$niveau->with('apprenants')->first();
-
-
-        return Inertia::render("Etablissement/Niveau/Show",["niveau"=>$niveau]);
+        //
     }
 
     /**
@@ -88,18 +85,15 @@ class NiveauController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,$id, Niveau $niveau)
+    public function update(Request $request, $id)
     {
-        $niveau->update([
-            "libelle"=>$request->dataEdit["libelle"],
-            "description"=>$request->dataEdit["description"],
-        ]);
-
+        $niveau=Niveau::find($request->editId);
+        $niveau->libelle=$request->libelleEdit;
         $niveau->save();
 
-        return redirect()->back()->with("success");
+        return redirect()->back()->with("success","Niveau modifié avec succès");
     }
 
     /**
@@ -108,7 +102,7 @@ class NiveauController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy($id, Niveau $niveau)
+    public function destroy($id,Niveau $niveau)
     {
         $niveau->delete();
 

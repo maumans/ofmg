@@ -254,7 +254,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
                                                      {data.personnel.prenom + " " + data.personnel.nom}
                                                  </div>
                                                  <div>
-                                                     <span className="font-bold capitalize">Fonctions:</span> {(data.personnel.contrat_fonctions.find((cf,i,j) => cf.fonction?.libelle.toLowerCase()==="directeur") && "Directeur") } {(data.personnel.contrat_fonctions.find((cf,i,j) => cf.fonction?.libelle.toLowerCase()==="comptable") && "Comptable")} {data.personnel.contrat_fonctions.find((cf,i,j) => cf.fonction?.libelle.toLowerCase()==="enseignant") && "Enseignant"}
+                                                     <span className="font-bold capitalize">Fonctions:</span> {(data.personnel.contrat_fonctions.find((cf,i,j) => cf.fonction?.libelle.toLowerCase()==="directeur") && "Directeur") } {(data.personnel.contrat_fonctions.find((cf,i,j) => cf.fonction?.libelle.toLowerCase()==="comptable") && "COMPTABLE")} {data.personnel.contrat_fonctions.find((cf,i,j) => cf.fonction?.libelle.toLowerCase()==="enseignant") && "Enseignant"}
                                                  </div>
 
                                                  <div>

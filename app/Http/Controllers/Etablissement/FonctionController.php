@@ -15,11 +15,11 @@ class FonctionController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Inertia\Response
+     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $fonctions=Fonction::whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->get();
+        $fonctions=Fonction::all();
 
         return Inertia::render('Etablissement/Fonction/Index',["fonctions"=>$fonctions]);
     }
@@ -38,17 +38,13 @@ class FonctionController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $request['etablissement_id']=Auth::user()->etablissementAdmin->id;
 
         Fonction::create($request->validate([
-            "libelle"=>["required",Rule::unique("fonctions")->where(function($query) use ($request){
-                return $query->where("libelle",$request->libelle)->where("etablissement_id",$request->etablissement_id);
-            })],
-            "etablissement_id"=>"required"
+            "libelle"=>"required|unique:fonctions"
         ]));
 
         return redirect()->back()->with("success","Fonction ajoutée avec succès");
@@ -81,11 +77,16 @@ class FonctionController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, $id)
     {
-        //
+        //dd($request->all());
+        $fonction=Fonction::find($request->editId);
+        $fonction->libelle=$request->libelleEdit;
+        $fonction->save();
+
+        return redirect()->back()->with("success","Fonction modifiée avec succès");
     }
 
     /**
@@ -98,6 +99,6 @@ class FonctionController extends Controller
     {
         $fonction->delete();
 
-        return redirect()->back()->with("error","Fonction supprimée avec succès");
+        return redirect()->back()->with("success","Fonction supprimée avec succès");
     }
 }

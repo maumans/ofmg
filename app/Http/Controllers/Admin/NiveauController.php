@@ -17,7 +17,7 @@ class NiveauController extends Controller
      */
     public function index()
     {
-        $niveaux=Niveau::where("id",">",0)->with("cycle","classes")->orderByDesc('created_at')->get();
+        $niveaux=Niveau::with("cycle","classes")->orderByDesc('created_at')->get();
         $cycles=Cycle::all();
 
         return Inertia::render('Admin/Niveau/Index',["niveaux"=>$niveaux,"cycles"=>$cycles]);

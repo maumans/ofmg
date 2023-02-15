@@ -70,7 +70,7 @@ function Index(props) {
 
 
     return (
-        <AdminPanel auth={props.auth} error={props.error} >
+        <AdminPanel auth={props.auth} error={props.error}>
             <div className={"p-5"}>
                 <div>
 

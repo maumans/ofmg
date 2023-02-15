@@ -259,7 +259,7 @@ function Index(props) {
                             }
 
                             {
-                                (data.niveau?.cycle?.libelle==="Lycée" || data.departement) &&
+                                (data.niveau?.cycle?.libelle==="LYCÉE" || data.departement) &&
                                 <div>
                                     <FormControl  className={"w-full"}>
                                         <Autocomplete

@@ -111,7 +111,7 @@ export default function Authenticated({auth, children}) {
                                                             <button
                                                                 className="inline-flex items-center px-3 py-2 border border-2 border-white text-sm leading-4 font-medium rounded-md text-white bg-black  hover:text-gray-500 focus:outline-none transition ease-in-out duration-150"
                                                             >
-                                                                <span className={"font-bold mr-4"}>{auth?.user?.prenom + " " + auth?.user?.nom}</span> <span className={"orangeOrangeColor"}> | {auth.admin || auth.etablissement ?"Administrateur":auth.ofmg?"OFGM":auth.tuteur?"Tuteur":auth.comptable?"Comptable":auth.directeur?"directeur":"" }</span>
+                                                                <span className={"font-bold mr-4"}>{auth?.user?.prenom + " " + auth?.user?.nom}</span> <span className={"orangeOrangeColor"}> | {auth.admin || auth.etablissement ?"Administrateur":auth.ofmg?"OFGM":auth.tuteur?"Tuteur":auth.comptable?"COMPTABLE":auth.directeur?"DIRECTEUR":"" }</span>
                                                                 <svg
                                                                     className="ml-2 -mr-0.5 h-4 w-4"
                                                                     xmlns="http://www.w3.org/2000/svg"
@@ -229,7 +229,7 @@ export default function Authenticated({auth, children}) {
                                             <div className="px-4">
                                                 <div className="font-medium text-base text-white">{auth?.user?.prenom+" "+auth?.user?.nom}</div>
                                                 <div className="font-medium text-sm text-white">{auth?.user?.email}</div>
-                                                <span className={"orangeOrangeColor"}>{auth.admin || auth.etablissement ?"Administrateur":auth.ofmg?"OFGM":auth.tuteur?"Tuteur":auth.comptable?"Comptable":auth.directeur?"directeur":"" }</span>
+                                                <span className={"orangeOrangeColor"}>{auth.admin || auth.etablissement ?"Administrateur":auth.ofmg?"OFGM":auth.tuteur?"Tuteur":auth.comptable?"COMPTABLE":auth.directeur?"DIRECTEUR":"" }</span>
                                             </div>
 
                                             <div className="mt-3 space-y-1">

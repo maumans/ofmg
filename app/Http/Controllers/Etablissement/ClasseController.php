@@ -26,12 +26,12 @@ class ClasseController extends Controller
         $departements=null;
         $classes=Auth::user()->etablissementAdmin->classes()->with("option.departement","niveau")->orderByDesc('created_at')->get();
 
-        Auth::user()->etablissementAdmin->typeEtablissement->libelle=="Université" && $niveaux=Niveau::whereRelation("cycle","libelle","Université")->with("cycle")->get();
-        Auth::user()->etablissementAdmin->typeEtablissement->libelle=="Ecole" && $niveaux=Niveau::whereRelation("cycle","libelle","<>","Université")->with("cycle")->get();
+        Auth::user()->etablissementAdmin->typeEtablissement->libelle=="UNIVERSITÉ" && $niveaux=Niveau::whereRelation("cycle","libelle","UNIVERSITÉ")->with("cycle")->get();
+        Auth::user()->etablissementAdmin->typeEtablissement->libelle=="ÉCOLE" && $niveaux=Niveau::whereRelation("cycle","libelle","<>","UNIVERSITÉ")->with("cycle")->get();
 
         $departement=null;
-        Auth::user()->etablissementAdmin->typeEtablissement->libelle=="Université" && $departements=Departement::with("options")->get();
-        Auth::user()->etablissementAdmin->typeEtablissement->libelle=="Ecole" && $options=Option::doesntHave("departement")->get();
+        Auth::user()->etablissementAdmin->typeEtablissement->libelle=="UNIVERSITÉ" && $departements=Departement::with("options")->get();
+        Auth::user()->etablissementAdmin->typeEtablissement->libelle=="ÉCOLE" && $options=Option::doesntHave("departement")->get();
 
         return Inertia::render('Etablissement/Classe/Index',["classes"=>$classes,"niveaux"=>$niveaux,"options"=>$options,"departements"=>$departements]);
     }

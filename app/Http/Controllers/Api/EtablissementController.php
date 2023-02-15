@@ -39,7 +39,7 @@ class EtablissementController extends Controller
      *                      "etablissement":{
      *                      "code": "20220705091618",
      *                      "nom": "Koffi Annan",
-     *                      "type": "Université",
+     *                      "type": "UNIVERSITÉ",
      *                  },
      *              }
      *          }
@@ -127,7 +127,7 @@ class EtablissementController extends Controller
      *                      "etablissement":{
      *                          "code": "20220705091618",
      *                          "nom": "Koffi Annan",
-     *                          "type": "Université",
+     *                          "type": "UNIVERSITÉ",
      *                      },
      *                      "apprenant": {
      *                          "nom": "Diallo",
