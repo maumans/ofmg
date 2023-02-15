@@ -192,13 +192,6 @@ function ResponsiveDrawer(props) {
                                         <ListItemText primary="Liste des apprenants" />
                                     </ListItemButton>
                                 </Link>
-                                <Divider component="li"/>
-
-                                <Link href={route("etablissement.matiere.index",props.auth.user.id)}>
-                                    <ListItemButton sx={props.sousActive==="matiere"?{color:"#e1c9bd",pl:4}:{pl:4}}>
-                                        <ListItemText primary="Matière"/>
-                                    </ListItemButton>
-                                </Link>
 
                                 <Divider component="li"/>
 
@@ -312,7 +305,7 @@ function ResponsiveDrawer(props) {
                                 </Link>
                                 <Link href={route("etablissement.personnel.paiement.ListePaiementRapport",props.auth.user.id)}>
                                     <ListItemButton sx={props.sousActive==="listePaiement"?{color:"#e1c9bd",pl:4}:{pl:4}}>
-                                        <ListItemText primary="Liste des paiements" />
+                                        <ListItemText primary="Liste paiement salaires" />
                                     </ListItemButton>
                                 </Link>
                             </List>
