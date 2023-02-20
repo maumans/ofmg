@@ -2,7 +2,7 @@ import React, {Fragment, useEffect, useState} from 'react';
 import ReactPDF, { PDFViewer } from '@react-pdf/renderer';
 import {PDFDownloadLink, Page, Text, View, Document, StyleSheet,Image } from '@react-pdf/renderer';
 
-import logo from "../img/Orange_Money_Logo_One_Line_Black_RGB.png"
+import logo from "../img/Orange_Money_Logo.png"
 import formatNumber from "@/Utils/formatNumber";
 import {format} from "date-fns";
 
@@ -217,16 +217,16 @@ function Save({tuteur,etablissement,total,telephone,paiements,transactionCurrent
 
     return (
 
-       <div className={"m-5"}>
+       <div style={{height:600}}>
            {
 
-                <PDFViewer height={600}  className={"flex w-full justify-center"}>
+                <PDFViewer  height={550}  className={"flex w-full justify-center"}>
                     <MyDocument tuteur={tuteur} etablissement={etablissement} telephone={telephone} total={total} paiements={paiements} transactionCurrentId={transactionCurrentId} date={date}/>
                 </PDFViewer>
             }
 
            <PDFDownloadLink  document={<MyDocument tuteur={tuteur} etablissement={etablissement } telephone={telephone} total={total} paiements={paiements} transactionCurrentId={transactionCurrentId} date={date}/>} fileName={"reçu.pdf"}>
-               {({blob,url,loading, error})=>(loading?"loading": <div className={'w-full justify-center'}> <button className={"p-2 text-white orangeVertBackground rounded mt-5"}>Telecharger</button></div>)}
+               {({blob,url,loading, error})=>(loading?"Chargement du reçu ...": <button className={"p-2 text-white orangeVertBackground rounded mt-5"}>Télécharger</button>)}
            </PDFDownloadLink>
        </div>
 )
