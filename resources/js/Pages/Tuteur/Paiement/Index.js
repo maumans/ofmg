@@ -5,7 +5,7 @@ import {
     Accordion, AccordionDetails, AccordionSummary,
     Alert,
     Autocomplete, Avatar, Backdrop,
-    Checkbox, CircularProgress,
+    Checkbox, CircularProgress, Dialog, DialogContent,
     Divider,
     FormControl,
     FormControlLabel, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemText,
@@ -36,6 +36,7 @@ import {DesktopDatePicker} from "@mui/x-date-pickers/DesktopDatePicker";
 import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
 import {format} from "date-fns";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const style = {
     position: 'absolute',
@@ -413,6 +414,7 @@ function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAl
                             label="PAIEMENT" {...a11yProps(0)} />
                         <Tab label="HISTORIQUE DE PAIEMENT" {...a11yProps(1)}/>
                         <Tab label="TRANSACTIONS" {...a11yProps(2)}/>
+                        scrollable
                     </Tabs>
                 </Box>
                 <TabPanel value={value} index={0}>
@@ -856,14 +858,16 @@ function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAl
                         </motion.div>
                     </div>
 
-                    <Modal
+                    <Dialog
+                        fullWidth={true}
+                        fullHeight={true}
                         keepMounted
                         open={openModal}
                         onClose={handleCloseModal}
-                        aria-labelledby="keep-mounted-modal-title"
-                        aria-describedby="keep-mounted-modal-description"
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
                     >
-                        <Box sx={style}>
+                        <DialogContent>
                             {
                                 transaction &&
                                 <Save
@@ -876,8 +880,8 @@ function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAl
                                     transactionCurrentId={transaction?.paiement_global.transactionCurrentId}
                                 />
                             }
-                        </Box>
-                    </Modal>
+                        </DialogContent>
+                    </Dialog>
                 </TabPanel>
                 <Backdrop
                     sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}

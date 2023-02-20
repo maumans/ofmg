@@ -240,6 +240,9 @@ export default function Authenticated({auth, children}) {
                                         </div>
                                         :
                                         <>
+                                            <ResponsiveNavLink method="get" as="button" href={auth?.tuteur?route('tuteur.paiement.index',[auth?.user.id]):route('paiement.create')} active={route().current('tuteur.paiement.index') || route().current('tuteur.paiement.search') || route().current('paiement.create') || route().current('paiement.search') || route().current('paiement.ok') || route().current('tuteur.paiement.ok')}>
+                                                Paiement
+                                            </ResponsiveNavLink>
                                             <ResponsiveNavLink active={route().current() === "login"} method="get" href={route('login')} as="button">
                                                 Connexion
                                             </ResponsiveNavLink>
