@@ -20,7 +20,7 @@ trait HasTransaction
             );
         }
         else {
-            omb2b()->log("Transaction cashin déjà effectué", 'alert');
+            omb2b()->log("Transaction cashin déjà effectuée", 'alert');
         }
 
     }
@@ -38,7 +38,7 @@ trait HasTransaction
             );
         }
         else {
-            omb2b()->log("Transaction cashout déjà effectué", 'alert');
+            omb2b()->log("Transaction cashout déjà effectuée", 'alert');
         }
     }
 

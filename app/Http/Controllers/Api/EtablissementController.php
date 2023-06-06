@@ -379,8 +379,6 @@ class EtablissementController extends Controller
                             {
                                 $moisPaye->montant=0;
                                 $moisPaye->save();
-
-
                             }
                             else
                             {
@@ -398,6 +396,7 @@ class EtablissementController extends Controller
             DB::commit();
 
             //return response()->json(["apprenant"=>$apprenant,"Paiement"=>$paiement,"Mois payés"=>$moisPaye],200);
+
             return response()->json($paiement?"SUCCESS":"FAILED",200);
 
         }

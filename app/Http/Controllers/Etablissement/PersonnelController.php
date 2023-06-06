@@ -300,7 +300,7 @@ class PersonnelController extends Controller
         try{
             foreach($request->all() as $paiementOccasionnel)
             {
-                $p=Paiement_occasionnel::where("id",$paiementOccasionnel["id"])->first();
+                $p = Paiement_occasionnel::where("id",$paiementOccasionnel["id"])->first();
 
                 Paiement_occasionnel::where("id",$p->id)->first()->cashin();
 

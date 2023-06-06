@@ -233,7 +233,7 @@ class OmB2b
         $transactionData = $this->{$service}($props);
        // Log::info("transactionData",$transactionData);
         $this->addOperationColumnToTransaction($transaction, $operation);
-        $transactionResponse = $this->makeTransaction('cashin', $props);
+        //$transactionResponse = $this->makeTransaction('cashin', $props);
         //Log::info("transactionResponse",$transactionResponse);
         $_response = collect($transactionData);
 

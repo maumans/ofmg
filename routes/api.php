@@ -64,7 +64,6 @@ Route::middleware("auth.basic")->any('orange/notifications', function (Request $
 
             if($transaction->item_model == "App\Models\Paiement")
             {
-
                 $paiement = Paiement::where("id",$transaction->item_key)->first();
 
                 $paiement->transaction()->associate($transaction)->save();
