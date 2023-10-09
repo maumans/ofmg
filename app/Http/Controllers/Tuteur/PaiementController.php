@@ -32,31 +32,35 @@ class PaiementController extends Controller
      */
     public function index()
     {
+
         $codeNumeros=Code_numero::all();
 
         $totalAll=0;
         $resteApayerAll=0;
         $payerAll=0;
 
-       /* $historiquePaiement=Paiement::whereRelation('apprenant',function ($query) {
-            $query->whereRelation('tuteurs',function ($query) {
-                $query->where('id',Auth::id());
-            });
-        })->get();
+        $tuteur=User::where('id',Auth::user()->id)->where('status','Actif')->first();
 
-        dd($historiquePaiement);
+        $etablissements = collect();
 
-        //$historiquePaiement=Paiement::whereRelation('apprenant.tuteurs','id',Auth::id())->get();*/
+        foreach ($tuteur->tuteurApprenants as $ta)
+        {
+            $etablissements->push($ta->classe->etablissement);
+        }
+
+        //dd($etablissements);
 
         $tuteur=User::where('id',Auth::user()->id)->with(["paiementsTuteur"=>function($query){
-            $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif","etablissement",'paiementGlobal')->get();
+            $query->orderByDesc('created_at')->with(["apprenant","typePaiement","modePaiement","tarif"=>function($query){
+                $query->where('status',true);
+            },"etablissement",'paiementGlobal'])->get();
         },"tuteurApprenants"=>function($query){
-            $query->whereHas("classe.etablissement.anneeEnCours")->with(["classe.etablissement.anneeEnCours","tarifs.typePaiement","tarifs"=>function($query){
-                $query->get();
+            $query->whereHas("classe.etablissement.anneeEnCours")->with(["classe.etablissement.anneeEnCours","tarifs"=>function($query){
+                $query->with('typePaiement');
             }])->get();
         }])->first();
 
-        //dd(User::where('id',Auth::user()->id)->first()->paiementsTuteur()->with('paiementGlobal')->get()->last());
+
 
         $transactions=Transaction::whereRelation('paiementGlobal.tuteur',"id",$tuteur->id)->with('paiementGlobal.tuteur',"paiementGlobal.etablissement","paiementGlobal.paiements.apprenant","paiementGlobal.paiements.typePaiement")->orderByDesc('created_at')->get();
 
@@ -89,11 +93,12 @@ class PaiementController extends Controller
             }
         }
 
-        return Inertia::render("Tuteur/Paiement/Index",["tuteur"=>$tuteur,"resteApayerAll"=>$resteApayerAll,"totalAll"=>$totalAll,"payerAll"=>$payerAll,"donneesParFrais"=>$donneesParFrais,"codeNumeros"=>$codeNumeros,"transactions"=>$transactions]);
+        return Inertia::render("Tuteur/Paiement/Index",["tuteur"=>$tuteur,"resteApayerAll"=>$resteApayerAll,"totalAll"=>$totalAll,"payerAll"=>$payerAll,"donneesParFrais"=>$donneesParFrais,"codeNumeros"=>$codeNumeros,"transactions"=>$transactions,'allEtablissements'=>$etablissements]);
     }
 
     public function search($userId,$matricule)
     {
+
 
         $codeNumeros=Code_numero::all();
 

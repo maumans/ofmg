@@ -95,7 +95,7 @@ const styles = theme => ({
     }
 })
 
-function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAll,resteApayerAll,donneesParFrais,codeNumeros,transactions}) {
+function Index({auth,nbrMois,allEtablissements,success,montantTotal,errors,tuteur,totalAll,payerAll,resteApayerAll,donneesParFrais,codeNumeros,transactions}) {
 
     const [successSt, setSuccessSt]=useState();
     const [codeNumerosSt, setCodeNumerosSt]=useState();
@@ -316,7 +316,7 @@ function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAl
         setValueEt(newValue);
     };
 
-    const [etablissements,setEtablissements]=useState(null)
+    const [etablissements,setEtablissements]=useState(allEtablissements);
 
     useEffect(() => {
 
@@ -326,7 +326,7 @@ function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAl
 
             et=[...et.filter(e=>e.id!==ap.classe.etablissement.id),ap.classe.etablissement]
         ))
-        setEtablissements(et)
+        setEtablissements(allEtablissements)
     },[])
 
     useEffect(() => {
@@ -730,10 +730,10 @@ function Index({auth,nbrMois,success,montantTotal,errors,tuteur,totalAll,payerAl
                                     tuteur.tuteur_apprenants.length===0 &&
                                         <div className={"flex flex-col items-center py-10 space-y-5"}>
                                             <div>
-                                                Vous n'avez aucun apprenant inscrit pour le moment
+                                                Vous n'avez aucune opération disponible pour le moment
                                             </div>
                                             <div className={"text-blue-500"}>
-                                                 Veuillez contacter l'etablissement si ce n'est pas le cas
+                                                 Veuillez contacter l'etablissement pour plus d'informations
                                             </div>
                                         </div>
 
