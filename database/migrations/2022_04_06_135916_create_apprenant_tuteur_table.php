@@ -17,6 +17,7 @@ class CreateApprenantTuteurTable extends Migration
             $table->id();
             $table->foreignId("apprenant_id")->constrained("apprenants")->cascadeOnDelete();
             $table->foreignId("tuteur_id")->constrained("users")->cascadeOnDelete();
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

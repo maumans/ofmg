@@ -18,6 +18,7 @@ class CreateOptionsTable extends Migration
             $table->string("libelle")->nullable();
             $table->foreignId("cycle_id")->nullable()->constrained("cycles");
             $table->foreignId("departement_id")->nullable()->constrained("departements");
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

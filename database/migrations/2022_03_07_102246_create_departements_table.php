@@ -16,6 +16,7 @@ class CreateDepartementsTable extends Migration
         Schema::create('departements', function (Blueprint $table) {
             $table->id();
             $table->string("libelle")->nullable();
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

@@ -17,6 +17,7 @@ class CreateMoisTable extends Migration
             $table->id();
             $table->string('libelle')->nullable();
             $table->integer('position')->nullable();
+            $table->boolean('status')->default(true);
 
             $table->timestamps();
         });

@@ -16,6 +16,7 @@ class CreateModePaiementsTable extends Migration
         Schema::create('mode_paiements', function (Blueprint $table) {
             $table->id();
             $table->string("libelle")->nullable();
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

@@ -22,6 +22,7 @@ class CreateClassesTable extends Migration
             $table->foreignId('etablissement_id')->nullable()->constrained("etablissements");
             $table->foreignId('option_id')->nullable()->constrained("options");
             $table->unique(array('etablissement_id',"libelle"));
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

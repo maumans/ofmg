@@ -21,6 +21,7 @@ class CreateNiveauxTable extends Migration
             $table->foreignId("departement_id")->nullable()->constrained("departements");
             $table->foreignId('etablissement_id')->nullable()->constrained("etablissements");
             $table->unique(array('etablissement_id',"libelle"));
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

@@ -24,6 +24,7 @@ class CreateContratsTable extends Migration
             $table->enum("frequence",['HORAIRE',"MENSUELLE","AUCUN"])->nullable();
             $table->integer("montantHoraire")->nullable();
             $table->integer("montantMensuel")->nullable();
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
 

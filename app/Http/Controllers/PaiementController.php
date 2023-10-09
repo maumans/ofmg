@@ -42,49 +42,60 @@ class PaiementController extends Controller
 
         $anneeEnCours=$etablissement ? $etablissement->anneeEnCours:null;
 
-        $apprenant=$apprenant ? Apprenant::where("matricule",$matricule)->whereRelation("classe.etablissement","code",$code)->with(["tarifs"=>function($query) use ($anneeEnCours){
-            $query->whereRelation('anneeScolaire','id',$anneeEnCours->id)->with(["typePaiement",'apprenantTarif.moisPayes'])->get();
-        },"classe"=>function($query) use ($anneeEnCours){
-            $query->with(["tarifs"=>function($query) use ($anneeEnCours){
-                $query->whereRelation('anneeScolaire','id',$anneeEnCours->id)->with("typePaiement")->get();
-            }]);
-        },
-           "paiements"=>function($query) use ($anneeEnCours,$apprenant){
-          $query->whereHas("tarif",function ($query) use ($anneeEnCours,$apprenant){
-              $query->where('annee_scolaire_id', $anneeEnCours->id);
-          })->with("typePaiement","tarif")->get();
+        if ($anneeEnCours)
+        {
+
+            $apprenant=$apprenant ? Apprenant::where("matricule",$matricule)->whereRelation("classe.etablissement","code",$code)->with(["tarifs"=>function($query) use ($anneeEnCours){
+                $query->whereRelation('anneeScolaire','id',$anneeEnCours->id)->with(["typePaiement",'apprenantTarif.moisPayes'])->get();
+            },"classe"=>function($query) use ($anneeEnCours){
+                $query->with(["tarifs"=>function($query) use ($anneeEnCours){
+                    $query->whereRelation('anneeScolaire','id',$anneeEnCours->id)->where('status',true)->with("typePaiement")->get();
+                }]);
+            },
+               "paiements"=>function($query) use ($anneeEnCours,$apprenant){
+              $query->whereHas("tarif",function ($query) use ($anneeEnCours,$apprenant){
+                  $query->where('annee_scolaire_id', $anneeEnCours->id)->where('status',true);
+              })->with(["typePaiement","tarif"=>function($query){
+                  $query->where('status',true);
+              }])->get();
+
+            }
+            ])->first():$apprenant;
+
+            $nbrMois=$anneeEnCours ? Carbon::parse($anneeEnCours->dateFin)->diffInMonths(Carbon::parse($anneeEnCours->dateDebut)):null;
+
+            $apprenant && $apprenant->classe->tarifs->map(function($tarif) use($apprenant){
+
+              $tarif->resteApayer=$tarif->montant-$apprenant->paiements->where("type_paiement_id",$tarif->typePaiement->id)->sum("montant");
+            });
+
+            //dd($apprenant);
+
+
+            $paiements=$apprenant ? $apprenant->paiements()->with("tarif","typePaiement")->get()->unique('type_paiement_id'):null;
+
+            $apprenant ?  $paiements->map(function($paiement) use ($apprenant)
+            {
+                $paiement->resteApayer=$paiement->tarif->montant-$apprenant->paiements->where("type_paiement_id",$paiement->tarif->typePaiement->id)->sum("montant");
+            }):null;
+
+
+            $modePaiements=Mode_paiement::all();
+
+            /*
+            $tuteur=User::where('id',Auth::user()->id)->with(["paiementsTuteur"=>function($query){
+                $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif")->get();
+            }])->first();
+            */
+
+            return Inertia::render("Paiement/Create",["etablissement"=>$etablissement,"apprenant"=>$apprenant,"matricule"=>$matricule,"nbrMois"=>$nbrMois,"modePaiements"=>$modePaiements,"paiements"=>$paiements,"codeNumeros"=>$codeNumeros,'code'=>$code,'']);
+        }
+        else
+        {
+            return redirect()->back()->with("error","L'année n'a pas encore débutée pour cet établissement");
+        }
 
         }
-        ])->first():$apprenant;
-
-        $nbrMois=$anneeEnCours ? Carbon::parse($anneeEnCours->dateFin)->diffInMonths(Carbon::parse($anneeEnCours->dateDebut)):null;
-
-        $apprenant && $apprenant->classe->tarifs->map(function($tarif) use($apprenant){
-
-          $tarif->resteApayer=$tarif->montant-$apprenant->paiements->where("type_paiement_id",$tarif->typePaiement->id)->sum("montant");
-        });
-
-        //dd($apprenant);
-
-
-        $paiements=$apprenant ? $apprenant->paiements()->with("tarif","typePaiement")->get()->unique('type_paiement_id'):null;
-
-        $apprenant ?  $paiements->map(function($paiement) use ($apprenant)
-        {
-            $paiement->resteApayer=$paiement->tarif->montant-$apprenant->paiements->where("type_paiement_id",$paiement->tarif->typePaiement->id)->sum("montant");
-        }):null;
-
-
-        $modePaiements=Mode_paiement::all();
-
-        /*
-        $tuteur=User::where('id',Auth::user()->id)->with(["paiementsTuteur"=>function($query){
-            $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif")->get();
-        }])->first();
-        */
-
-        return Inertia::render("Paiement/Create",["etablissement"=>$etablissement,"apprenant"=>$apprenant,"matricule"=>$matricule,"nbrMois"=>$nbrMois,"modePaiements"=>$modePaiements,"paiements"=>$paiements,"codeNumeros"=>$codeNumeros]);
-    }
 
     /**
      * Show the form for creating a new resource.

@@ -17,6 +17,7 @@ class CreateTypePaiementsTable extends Migration
             $table->id();
             $table->string("libelle")->nullable();
             $table->enum("concerne",["APPRENANT","PERSONNEL"])->default('APPRENANT');
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

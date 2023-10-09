@@ -23,6 +23,7 @@ class CreateContratFonctionsTable extends Migration
             $table->foreignId("annee_scolaire_id")->nullable()->constrained("annee_scolaires");
             $table->foreignId("cours_id")->nullable()->constrained("cours");
             $table->unique(array('contrat_id',"fonction_id","cours_id"));
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

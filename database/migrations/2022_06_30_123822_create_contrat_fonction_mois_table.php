@@ -21,6 +21,7 @@ class CreateContratFonctionMoisTable extends Migration
             $table->foreignId("mois_id")->nullable()->constrained("mois");
             $table->foreignId("contrat_fonction_id")->nullable()->constrained("contrat_fonctions");
             $table->foreignId("user_id")->nullable()->constrained("users");
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

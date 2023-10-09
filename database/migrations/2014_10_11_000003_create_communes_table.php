@@ -17,6 +17,7 @@ class CreateCommunesTable extends Migration
             $table->id();
             $table->string('libelle')->unique()->nullable();
             $table->foreignId("ville_id")->nullable()->constrained("communes")->cascadeOnDelete();
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

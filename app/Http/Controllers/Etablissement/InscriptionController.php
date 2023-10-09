@@ -249,18 +249,27 @@ class InscriptionController extends Controller
                if($tuteur["id"]==null)
                {
                    $request->validate([
+                       "tuteursAdd.*.login"=>"required|unique:users",
                        "tuteursAdd.*.email"=>"required|unique:users",
                        "tuteursAdd.*.telephone"=>"required|unique:users"
                    ],
                        [
+                           "tuteursAdd.*.login.unique"=>"La valeur du champ login est déjà utilisée",
                            "tuteursAdd.*.email.unique"=>"La valeur du champ email est déjà utilisée",
                            "tuteursAdd.*.telephone.unique"=>"La valeur du champ telephone est déjà utilisée"
                        ]);
+
                    $tuteur["password"]=Hash::make($tuteur["password"]);
+
                    $tuteur=User::create($tuteur);
+
                    $tuteur->roles()->syncWithoutDetaching(Role::where("libelle","tuteur")->first());
                }
-               $apprenant->tuteurs()->syncWithoutDetaching(User::find($tuteur["id"]));
+
+               //dd($request->tuteursAdd,$tuteur);
+
+               $apprenant->tuteurs()->syncWithoutDetaching($tuteur->id);
+
            }
 
            $inscription->classe()->associate(Classe::find($request->classe["id"]))->save();

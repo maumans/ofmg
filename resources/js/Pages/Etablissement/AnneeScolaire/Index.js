@@ -120,7 +120,7 @@ function Index(props) {
 
     function handleCloture()
     {
-        confirm("Voulez-vous vraiment cloturer l'année ?") && Inertia.get(route("etablissement.anneeScolaire.cloture"));
+        confirm("Voulez-vous vraiment cloturer l'année encours?") && Inertia.get(route("etablissement.anneeScolaire.cloture"));
     }
 
     ////// SnackBar
@@ -167,12 +167,13 @@ function Index(props) {
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5"}>
                         <div className={"border p-5 rounded space-y-5"}>
                             <div className={"text-lg font-bold"}>
-                                Demarrer une année scolaire
+                                Démarrer une année scolaire {!props.anneeEnCoursFinie && <span className={'text-red-600 font-normal text-sm'}>(veuillez cloturer l'année scolaire encours)</span>}
                             </div>
                             <div className={"grid md:grid-cols-2 grid-cols-1 gap-4"} style={{maxWidth: 600}}>
                                 <div>
                                     <div>Date de debut</div>
                                     <TextField
+                                        disabled={!props.anneeEnCoursFinie}
                                         className={"w-full"}
                                         inputProps={{
                                             type:"date",
@@ -182,6 +183,7 @@ function Index(props) {
                                 <div>
                                     <div>Date de fin</div>
                                     <TextField
+                                        disabled={!props.anneeEnCoursFinie}
                                         className={"w-full"}
                                         inputProps={{
                                             type:"date",
@@ -232,7 +234,7 @@ function Index(props) {
                                             value={dataEdit.dateDebutEdit}
                                                inputProps={{
                                                    type:"date",
-                                                   min:props.aujourdhui
+                                                   //min:props.aujourdhui
                                                }}
                                                name={"dateDebutEdit"} onChange={(e)=>setDataEdit("dateDebutEdit",e.target.value)}/>
                                         <div className={"flex my-2 text-red-600"}>{props.errors["dataEdit.dateDebutEdit"] && props.errors["dataEdit.dateDebutEdit"]}</div>
@@ -244,7 +246,7 @@ function Index(props) {
                                             value={dataEdit.dateFinEdit}
                                             inputProps={{
                                                 type:"date",
-                                                min:props.aujourdhui
+                                                //min:props.aujourdhui
                                             }}
                                             name={"dateFinEdit"} onChange={(e)=>setDataEdit("dateFinEdit",e.target.value)}/>
                                         <div className={"flex my-2 text-red-600"}>{props.errors["dataEdit.dateFinEdit"] && props.errors["dataEdit.dateFinEdit"]}</div>

@@ -71,7 +71,7 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
     );
 });
 
-function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,success,montantTotal,paiements,errors,tuteur,codeNumeros}) {
+function Create({auth,etablissement,apprenant,matricule,code,nbrMois,modePaiements,success,montantTotal,paiements,errors,error,tuteur,codeNumeros}) {
 
 
 
@@ -94,8 +94,8 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
         "montants":[],
         "total":montantTotal?montantTotal:0,
         "numero_retrait":"",
-        "code":"",
-        "matricule":"",
+        "code":code && !apprenant ?code :'',
+        "matricule":matricule && !apprenant ?matricule :'',
         "etablissement":etablissement
     });
 
@@ -280,7 +280,7 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                             {
                                 (matricule && !apprenant) &&
                                 <div className={"m-5 p-2 mt-4 bg-gray-100 rounded font-bold text-red-500"}>
-                                    L'apprenant de matricule {matricule} n'existe pas
+                                    Données incorrectes veuillez vérifier le code l'établissement ({code}) et le matricule de l'apprenant ({matricule})
                                 </div>
                             }
 
@@ -305,108 +305,129 @@ function Create({auth,etablissement,apprenant,matricule,nbrMois,modePaiements,su
                                                 </div>
                                             </div>
                                         }
-                                        <div className={"grid md:grid-cols-2 sm:grid-cols-2 grid-cols-1 col-span-3 gap-4"}>
-                                            <div hidden={!apprenant?.tarifs} className={"md:col-span-2 sm:col-span-2 text-lg"}>
-                                                Veuillez cocher les frais à regler
-                                            </div>
-                                            {
-                                               apprenant?.tarifs.map((t) =>(
 
-                                                    <div key={t.id} className={"relative shadow-lg"}>
-                                                        {
-                                                            t.pivot.resteApayer===0 ?
-                                                                <div className={"absolute -right-2 -top-3 rounded p-3 orangeVertBackground text-white"}>
-                                                                    Payé
-                                                                </div>
-                                                                :
-                                                                <div className={"absolute -right-2 -top-3 rounded p-3 bg-red-400 text-white"}>
-                                                                    Reste à payer
-                                                                </div>
-                                                        }
-                                                        <div key={t.id} className={`grid grid-cols-1 gap-2 p-5 rounded h-full ${t.pivot.resteApayer===0 ? "border-2 border-green-400":"border-2 border-red-400"}`} style={{backgroundColor:"#f8f1eb"}}>
-                                                            {
-                                                                <div className={"flex items-center p-2 rounded text-orange-400 bg-white"} style={{height:50}}>
-                                                                    <div key={t.id} className={"text-xl"}>
-                                                                        <FormControlLabel  control={<Checkbox defaultChecked={t.pivot.resteApayer===0} disabled={t.pivot.resteApayer===0} name={apprenant.id+"_"+t.id} onChange={handleChangeCheckbox} />} label={t.type_paiement.libelle} />
-                                                                    </div>
-                                                                </div>
-                                                            }
-                                                            {
-                                                                t?.montant &&
-                                                                <div>
-                                                                    <span className={"font-bold"}>Total à payer: </span> <span>{formatNumber(t.montant)} FG</span>
-                                                                </div>
-                                                            }
-                                                            {
-                                                                t?.montant &&
-                                                                <div>
-                                                                    <span className={"font-bold"}>Somme <span className="lowercase">{t.frequence} à payer: </span> </span> <span> {formatNumber(t.montant/(t.frequence==="MENSUELLE"?t.pivot.nombreMois:t.frequence==="SEMESTRIELLE"?nbrMois/2:t.frequence==="TRIMESTRIELLE"?nbrMois/3:t.frequence==="ANNUELLE"? 1:1))} FG</span>
-                                                                </div>
-                                                            }
-                                                            {
-                                                                t?.montant &&
-                                                                <div>
-                                                                    <span className={"font-bold"}>Reste à payer: </span> <span>{formatNumber(t.pivot.resteApayer)} FG</span>
-                                                                </div>
-                                                            }
+                                        {
 
-                                                            {
-                                                                t?.montant &&
-                                                                <div>
-                                                                    <span className={"font-bold"}>Payé: </span> <span>{formatNumber(t.montant-t.pivot.resteApayer)} FG</span>
-                                                                </div>
-                                                            }
-                                                            {
-                                                                t?.frequence &&
-                                                                <div>
-                                                                    <span className={"font-bold text-lg"}>Frequence de paiement: </span> <span> {t.frequence} </span>
-                                                                </div>
-                                                            }
-                                                            {
-                                                                t?.echeance &&
-                                                                <div>
-                                                                    <span className={"font-bold"}>Echeance: </span> <span>Le {t.echeance} de chaque mois</span>
-                                                                </div>
-                                                            }
-
-
-                                                            {
-                                                                (tarifs && t.pivot.resteApayer!==0) &&
-                                                                <div  className={"grid gap-3 grid-cols-1"}>
-                                                                    <div>
-                                                                        <TextField
-                                                                            disabled={!tarifs[apprenant.id+"_"+t.id]}
-                                                                            alt="Veuillez cocher le champs"
-                                                                            className={"w-full"}  name={apprenant.id+"_"+t.id} label={"Montant"} value={montants[apprenant.id+"_"+t.id]} onChange={(e)=>setMontants(montants=>({
-                                                                            ...montants,
-                                                                            [apprenant.id+"_"+t.id]:e.target.value
-                                                                        }))}
-                                                                            InputProps={{
-                                                                                inputComponent: NumberFormatCustom,
-                                                                                inputProps:{
-                                                                                    max:t.pivot.resteApayer,
-                                                                                    name:apprenant.id+"_"+t.id
-
-                                                                                },
-                                                                            }}
-                                                                            required
-                                                                        />
-                                                                        <div className={"flex my-2 text-red-600"}>{errors["montants."+apprenant.id+"_"+t.id] && errors["montants."+apprenant.id+"_"+t.id]}</div>
-                                                                    </div>
-
-                                                                </div>
-                                                            }
-
-
+                                            apprenant
+                                            &&
+                                            (
+                                                apprenant?.tarifs?.length > 0 ?
+                                                    <div className={"grid md:grid-cols-2 sm:grid-cols-2 grid-cols-1 col-span-3 gap-4"}>
+                                                        <div hidden={!apprenant?.tarifs} className={"md:col-span-2 sm:col-span-2 text-lg"}>
+                                                            Veuillez cocher les frais à regler
                                                         </div>
+                                                        {
+                                                            apprenant?.tarifs.map((t) =>(
 
+                                                                <div key={t.id} className={"relative shadow-lg"}>
+                                                                    {
+                                                                        t.pivot.resteApayer===0 ?
+                                                                            <div className={"absolute -right-2 -top-3 rounded p-3 orangeVertBackground text-white"}>
+                                                                                Payé
+                                                                            </div>
+                                                                            :
+                                                                            <div className={"absolute -right-2 -top-3 rounded p-3 bg-red-400 text-white"}>
+                                                                                Reste à payer
+                                                                            </div>
+                                                                    }
+                                                                    <div key={t.id} className={`grid grid-cols-1 gap-2 p-5 rounded h-full ${t.pivot.resteApayer===0 ? "border-2 border-green-400":"border-2 border-red-400"}`} style={{backgroundColor:"#f8f1eb"}}>
+                                                                        {
+                                                                            <div className={"flex items-center p-2 rounded text-orange-400 bg-white"} style={{height:50}}>
+                                                                                <div key={t.id} className={"text-xl"}>
+                                                                                    <FormControlLabel  control={<Checkbox defaultChecked={t.pivot.resteApayer===0} disabled={t.pivot.resteApayer===0} name={apprenant.id+"_"+t.id} onChange={handleChangeCheckbox} />} label={t.type_paiement.libelle} />
+                                                                                </div>
+                                                                            </div>
+                                                                        }
+                                                                        {
+                                                                            t?.montant &&
+                                                                            <div>
+                                                                                <span className={"font-bold"}>Total à payer: </span> <span>{formatNumber(t.montant)} FG</span>
+                                                                            </div>
+                                                                        }
+                                                                        {
+                                                                            t?.montant &&
+                                                                            <div>
+                                                                                <span className={"font-bold"}>Somme <span className="lowercase">{t.frequence} à payer: </span> </span> <span> {formatNumber(t.montant/(t.frequence==="MENSUELLE"?t.pivot.nombreMois:t.frequence==="SEMESTRIELLE"?nbrMois/2:t.frequence==="TRIMESTRIELLE"?nbrMois/3:t.frequence==="ANNUELLE"? 1:1))} FG</span>
+                                                                            </div>
+                                                                        }
+                                                                        {
+                                                                            t?.montant &&
+                                                                            <div>
+                                                                                <span className={"font-bold"}>Reste à payer: </span> <span>{formatNumber(t.pivot.resteApayer)} FG</span>
+                                                                            </div>
+                                                                        }
+
+                                                                        {
+                                                                            t?.montant &&
+                                                                            <div>
+                                                                                <span className={"font-bold"}>Payé: </span> <span>{formatNumber(t.montant-t.pivot.resteApayer)} FG</span>
+                                                                            </div>
+                                                                        }
+                                                                        {
+                                                                            t?.frequence &&
+                                                                            <div>
+                                                                                <span className={"font-bold text-lg"}>Frequence de paiement: </span> <span> {t.frequence} </span>
+                                                                            </div>
+                                                                        }
+                                                                        {
+                                                                            t?.echeance &&
+                                                                            <div>
+                                                                                <span className={"font-bold"}>Echeance: </span> <span>Le {t.echeance} de chaque mois</span>
+                                                                            </div>
+                                                                        }
+
+
+                                                                        {
+                                                                            (tarifs && t.pivot.resteApayer!==0) &&
+                                                                            <div  className={"grid gap-3 grid-cols-1"}>
+                                                                                <div>
+                                                                                    <TextField
+                                                                                        disabled={!tarifs[apprenant.id+"_"+t.id]}
+                                                                                        alt="Veuillez cocher le champs"
+                                                                                        className={"w-full"}  name={apprenant.id+"_"+t.id} label={"Montant"} value={montants[apprenant.id+"_"+t.id]} onChange={(e)=>setMontants(montants=>({
+                                                                                        ...montants,
+                                                                                        [apprenant.id+"_"+t.id]:e.target.value
+                                                                                    }))}
+                                                                                        InputProps={{
+                                                                                            inputComponent: NumberFormatCustom,
+                                                                                            inputProps:{
+                                                                                                max:t.pivot.resteApayer,
+                                                                                                name:apprenant.id+"_"+t.id
+
+                                                                                            },
+                                                                                        }}
+                                                                                        required
+                                                                                    />
+                                                                                    <div className={"flex my-2 text-red-600"}>{errors["montants."+apprenant.id+"_"+t.id] && errors["montants."+apprenant.id+"_"+t.id]}</div>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        }
+
+
+                                                                    </div>
+
+                                                                </div>
+
+
+
+                                                            ))
+                                                        }
                                                     </div>
+                                                    :
+                                                    <div className={"text-red-600 text-xl"}>
+                                                        Aucun tarif disponible
+                                                    </div>
+                                            )
+                                        }
 
+                                        {
+                                            error &&
 
-
-                                                ))
-                                            }
-                                        </div>
+                                            <div className={"text-red-600 text-xl"}>
+                                                {error}
+                                            </div>
+                                        }
 
                                     </div>
 

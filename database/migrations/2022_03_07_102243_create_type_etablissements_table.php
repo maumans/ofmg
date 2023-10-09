@@ -16,6 +16,7 @@ class CreateTypeEtablissementsTable extends Migration
         Schema::create('type_etablissements', function (Blueprint $table) {
             $table->id();
             $table->string("libelle")->nullable();
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

@@ -70,6 +70,8 @@ class TarifController extends Controller
     public function store(Request $request)
     {
 
+        //dd($request->all());
+
         $request->validate([
             "montant" =>"required",
         ]);
@@ -85,6 +87,8 @@ class TarifController extends Controller
 
             $nombreMois=$intervalle->count();
 
+
+
             foreach($request->classes as $classe)
             {
                 $tarif=Tarif::create([
@@ -95,14 +99,18 @@ class TarifController extends Controller
                 ]);
 
                 $tarif->etablissement()->associate(Auth::user()->etablissementAdmin)->save();
+
+
                 $tarif->anneeScolaire()->associate(Auth::user()->etablissementAdmin->anneeEnCours)->save();
+
                 $tarif->typePaiement()->associate(Type_paiement::find($request->typePaiement["id"]))->save();
+
                 $classe && $tarif->classe()->associate(Classe::find($classe["id"]))->save();
             }
 
             DB::commit();
 
-            return redirect()->route("etablissement.tarif.index")->with("success","Service(s) crée(s) avec succès");
+            return redirect()->back()->with("success","Service(s) crée(s) avec succès");
         }
         catch(Exception $e){
 

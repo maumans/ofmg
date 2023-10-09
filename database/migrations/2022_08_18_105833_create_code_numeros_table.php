@@ -16,6 +16,7 @@ class CreateCodeNumerosTable extends Migration
         Schema::create('code_numeros', function (Blueprint $table) {
             $table->id();
             $table->string('libelle');
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

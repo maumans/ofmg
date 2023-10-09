@@ -29,6 +29,7 @@ class EtablissementSeeder extends Seeder
         $user=User::create([
             "nom"=>"sainte",
             "prenom"=>"marie",
+            "login"=>"sainteMarie",
             "email"=>"sm@gmail.com",
             'password' => Hash::make("29101997"),
 

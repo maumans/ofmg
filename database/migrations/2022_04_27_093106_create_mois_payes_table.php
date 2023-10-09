@@ -18,7 +18,7 @@ class CreateMoisPayesTable extends Migration
             $table->integer("montant")->nullable();
             $table->foreignId("mois_id")->nullable()->constrained("mois")->cascadeOnDelete();
             $table->foreignId("apprenant_tarif_id")->nullable()->constrained("apprenant_tarif")->cascadeOnDelete();
-
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

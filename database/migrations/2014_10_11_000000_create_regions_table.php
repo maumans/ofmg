@@ -16,6 +16,7 @@ class CreateRegionsTable extends Migration
         Schema::create('regions', function (Blueprint $table) {
             $table->id();
             $table->string('libelle')->unique()->nullable();
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

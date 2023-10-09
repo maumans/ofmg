@@ -25,6 +25,7 @@ class CreateEtablissementsTable extends Migration
             $table->foreignId("commune_id")->nullable()->constrained("communes")->cascadeOnDelete();
             $table->foreignId("ville_id")->nullable()->constrained("villes")->cascadeOnDelete();
             $table->foreignId("user_id")->nullable()->constrained("users")->cascadeOnDelete();
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
 

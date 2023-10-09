@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Etablissement;
 
 use App\Http\Controllers\Controller;
 use App\Models\Annee_scolaire;
+use App\Models\Tarif;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -122,7 +123,21 @@ class AnneeScolaireController extends Controller
      */
     public function destroy($userId,Annee_scolaire $anneeScolaire)
     {
-        $anneeScolaire->delete();
+
+        $anneeScolaire->status=false;
+
+        $anneeScolaire->save();
+
+        $tarifs=Tarif::where('annee_scolaire_id',$anneeScolaire->id)->where('status',true)->get();
+
+        if($tarifs)
+        {
+            foreach ($tarifs as $tarif)
+            {
+                $tarif->status=false;
+                $tarif->save();
+            }
+        }
 
         return redirect()->back()->with("Année scolaire supprimée avec succès");
     }
@@ -132,6 +147,18 @@ class AnneeScolaireController extends Controller
        $anneeEnCours=Annee_scolaire::find(Auth::user()->etablissementAdmin->anneeEnCours->id);
        $anneeEnCours->actif=false;
        $anneeEnCours->save();
+
+        $tarifs=Tarif::where('annee_scolaire_id',$anneeEnCours->id)->where('status',true)->get();
+
+        if($tarifs)
+        {
+            foreach ($tarifs as $tarif)
+            {
+                $tarif->status=false;
+                $tarif->save();
+            }
+        }
+
         Auth::user()->etablissementAdmin->anneeEnCours()->dissociate()->save();
         return redirect()->back()->with("succcess","Année cloturée avec succès à l'année prochaine");
     }

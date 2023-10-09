@@ -17,6 +17,7 @@ class CreateFonctionsTable extends Migration
             $table->id();
             $table->string("libelle");
             $table->foreignId("etablissement_id")->nullable()->constrained("etablissements");
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

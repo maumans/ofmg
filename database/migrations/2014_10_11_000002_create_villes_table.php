@@ -17,6 +17,7 @@ class CreateVillesTable extends Migration
             $table->id();
             $table->string('libelle')->unique()->nullable();
             $table->foreignId("region_id")->nullable()->constrained("regions")->cascadeOnDelete();
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

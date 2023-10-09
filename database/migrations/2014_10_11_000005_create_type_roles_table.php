@@ -16,6 +16,7 @@ class CreateTypeRolesTable extends Migration
         Schema::create('type_roles', function (Blueprint $table) {
             $table->id();
             $table->string("libelle");
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

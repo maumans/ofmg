@@ -17,6 +17,7 @@ class CreateRolesTable extends Migration
             $table->id();
             $table->string("libelle");
             $table->foreignId("type_role_id")->nullable()->constrained("type_roles");
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

@@ -23,6 +23,7 @@ class CreateCoursTable extends Migration
             $table->foreignId("matiere_id")->nullable()->constrained("matieres");
             $table->foreignId("annee_scolaire_id")->nullable()->constrained("annee_scolaires");
             $table->unique(array('contrat_id',"classe_id","matiere_id","annee_scolaire_id"));
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

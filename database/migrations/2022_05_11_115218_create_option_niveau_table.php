@@ -18,6 +18,7 @@ class CreateOptionNiveauTable extends Migration
             $table->string("type")->nullable();
             $table->foreignId("option_id")->nullable()->constrained("options");
             $table->foreignId("niveau_id")->nullable()->constrained("niveaux");
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

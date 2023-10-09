@@ -16,6 +16,7 @@ class CreateCyclesTable extends Migration
         Schema::create('cycles', function (Blueprint $table) {
             $table->id();
             $table->string('libelle')->nullable();
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

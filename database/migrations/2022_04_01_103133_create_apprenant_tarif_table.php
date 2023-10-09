@@ -21,6 +21,7 @@ class CreateApprenantTarifTable extends Migration
             $table->integer("nombreMois")->nullable();
 
             $table->foreignId('annee_scolaire_id')->nullable()->constrained("annee_scolaires");
+            $table->boolean('status')->default(true);
 
             $table->timestamps();
         });

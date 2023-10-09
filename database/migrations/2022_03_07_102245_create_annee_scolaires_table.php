@@ -19,6 +19,7 @@ class  CreateAnneeScolairesTable extends Migration
             $table->date("dateFin")->nullable();
             $table->boolean('actif')->default(true)->nullable();
             $table->foreignId('etablissement_id')->nullable()->constrained("etablissements");
+            $table->boolean('status')->default(true);
             $table->timestamps();
 
         });

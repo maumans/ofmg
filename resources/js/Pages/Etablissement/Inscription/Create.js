@@ -412,6 +412,91 @@ function Create(props) {
                                     Tuteurs
                                 </div>
 
+                                {
+                                    !(data.tuteursAdd && data.tuteursAdd.length) > 0 &&
+                                    <div className="mb-5 text-red-600">
+                                        Aucun tuteur associée
+                                        <div className="text-red-600">
+                                            {props.errors?.tuteursAdd}
+                                        </div>
+                                    </div>
+                                }
+
+                                <div className={'mb-5'}>
+                                    <div>
+                                        Rechercher un tuteur existant
+                                    </div>
+                                    <div className={"p-2 border rounded space-x-3 flex items-center w-full"} style={{maxWidth:600}} >
+
+                                        <TextField
+                                            className={"w-full"}
+                                            variant={"standard"}
+                                            onChange={(e) => setData("search", e.target.value)}
+                                            label={"Entrez l'identifiant,le numero ou l'email du tuteur"}
+
+                                        />
+                                        <button type="button" onClick={handleSearchButton} className={"rounded bg-gray-600 p-3 text-white flex"}>
+                                            <SearchIcon/>
+                                        </button>
+
+                                    </div>
+
+                                    {
+                                        declancheur &&
+                                        <Box className={"text-center"}>
+                                            <CircularProgress />
+                                        </Box>
+
+                                    }
+
+                                    {
+                                        data.tuteurs?.length >0 &&
+                                        <div>
+
+                                            <List dense sx={{ width: '100%', maxWidth: 600, bgcolor: 'background.paper' }}>
+                                                { data.tuteurs.map((t,i) => {
+                                                    const labelId = `checkbox-list-secondary-label-${t.id}`;
+                                                    return (
+
+                                                        <motion.div
+                                                            key={t.id}
+
+                                                            initial={{y:-100,opacity:0}}
+                                                            animate={{y:0,opacity:1}}
+                                                            transition={{
+                                                                duration: 0.5,
+                                                                type: "spring",
+                                                                delay: i * 0.1
+                                                            }}
+                                                        >
+                                                            <ListItem
+                                                                secondaryAction={
+                                                                    <Checkbox
+                                                                        edge="end"
+                                                                        onChange={handleToggle(t.id)}
+                                                                        checked={checked.indexOf(t.id) !== -1}
+                                                                        inputProps={{ 'aria-labelledby': labelId }}
+                                                                    />
+                                                                }
+                                                                disablePadding
+                                                            >
+                                                                <ListItemButton>
+                                                                    <ListItemText id={labelId} primary={capitalize(t?.prenom)+" "+capitalize(t?.nom)} secondary={" Tel: "+t.telephone+" |   Login: "+t.login+(t.login && (" |   Email: "+t.email))}
+                                                                    />
+                                                                </ListItemButton>
+                                                            </ListItem>
+
+                                                        </motion.div>
+                                                    );
+                                                })}
+                                            </List>
+                                            <button onClick={handleAddNewTuteur} className={"p-3 rounded orangeVertBackground text-white flex text-center items-center mt-4"}>
+                                                Ajouter
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+
 
                                         <List
                                             className={"w-full grid md:grid-cols-2 grid-cols-1 gap-3 rounded"}
@@ -454,92 +539,14 @@ function Create(props) {
                                             </AnimatePresence>
                                         </List>
 
-                                    {
-                                        !(data.tuteursAdd && data.tuteursAdd.length) > 0 &&
-                                        <div className="mb-5">
-                                            Aucun tuteur
-                                            <div className="text-red-600">
-                                                {props.errors?.tuteursAdd}
-                                            </div>
-                                        </div>
-                                    }
-
 
                                 <div >
                                     <button onClick={()=>setOpenModal(true)} type={"button"} className={"rounded orangeBlueBackground p-3 text-white flex"}>
-                                        Ajouter un nouveau tuteur <span className={"ml-2 rounded-full bg-white text-green-600 flex text-center items-center"}><AddIcon /></span>
+                                        Créer un nouveau tuteur <span className={"ml-2 rounded-full bg-white text-green-600 flex text-center items-center"}><AddIcon /></span>
                                     </button>
                                 </div>
                             </div>
 
-                            <div className={"p-2 border rounded space-x-3 flex items-center w-full"} style={{maxWidth:600}} >
-                                <TextField
-                                    className={"w-full"}
-                                    variant={"standard"}
-                                    onChange={(e) => setData("search", e.target.value)}
-                                    label={"Entrez l'identifiant,le numero ou l'email du tuteur"}
-
-                                />
-                                <button type="button" onClick={handleSearchButton} className={"rounded bg-gray-600 p-3 text-white flex"}>
-                                    <SearchIcon/>
-                                </button>
-
-                            </div>
-
-                            {
-                                declancheur &&
-                                <Box className={"text-center"}>
-                                    <CircularProgress />
-                                </Box>
-
-                            }
-
-                            {
-                                data.tuteurs?.length >0 &&
-                                <div>
-
-                                    <List dense sx={{ width: '100%', maxWidth: 600, bgcolor: 'background.paper' }}>
-                                        { data.tuteurs.map((t,i) => {
-                                            const labelId = `checkbox-list-secondary-label-${t.id}`;
-                                            return (
-
-                                                <motion.div
-                                                    key={t.id}
-
-                                                    initial={{y:-100,opacity:0}}
-                                                    animate={{y:0,opacity:1}}
-                                                    transition={{
-                                                        duration: 0.5,
-                                                        type: "spring",
-                                                        delay: i * 0.1
-                                                    }}
-                                                >
-                                                    <ListItem
-                                                        secondaryAction={
-                                                            <Checkbox
-                                                                edge="end"
-                                                                onChange={handleToggle(t.id)}
-                                                                checked={checked.indexOf(t.id) !== -1}
-                                                                inputProps={{ 'aria-labelledby': labelId }}
-                                                            />
-                                                        }
-                                                        disablePadding
-                                                    >
-                                                        <ListItemButton>
-                                                            <ListItemText id={labelId} primary={capitalize(t?.prenom)+" "+capitalize(t?.nom)} secondary={" Tel: "+t.telephone+" |   Login: "+t.login+(t.login && (" |   Email: "+t.email))}
-                                                            />
-                                                        </ListItemButton>
-                                                    </ListItem>
-
-                                                </motion.div>
-                                            );
-                                        })}
-                                    </List>
-                                    <button onClick={handleAddNewTuteur} className={"p-3 rounded orangeVertBackground text-white flex text-center items-center mt-4"}>
-                                        Ajouter
-                                    </button>
-                                </div>
-                            }
 
 
                             {
@@ -721,7 +728,7 @@ function Create(props) {
                                         columns={tuteursAddColumn}
                                         pageSize={5}
                                         rowsPerPageOptions={[5]}
-                                        checkboxSelection
+                                        //checkboxSelection
                                         autoHeight
                                     />
                                 </div>
