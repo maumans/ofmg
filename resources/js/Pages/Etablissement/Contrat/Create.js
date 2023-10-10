@@ -201,23 +201,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
                                  Contrat
                              </div>
 
-                             <div className={"w-full  bg-white p-4"}>
-                                 <div>
-                                     Selectionnez la fonction à attribuer à l'employé *
-                                 </div>
-                                 <Autocomplete
-                                     className={"w-full my-4"}
-                                     onChange={(e,val)=>setData("fonction",val)}
-                                     disablePortal={true}
-                                     id={"combo-box-demo"}
-                                     options={fonctions}
-                                     getOptionLabel={option=>option.libelle}
-                                     isOptionEqualToValue={(option, value) => option.id === value.id}
-                                     renderInput={(params)=><TextField autoComplete={"Fonction"}  fullWidth {...params} label={"Fonction"} required/>}
-                                     required
-                                 />
-                                 <div className={"text-red-600"}>{errors?.fonction}</div>
-                             </div>
+
 
                              <div className={"p-4 rounded space-y-3 items-center w-full bg-white"} >
 
@@ -338,6 +322,8 @@ function Create({auth,errors,fonctions,classes,matieres}) {
                              </AnimatePresence>
 
 
+
+
                              <AnimatePresence>
                                  {
                                      (newEmp || data.personnel) &&
@@ -418,6 +404,24 @@ function Create({auth,errors,fonctions,classes,matieres}) {
                                      </motion.div>
                                  }
                              </AnimatePresence>
+
+                             <div className={"w-full  bg-white p-4"}>
+                                 <div>
+                                     Selectionnez la fonction à attribuer à l'employé *
+                                 </div>
+                                 <Autocomplete
+                                     className={"w-full my-4"}
+                                     onChange={(e,val)=>setData("fonction",val)}
+                                     disablePortal={true}
+                                     id={"combo-box-demo"}
+                                     options={fonctions}
+                                     getOptionLabel={option=>option.libelle}
+                                     isOptionEqualToValue={(option, value) => option.id === value.id}
+                                     renderInput={(params)=><TextField autoComplete={"Fonction"}  fullWidth {...params} label={"Fonction"} required/>}
+                                     required
+                                 />
+                                 <div className={"text-red-600"}>{errors?.fonction}</div>
+                             </div>
 
                              <AnimatePresence>
                                  {

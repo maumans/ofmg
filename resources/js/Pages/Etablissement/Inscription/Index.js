@@ -373,14 +373,17 @@ function Index(props) {
         setInscriptions(props.inscriptions)
     },[props.inscriptions])
 
+    const [loading,setLoading] = useState(false)
+
 
     function handleSearchButton()
     {
         //Inertia.post(route("etablissement.inscription.searchInscription",props.auth.user.id),{matricule:data.matriculeSearch,anneeScolaireId:data.anneeScolaireSearch?.id || null,classeId:data.classeSearch?.id || null},{preserveState:true,preserveScroll:true})
 
-
+        setLoading(true)
         axios.post(route("etablissement.inscription.searchInscription",props.auth.user.id),{matricule:data.matriculeSearch ,anneeScolaireId:data.anneeScolaireSearch?.id,classeId:data.classeSearch?.id},{preserveState:true,preserveScroll:true}).then((response)=>{
             setInscriptions(response.data)
+            setLoading(false)
         }).catch(error=>{
             console.log(error)
         });
@@ -428,7 +431,7 @@ function Index(props) {
 
 
     return (
-        <AdminPanel auth={props.auth} error={props.error} sousActive={"listeInscripton"} active={"gestionCursus"} >
+        <AdminPanel auth={props.auth} error={props.error} sousActive={"listeInscription"} active={"gestionCursus"} >
             <div className={"p-5"}>
                 <div>
                     <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
@@ -532,6 +535,7 @@ function Index(props) {
                                                     <div>
                                                         <FormControl  className={"w-full"}>
                                                             <Autocomplete
+                                                                value={dataEdit.classe}
                                                                 onChange={(e,val)=>{
                                                                     setDataEdit("classe",val)
                                                                 }}
@@ -653,6 +657,7 @@ function Index(props) {
                         style={{width: '100%' }} className={"flex justify-center"}>
                         {
                             <DataGrid
+                                loading={loading}
 
                                 components={{
                                     Toolbar:GridToolbar,

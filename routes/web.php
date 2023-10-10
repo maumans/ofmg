@@ -54,6 +54,7 @@ Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","pa
     Route::resource('etablissement.tarif',\App\Http\Controllers\Etablissement\TarifController::class)->middleware("anneeScolaireIsDefined");
     Route::resource('etablissement.paiement',\App\Http\Controllers\Etablissement\PaiementController::class)->middleware("anneeScolaireIsDefined");
     Route::post("etablissement/{userId}/paiement/search/{matricule?}",[\App\Http\Controllers\Etablissement\PaiementController::class,"search"])->middleware("anneeScolaireIsDefined")->name("etablissement.paiement.search");
+    Route::get("etablissement/{userId}/paiement/{idApprenant}/tarif",[\App\Http\Controllers\Etablissement\PaiementController::class,"tarif"])->middleware("anneeScolaireIsDefined")->name("etablissement.paiement.tarif");
 
     Route::post("etablissement/{etablissementId}/paiement/filtre",[\App\Http\Controllers\Etablissement\PaiementController::class,"filtre"])->name("etablissement.paiement.filter");
 
@@ -62,6 +63,8 @@ Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","pa
     Route::get("etablissement/anneeScolaire/cloture",[\App\Http\Controllers\Etablissement\AnneeScolaireController::class,"cloture"])->name("etablissement.anneeScolaire.cloture")->middleware("anneeScolaireIsDefined");
 
     Route::resource('etablissement.inscription',\App\Http\Controllers\Etablissement\InscriptionController::class)->middleware("anneeScolaireIsDefined");
+    Route::resource('etablissement.reinscription',\App\Http\Controllers\Etablissement\ReinscriptionController::class)->middleware("anneeScolaireIsDefined");
+    Route::resource('etablissement.tuteur',\App\Http\Controllers\Etablissement\TuteurController::class)->middleware("anneeScolaireIsDefined");
     Route::post("etablissement/{userId}/inscription/import",[\App\Http\Controllers\Etablissement\InscriptionController::class,"import"])->name("etablissement.inscription.import")->middleware("anneeScolaireIsDefined");
 
     Route::resource('etablissement.contrat',\App\Http\Controllers\Etablissement\ContratController::class)->middleware("anneeScolaireIsDefined");

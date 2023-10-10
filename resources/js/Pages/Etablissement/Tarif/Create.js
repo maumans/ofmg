@@ -83,6 +83,12 @@ const NumberFormatCustomMontant = React.forwardRef(function NumberFormatCustom(p
 
 function Index(props) {
 
+    const [loading,setLoading] = useState(true)
+
+    useEffect(()=>{
+        setLoading(false)
+    },[])
+
     const [tarifs,setTarifs] = useState();
 
     const [open, setOpen] = React.useState(false);
@@ -301,6 +307,7 @@ function Index(props) {
                     {
                         tarifs &&
                         <DataGrid
+                            loading={loading}
                             components={{
                                 Toolbar:GridToolbar,
                             }}

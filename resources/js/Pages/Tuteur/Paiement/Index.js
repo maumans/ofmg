@@ -267,9 +267,14 @@ function Index({auth,nbrMois,allEtablissements,success,montantTotal,errors,tuteu
         { field: 'action', headerName: 'ACTION',width:100,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
-                    <button onClick={()=>handleOpenModal(cellValues.row)} className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>
-                        Reçu
-                    </button>
+                    {
+                        cellValues.row.status==="SUCCESS"
+                        &&
+                        <button onClick={()=>handleOpenModal(cellValues.row)} className={"p-2 text-white orangeOrangeBackground hover:orangeOrangeBackground transition duration-500 rounded"}>
+                            Reçu
+                        </button>
+                    }
+
                 </div>
             )
         },

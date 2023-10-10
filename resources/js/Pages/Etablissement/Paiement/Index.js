@@ -16,6 +16,7 @@ import {useForm} from "@inertiajs/inertia-react";
 import axios from "axios";
 import {Inertia} from "@inertiajs/inertia";
 import {format} from "date-fns";
+import CloseIcon from "@mui/icons-material/Close";
 
 function Index({auth,error,paiements,success}) {
 
@@ -93,14 +94,25 @@ function Index({auth,error,paiements,success}) {
 
     ];
 
+    const [loading,setLoading] = useState(true)
+
+    useEffect(()=>{
+        setLoading(false)
+    },[])
+
     function handleSearch()
     {
+        setLoading(true)
+
+
         handleToggle()
         axios.post(route("etablissement.paiement.filter",auth.user.etablissement_admin.id),data)
             .then(({data}) => {
                 setPaiementsSt(data);
                 setFiltre(true)
                 setOpen(false)
+                setTimeout(()=>{console.log(1)},1000)
+                setLoading(false)
             })
 
 /*
@@ -171,6 +183,7 @@ function Index({auth,error,paiements,success}) {
                                 }}
                                 style={{width: '100%' }}>
                                 <DataGrid
+                                    loading={loading}
                                     components={{
                                         Toolbar:GridToolbar,
                                     }}

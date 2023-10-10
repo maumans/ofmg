@@ -179,6 +179,14 @@ function ResponsiveDrawer(props) {
                         <Collapse in={open==="gestionCursus"}>
                             <List component="div" disablePadding>
 
+                                <Link href={route("etablissement.classe.index",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="classe"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Classe"/>
+                                    </ListItemButton>
+                                </Link>
+
+                                <Divider component="li"/>
+
                                 <Link href={route("etablissement.inscription.create",props.auth.user.id)}>
                                     <ListItemButton sx={props.sousActive==="inscrire"?{color:"#e1c9bd",pl:4}:{pl:4}}>
                                         <ListItemText primary="Inscription" />
@@ -187,17 +195,25 @@ function ResponsiveDrawer(props) {
 
                                 <Divider component="li"/>
 
+                                <Link href={route("etablissement.reinscription.index",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="reinscripton"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Réinscription" />
+                                    </ListItemButton>
+                                </Link>
+
+                                <Divider component="li"/>
+
                                 <Link href={route("etablissement.inscription.index",props.auth.user.id)}>
-                                    <ListItemButton sx={props.sousActive==="listeInscripton"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                    <ListItemButton sx={props.sousActive==="listeInscription"?{color:"#e1c9bd",pl:4}:{pl:4}}>
                                         <ListItemText primary="Liste des apprenants" />
                                     </ListItemButton>
                                 </Link>
 
                                 <Divider component="li"/>
 
-                                <Link href={route("etablissement.classe.index",props.auth.user.id)}>
-                                    <ListItemButton sx={props.sousActive==="classe"?{color:"#e1c9bd",pl:4}:{pl:4}}>
-                                        <ListItemText primary="Classe"/>
+                                <Link href={route("etablissement.tuteur.index",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="tuteur"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Tuteur" />
                                     </ListItemButton>
                                 </Link>
                             </List>

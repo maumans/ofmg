@@ -40,63 +40,41 @@ class PaiementController extends Controller
      */
     public function search(Request $request,$userId)
     {
-        $matricule=$request->matricule;
-        $tuteurNumber=$request->tuteurNumber;
+        $searchText=$request->searchText;
 
-        $apprenants=null;
-        $tuteurApprenants=null;
-        $tuteur=null;
-        $apprenant=null;
-
-        if($request->classeId)
-        {
-            $classe=Classe::where("id",$request->classeId)->first();
-
-            $apprenants=$classe ? $classe->apprenants()->with("classe")->orderByDesc("created_at")->get() : null;
-        }
-        else if ($tuteurNumber)
-        {
-            $apprenant=null;
-
-            $tuteur=User::where("telephone",$tuteurNumber)->with(["paiementsTuteur"=>function($query){
-                $query->orderByDesc('created_at')->with("apprenant","typePaiement","modePaiement","tarif")->get();
-            },"tuteurApprenants"=>function($query){
-                $query->with(["classe.etablissement.anneeEnCours","tarifs.typePaiement","tarifs"=>function($query){
-                    $query->get();
-                }])->get();
-            }])->first();
-        }
-        else if($matricule)
+        if(Auth::user()->etablissementAdmin->anneeEnCours)
         {
 
-            $apprenant=Apprenant::where("matricule",$matricule)->first();
+            $anneeEnCours=Auth::user()->etablissementAdmin->anneeEnCours;
 
-            $etablissement=$apprenant ? $apprenant->classe->etablissement:null;
-
-            $anneeEnCours=$etablissement ? $etablissement->anneeScolaires->last():null;
-
-            $apprenant=$apprenant ? Apprenant::where("matricule",$matricule)->with(["tarifs"=>function($query){
-                $query->with("typePaiement")->get();
-            },"classe"=>function($query){
-                $query->with(["tarifs"=>function($query){
-                    $query->with("typePaiement")->get();
-                },"etablissement"]);
-            },
-                "paiements"=>function($query) use ($anneeEnCours,$apprenant){
-                    $query->whereHas("tarif",function ($query) use ($anneeEnCours,$apprenant){
-                        $query->where('annee_scolaire_id', $anneeEnCours->id);
-                    })->with("typePaiement","tarif")->get();
-
+            $apprenants = Apprenant::where(function ($query) use ($request){
+                if ($request->classeId)
+                {
+                    $query->where('classe_id',$request->classeId);
                 }
-            ,"tuteurs"])->first():$apprenant;
+            })->where(function ($query) use($searchText){
+                $query->where("matricule",'like',"%".$searchText."%")->orWhere("nom",'like',"%".$searchText."%")->orWhere("prenom",'like',"%".$searchText."%");
+            })->with(["tarifs"=>function($query){
+                    $query->with("typePaiement")->get();
+                },"classe"=>function($query){
+                    $query->with(["tarifs"=>function($query){
+                        $query->with("typePaiement")->get();
+                    },"etablissement"]);
+                },
+                    "paiements"=>function($query) use ($anneeEnCours){
+                        $query->whereHas("tarif",function ($query) use ($anneeEnCours){
+                            $query->where('annee_scolaire_id', $anneeEnCours->id);
+                        })->with("typePaiement","tarif")->get();
+
+                    }
+                    ,"tuteurs"]
+            )->get();
+
         }
 
-        $modePaiements=Mode_paiement::all();
-        $classes=Classe::where('etablissement_id',Auth::user()->etablissementAdmin->id)->with("apprenants")->get();
-
-
-        return ["apprenant"=>$apprenant,"matricule"=>$matricule,"modePaiements"=>$modePaiements,"classes"=>$classes,"apprenants"=>$apprenants,"tuteur"=>$tuteur];
+        return ["apprenants"=>$apprenants/*,"matricule"=>$matricule,"modePaiements"=>$modePaiements,"classes"=>$classes,"apprenant"=>$apprenant*/ /*,"tuteur"=>$tuteur*/];
     }
+
 
     public function filtre(Request $request)
     {
@@ -127,6 +105,39 @@ class PaiementController extends Controller
 
 
         return Inertia::render("Etablissement/Paiement/Create",["classes"=>$classes,"apprenants"=>$apprenants,"codeNumeros"=>$codeNumeros]);
+    }
+
+    public function tarif($etablissementId,$id)
+    {
+        $codeNumeros=Code_numero::all();
+
+        $apprenant=Apprenant::where("id",$id)->first();
+
+        $etablissement=$apprenant ? $apprenant->classe->etablissement:null;
+
+        $anneeEnCours=$etablissement ? $etablissement->anneeScolaires->last():null;
+
+        $apprenant=$apprenant ? Apprenant::where("id",$id)->with(["tarifs"=>function($query){
+            $query->with("typePaiement")->get();
+        },"classe"=>function($query){
+            $query->with(["tarifs"=>function($query){
+                $query->with("typePaiement")->get();
+            },"etablissement"]);
+        },
+            "paiements"=>function($query) use ($anneeEnCours,$apprenant){
+                $query->whereHas("tarif",function ($query) use ($anneeEnCours,$apprenant){
+                    $query->where('annee_scolaire_id', $anneeEnCours->id);
+                })->with("typePaiement","tarif")->get();
+
+            }
+            ,"tuteurs"])->first():$apprenant;
+
+
+        $modePaiements=Mode_paiement::all();
+
+        //dd($apprenant);
+
+        return Inertia::render("Etablissement/Paiement/Tarif",["modePaiements"=>$modePaiements,"apprenant"=>$apprenant,"codeNumeros"=>$codeNumeros]);
     }
 
     /**
@@ -236,7 +247,7 @@ class PaiementController extends Controller
 
             DB::commit();
 
-            return redirect()->route("etablissement.paiement.index",["etablissement"=>Auth::user()->etablissementAdmin->id])->with(["success"=>"Paiements effectués","montantTotal"=>$request->total]);
+            return redirect()->back()->with(["success"=>"Paiements effectués","montantTotal"=>$request->total]);
         }
         catch(Exception $e){
 

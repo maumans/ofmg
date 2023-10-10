@@ -7,6 +7,7 @@ use App\Models\Code_numero;
 use App\Models\Commune;
 use App\Models\Etablissement;
 use App\Models\Contrat;
+use App\Models\Fonction;
 use App\Models\Role;
 use App\Models\Type_etablissement;
 use App\Models\User;
@@ -112,6 +113,21 @@ class EtablissementController extends Controller
             DB::commit();
 
             $etablissements=Etablissement::with("ville","commune","typeEtablissement","admins")->orderByDesc('created_at')->get();
+
+            Fonction::create([
+                'libelle'=>'Directeur',
+                'etablissement_id'=>$etablissement->id,
+            ]);
+
+            Fonction::create([
+                'libelle'=>'Comptable',
+                'etablissement_id'=>$etablissement->id,
+            ]);
+
+            Fonction::create([
+                'libelle'=>'Enseignant',
+                'etablissement_id'=>$etablissement->id,
+            ]);
 
             return Inertia::render('Admin/Etablissement/Index',["etablissements"=>$etablissements])->with("success", "Etablissement créé avec succès");
 
