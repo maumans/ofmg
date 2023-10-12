@@ -20,6 +20,7 @@ class CreateInscriptionsTable extends Migration
             $table->foreignId("apprenant_id")->nullable()->constrained("apprenants")->cascadeOnDelete();
             $table->foreignId("niveau_id")->nullable()->constrained("niveaux");
             $table->foreignId("classe_id")->nullable()->constrained("classes");
+            $table->boolean('reinscription')->default(false);
             $table->boolean('status')->default(true);
             $table->timestamps();
         });

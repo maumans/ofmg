@@ -196,7 +196,7 @@ function ResponsiveDrawer(props) {
                                 <Divider component="li"/>
 
                                 <Link href={route("etablissement.reinscription.index",props.auth.user.id)}>
-                                    <ListItemButton sx={props.sousActive==="reinscripton"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                    <ListItemButton sx={props.sousActive==="reinscription"?{color:"#e1c9bd",pl:4}:{pl:4}}>
                                         <ListItemText primary="Réinscription" />
                                     </ListItemButton>
                                 </Link>

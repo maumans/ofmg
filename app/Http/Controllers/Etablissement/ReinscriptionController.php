@@ -31,34 +31,31 @@ class ReinscriptionController extends Controller
      */
     public function index()
     {
-        /*
-            $classes=Auth::user()->etablissementAdmin->classes()->with("tarifs",function ($query){
-                $query->whereRelation("typePaiement","concerne","APPRENANT")->with("typePaiement",)->get();
-            })->get();
-        */
+
+        $classe = Auth::user()->etablissementAdmin->classes()->orderBy("created_at")->first();
 
         $classes=Auth::user()->etablissementAdmin->classes()->with("tarifs",function ($query){
             $query->whereRelation("typePaiement","concerne","APPRENANT")->with("typePaiement",)->get();
         })->get();
 
-        $villes=Ville::all();
         $anneeEnCours=Auth::user()->etablissementAdmin->anneeScolaires->last();
-
-        $anneeScolaires=Auth::user()->etablissementAdmin->anneeScolaires()->orderByDesc('created_at')->get();
 
         $tarifs=Auth::user()->etablissementAdmin->tarifs()->where("annee_scolaire_id",$anneeEnCours->id)->with("typePaiement")->get();
 
-        $reinscriptions=Inscription::whereRelation('classe.etablissement',"etablissement_id",Auth::user()->etablissementAdmin->id)->with(["apprenant"=>function($query){
-            return $query->with("tarifs")->get();
-        },"classe"=>function($query){
+
+        $apprenants = Apprenant::where(function ($query) use ($classe){
+            if ($classe)
+            {
+                $query->whereRelation("classe",'id',$classe->id);
+            }
+
+        })->with(["tarifs","tuteurs","classe"=>function($query){
             return $query->with(["tarifs"=>function($query){
                 return $query->with("typePaiement")->get();
             }])->get();
-        },"anneeScolaire"])->orderByDesc('created_at')->get();
+        }])->orderByDesc('created_at')->get();
 
-        $tuteurs =User::whereRelation("roles","libelle","tuteur")->get("telephone");
-
-        return Inertia::render('Etablissement/Reinscription/Index',["classes"=>$classes,"villes"=>$villes,"tarifs"=>$tarifs,"anneeEnCours"=>$anneeEnCours,"inscriptions"=>$reinscriptions,"tuteurs"=>$tuteurs,"anneeScolaires"=>$anneeScolaires]);
+        return Inertia::render('Etablissement/Reinscription/Index',["classes"=>$classes,"classe"=>$classe,"tarifs"=>$tarifs,"apprenants"=>$apprenants]);
     }
 
     /**
@@ -92,101 +89,124 @@ class ReinscriptionController extends Controller
         return $tuteurs;
     }
 
-    public function searchInscription(Request $request,$userId)
+    public function searchApprenant(Request $request,$userId)
     {
         $classeId=$request->classeId;
-        $anneeScolaireId=$request->anneeScolaireId;
-        $matricule=$request->matricule;
 
-        if($matricule)
-        {
-            $reinscriptions =Inscription::whereRelation("classe.etablissement",'id',Auth::user()->etablissementAdmin->id)->whereRelation("apprenant",'matricule',$matricule)->with(["apprenant"=>function($query){
-                return $query->with("tarifs","tuteurs")->get();
-            },"classe"=>function($query){
+        $searchText=$request->searchText;
+
+        //dd($request->all());
+
+        $apprenants =Apprenant::where(function ($query) use ($classeId,$searchText){
+            if ($classeId)
+            {
+                $query->whereRelation("classe",'id',$classeId);
+            }
+
+            if ($searchText)
+            {
+                $query->where("matricule",'like','%'.$searchText.'%')->orWhere("nom",'like','%'.$searchText.'%')->orWhere("prenom",'like','%'.$searchText.'%');
+            }
+            })->with(["tarifs","tuteurs","classe"=>function($query){
                 return $query->with(["tarifs"=>function($query){
                     return $query->with("typePaiement")->get();
-                }])->get();
-            },"anneeScolaire"])->orderByDesc('created_at')->get();
+            }])->get();
+        }])->orderByDesc('created_at')->get();
 
-            if($classeId && $anneeScolaireId)
-            {
-                $reinscriptions =$reinscriptions->whereRelation("classe",'id',$classeId)->whereRelation("anneeScolaire",'id',$anneeScolaireId)->with(["apprenant"=>function($query){
-                    return $query->with("tarifs","tuteurs")->get();
-                },"classe"=>function($query){
-                    return $query->with(["tarifs"=>function($query){
-                        return $query->with("typePaiement")->get();
-                    }])->get();
-                },"anneeScolaire"])->get();
+        return $apprenants;
+    }
 
-            }
-            else {
-                if ($classeId) {
-                    $reinscriptions = $reinscriptions->whereRelation("classe", 'id', $classeId)->with(["apprenant" => function ($query) {
-                        return $query->with("tarifs", "tuteurs")->get();
-                    }, "classe" => function ($query) {
-                        return $query->with(["tarifs" => function ($query) {
-                            return $query->with("typePaiement")->get();
-                        }])->get();
-                    }, "anneeScolaire"])->get();
-                } else if ($anneeScolaireId) {
-                    $reinscriptions = $reinscriptions->whereRelation("anneeScolaire", 'id', $anneeScolaireId)->with(["apprenant" => function ($query) {
-                        return $query->with("tarifs", "tuteurs")->get();
-                    }, "classe" => function ($query) {
-                        return $query->with(["tarifs" => function ($query) {
-                            return $query->with("typePaiement")->get();
-                        }])->get();
-                    }, "anneeScolaire"])->orderByDesc('created_at')->get();
-                }
-            }
-        }
-        else
+
+    public function validation(Request $request,$userId)
+    {
+        $apprenants=collect();
+
+        $classe=Classe::where("id",$request->classe['id'])->with(['tarifs'=>function ($query){
+            $query->where("status",true)->with('typePaiement');
+        }])->first();
+
+        $anneeEnCours=$classe->etablissement->anneeEnCours;
+
+        foreach ($request->apprenants as $id)
         {
-            if($classeId && $anneeScolaireId)
+            $apprenant=Apprenant::where('id',$id)->with("classe")->first();
+
+            if ($apprenant)
             {
-                $reinscriptions =Inscription::whereRelation("classe",'id',$classeId)->whereRelation("anneeScolaire",'id',$anneeScolaireId)->with(["apprenant"=>function($query){
-                    return $query->with("tarifs","tuteurs")->get();
-                },"classe"=>function($query){
-                    return $query->with(["tarifs"=>function($query){
-                        return $query->with("typePaiement")->get();
-                    }])->get();
-                },"anneeScolaire"])->orderByDesc('created_at')->get();
-
+                $apprenants->push($apprenant);
             }
-            else{
-                if($classeId)
-                {
-                    $reinscriptions = Inscription::whereRelation("classe",'id',$classeId)->with(["apprenant"=>function($query){
-                        return $query->with("tarifs","tuteurs")->get();
-                    },"classe"=>function($query){
-                        return $query->with(["tarifs"=>function($query){
-                            return $query->with("typePaiement")->get();
-                        }])->get();
-                    },"anneeScolaire"])->orderByDesc('created_at')->get();
-                }
-                else if($anneeScolaireId)
-                {
-                    $reinscriptions = Inscription::whereRelation("anneeScolaire",'id',$anneeScolaireId)->with(["apprenant"=>function($query){
-                        return $query->with("tarifs","tuteurs")->get();
-                    },"classe"=>function($query){
-                        return $query->with(["tarifs"=>function($query){
-                            return $query->with("typePaiement")->get();
-                        }])->get();
-                    },"anneeScolaire"])->orderByDesc('created_at')->get();
 
-                }
-                else
-                {
-                    $reinscriptions=null;
-                }
-            }
         }
 
+        return Inertia::render('Etablissement/Reinscription/Validation',["classe"=>$classe,"anneeEnCours"=>$anneeEnCours,"apprenants"=>$apprenants]);
+
+    }
+
+    public function validationSubmit(Request $request,$userId)
+    {
+
+        DB::beginTransaction();
+
+        try{
+
+            $anneeEnCours = Auth::user()->etablissementAdmin->anneeEnCours;
+
+            foreach ($request->tarifs as $key => $value)
+            {
+                $apprenantId = explode("-",$key)[0];
+                $tarifId = explode("-",$key)[1];
+                $classeId=$request->classe['id'];
 
 
+                $tarif=Tarif::where('id',$tarifId)->where('status',true)->first();
+
+                $inscription=Inscription::create([
+                    "montant" =>$tarif->montant,
+                    "apprenant_id" =>$apprenantId,
+                    "classe_id" =>$classeId,
+                    "annee_scolaire_id" =>$anneeEnCours->id,
+                    "reinscription"=>true
+                ]);
+
+                $apprenant=Apprenant::where('id',$apprenantId)->first();
+
+                $apprenant->classe_id=$classeId;
+
+                $apprenant->save();
+
+                if($value)
+                {
+                    //$tarif=Tarif::find($key);
+
+                    $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin)->roundMonth();
 
 
+                    $anneeScolaire=$tarif->anneeScolaire;
 
-        return $reinscriptions;
+                    $apprenant->tarifs()->syncWithoutDetaching([$tarifId=>["resteApayer"=>$tarif->montant,"nombreMois"=>$intervalle->count(),"annee_scolaire_id"=>$anneeScolaire->id]]);
+
+                    foreach($intervalle as $date)
+                    {
+                        $moisPaye=Mois_Paye::create([
+                            "montant"=>0
+                        ]);
+
+                        $moisPaye->mois()->associate(Mois::where("position",$date->month)->first())->save();
+                        $moisPaye->apprenantTarif()->associate(Apprenant_tarif::where("tarif_id",$tarif->id)->where("apprenant_id",$apprenant->id)->first())->save();
+
+                    }
+                }
+            }
+
+            DB::commit();
+            return redirect()->back()->with("success","Réinscription effectuée avec succès");
+        }
+        catch(Exception $e)
+        {
+            echo($e);
+            DB::rollback();
+        }
+
     }
 
     /**
@@ -197,6 +217,8 @@ class ReinscriptionController extends Controller
      */
     public function store(Request $request)
     {
+
+        dd("Store");
 
         $apprenant=Apprenant::where('matricule', $request->matricule)->first();
 
@@ -355,6 +377,7 @@ class ReinscriptionController extends Controller
             "date_naissance"=>$request->dataEdit["dateNaissance"],
             "lieu_naissance"=>$request->dataEdit["lieuNaissance"],
         ]);
+
         $inscription->save();
 
         if($request->dataEdit["tarifs"])

@@ -63,7 +63,7 @@ Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","pa
     Route::get("etablissement/anneeScolaire/cloture",[\App\Http\Controllers\Etablissement\AnneeScolaireController::class,"cloture"])->name("etablissement.anneeScolaire.cloture")->middleware("anneeScolaireIsDefined");
 
     Route::resource('etablissement.inscription',\App\Http\Controllers\Etablissement\InscriptionController::class)->middleware("anneeScolaireIsDefined");
-    Route::resource('etablissement.reinscription',\App\Http\Controllers\Etablissement\ReinscriptionController::class)->middleware("anneeScolaireIsDefined");
+    Route::resource('etablissement.reinscription',\App\Http\Controllers\Etablissement\ReinscriptionController::class)->except('create','store')->middleware("anneeScolaireIsDefined");
     Route::resource('etablissement.tuteur',\App\Http\Controllers\Etablissement\TuteurController::class)->middleware("anneeScolaireIsDefined");
     Route::post("etablissement/{userId}/inscription/import",[\App\Http\Controllers\Etablissement\InscriptionController::class,"import"])->name("etablissement.inscription.import")->middleware("anneeScolaireIsDefined");
 
@@ -99,9 +99,16 @@ Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","pa
 
     Route::get("etablissement/{userId}/inscription/search/tuteur/{search}",[\App\Http\Controllers\Etablissement\InscriptionController::class,"search"])->name("etablissement.inscription.tuteur.search")->middleware("anneeScolaireIsDefined");
     Route::get("etablissement/{userId}/contrat/search/personnels/{search}",[\App\Http\Controllers\Etablissement\ContratController::class,"search"])->name("etablissement.contrat.personnel.search")->middleware("anneeScolaireIsDefined");
+
     Route::resource('etablissement.apprenant',\App\Http\Controllers\Etablissement\ApprenantController::class);
 
     Route::post("etablissement/{userId}/inscription/searchInscription",[\App\Http\Controllers\Etablissement\InscriptionController::class,"searchInscription"])->name("etablissement.inscription.searchInscription");
+    Route::post("etablissement/{userId}/reinscription/searchApprenant",[\App\Http\Controllers\Etablissement\ReinscriptionController::class,"searchApprenant"])->name("etablissement.reinscription.searchApprenant");
+
+    Route::post("etablissement/{userId}/reinscription/validation",[\App\Http\Controllers\Etablissement\ReinscriptionController::class,"validation"])->name("etablissement.reinscription.validation");
+
+    Route::post("etablissement/{userId}/reinscription/validationSubmit",[\App\Http\Controllers\Etablissement\ReinscriptionController::class,"validationSubmit"])->name("etablissement.reinscription.validationSubmit");
+
 });
 
 Route::middleware(['auth', 'verified',"userIsTuteur","firstConnexion"])->group(function (){
