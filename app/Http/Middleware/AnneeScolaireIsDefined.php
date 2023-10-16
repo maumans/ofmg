@@ -19,7 +19,7 @@ class AnneeScolaireIsDefined
     {
         if($request->user() && !$request->user()->etablissementAdmin->anneeScolaireIsDefined())
         {
-            return Redirect::route("etablissement.index",["id"=>$request->user()->id])->with("error","Veuillez definir l'année scolaire");
+            return Redirect::route("etablissement.anneeScolaire.index",["etablissement"=>$request->user()->id])->with("error","Veuillez definir l'année scolaire");
         }
         return $next($request);
     }

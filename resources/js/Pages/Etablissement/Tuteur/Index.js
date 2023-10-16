@@ -74,21 +74,6 @@ function Index(props) {
             )
         },
 
-        { field: 'role(s)', headerName: 'ROLES',flex:1,minWidth:200,
-            renderCell:(user)=>(
-                <div>
-                    {user.row.roles.map((role)=> role.libelle+" ")}
-                </div>
-            )
-        },
-        { field: 'Organisation', headerName: 'ORGANISATION',flex:1,minWidth:300,
-            renderCell:(user)=>(
-                <div>
-                    {user.row.roles.find((role)=> role.libelle.toLowerCase()==="admin")?"Addvalis":user.row.roles.find((role)=> role.libelle.toLowerCase()==="ofmg")?"Orange":user.row.roles.find((role)=> role.libelle.toLowerCase()==="etablissement")?user.row.etablissement?.nom:user.row.roles.find((role)=> role.libelle.toLowerCase()==="tuteur")?"Tuteur":user.row.roles.find((role)=> role.libelle.toLowerCase()==="personnel")?user.row.etablissement?.nom:""}
-                </div>
-            )
-        },
-
         { field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues,i)=>(
                 <div key={i} className={"space-x-2"}>
@@ -111,7 +96,7 @@ function Index(props) {
     ];
 
     function handleDelete(id){
-        confirm("Voulez-vous supprimer cet utilisateur") && Inertia.delete(route("admin.user.destroy",[props.auth.user.id,id]),{preserveScroll:true})
+        confirm("Voulez-vous bloquer ce tuteur") && Inertia.delete(route("etablissement.tuteur.destroy",[props.auth.user.id,id]),{preserveScroll:true})
     }
 
     function handleEdit(id){

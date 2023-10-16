@@ -1170,11 +1170,6 @@ select{
 }
 
 
-.ml-auto{
-  margin-left: auto;
-}
-
-
 .block{
   display: block;
 }
@@ -1408,12 +1403,6 @@ select{
 
 .max-w-7xl{
   max-width: 80rem;
-}
-
-
-.max-w-fit{
-  max-width: -moz-fit-content;
-  max-width: fit-content;
 }
 
 
@@ -1870,12 +1859,6 @@ select{
 }
 
 
-.border-blue-500{
-  --tw-border-opacity: 1;
-  border-color: rgb(59 130 246 / var(--tw-border-opacity));
-}
-
-
 .border-b-white{
   --tw-border-opacity: 1;
   border-bottom-color: rgb(255 255 255 / var(--tw-border-opacity));
@@ -1987,12 +1970,6 @@ select{
 .bg-green-700{
   --tw-bg-opacity: 1;
   background-color: rgb(21 128 61 / var(--tw-bg-opacity));
-}
-
-
-.bg-blue-500{
-  --tw-bg-opacity: 1;
-  background-color: rgb(59 130 246 / var(--tw-bg-opacity));
 }
 
 
@@ -2455,15 +2432,15 @@ select{
 }
 
 
-.text-blue-500{
-  --tw-text-opacity: 1;
-  color: rgb(59 130 246 / var(--tw-text-opacity));
-}
-
-
 .text-blue-600{
   --tw-text-opacity: 1;
   color: rgb(37 99 235 / var(--tw-text-opacity));
+}
+
+
+.text-blue-500{
+  --tw-text-opacity: 1;
+  color: rgb(59 130 246 / var(--tw-text-opacity));
 }
 
 
@@ -2615,6 +2592,15 @@ select{
 {
     --tw-ring-color: transparent;
 }
+
+
+/*.MuiSelect-select .MuiSelect-outlined .MuiInputBase-input .MuiOutlinedInput-input .MuiInputBase-root:focus
+{
+    --tw-ring-color: transparent;
+    border: transparent !important;
+    outline: transparent !important;
+    box-shadow:none !important;
+}*/
 
 
 .orangeOrangeColor

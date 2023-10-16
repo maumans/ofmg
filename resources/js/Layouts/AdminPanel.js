@@ -483,7 +483,7 @@ function ResponsiveDrawer(props) {
                 </Link>
                 <Divider  component="li" />
                 <Link href={route("admin.departement.index",props.auth.user.id)}>
-                    <ListItemButton sx={props.active==="departement" ?{backgroundColor:"#bc5610",color:"white"}:null}>
+                    <ListItemButton sx={props.active==="département" ?{backgroundColor:"#bc5610",color:"white"}:null}>
                         <ListItemText primary="Départements" />
                     </ListItemButton>
                 </Link>

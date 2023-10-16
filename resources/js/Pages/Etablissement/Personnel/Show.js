@@ -93,7 +93,7 @@ function Show({auth,error,personnel,success,mois}) {
                                     sx={{backgroundColor:"#f8f1eb"}}
                                 >
                                     {
-                                        cf.fonction.libelle +" "+(cf.fonction.libelle.toLowerCase() ==="enseignant" ? ("en cours de "+cf.cours.matiere.libelle.toUpperCase() +" ("+ cf.cours.classe.libelle.toUpperCase() +")"):cf.fonction.libelle.toLowerCase() ==="comptable"?" de niveau "+personnel.niveauValidation:"")
+                                        cf.fonction.libelle +" "+(cf.fonction.libelle.toLowerCase() ==="enseignant" ? ("en cours de "+cf.cours.matiere.libelle.toUpperCase() +" ("+ cf.cours.classe.libelle.toUpperCase() +")"):cf.fonction.libelle.toLowerCase() ==="comptable"?" de niveau "+(personnel.niveauValidation ? personnel.niveauValidation:0):"")
                                     }
                                 </AccordionSummary>
 

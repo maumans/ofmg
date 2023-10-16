@@ -24,10 +24,17 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Illuminate\Validation\Rules;
+use Inertia\Middleware;
 use Rap2hpoutre\FastExcel\Facades\FastExcel;
 
 class InscriptionController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('anneeScolaireIsDefined')->only('create');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -72,6 +79,7 @@ class InscriptionController extends Controller
      */
     public function create()
     {
+
         $classes=Auth::user()->etablissementAdmin->classes()->with(["tarifs"=>function ($query){
             $query->whereRelation("typePaiement","concerne","APPRENANT")->with("typePaiement",)->get();
         },"etablissement.typeEtablissement"])->get();
@@ -233,6 +241,7 @@ class InscriptionController extends Controller
                "typePaiement.libelle"=>["required",Rule::unique("tarifs")->where(function($query) use ($request) {
                    return $query->where("etablissement_id",Auth::user()->etablissementAdmin->id)->where("typePaiement_id",$request->typePaiement["id"])->where("classe_id",$request->classe["id"]);
                })],
+               'reinscription'=>$request->type=='reinscription' ? true : false,
            ]);
 
            $apprenant=Apprenant::create([
@@ -246,6 +255,7 @@ class InscriptionController extends Controller
 
            foreach($request->tuteursAdd as $key =>$tuteur)
            {
+               //dd($request->tuteursAdd,$key,$tuteur);
                if($tuteur["id"]==null)
                {
                    $request->validate([
@@ -268,7 +278,7 @@ class InscriptionController extends Controller
 
                //dd($request->tuteursAdd,$tuteur);
 
-               $apprenant->tuteurs()->syncWithoutDetaching($tuteur->id);
+               $apprenant->tuteurs()->syncWithoutDetaching($tuteur['id']);
 
            }
 
@@ -289,16 +299,20 @@ class InscriptionController extends Controller
 
                    $apprenant->tarifs()->syncWithoutDetaching([$key=>["resteApayer"=>$tarif->montant,"nombreMois"=>$intervalle->count(),"annee_scolaire_id"=>$anneeScolaire->id]]);
 
-                   foreach($intervalle as $date)
+                   if (strtolower($tarif->frequence) == strtolower('MENSUELLE'))
                    {
-                       $moisPaye=Mois_Paye::create([
-                           "montant"=>0
-                       ]);
+                       foreach($intervalle as $date)
+                       {
+                           $moisPaye=Mois_Paye::create([
+                               "montant"=>0
+                           ]);
 
-                       $moisPaye->mois()->associate(Mois::where("position",$date->month)->first())->save();
-                       $moisPaye->apprenantTarif()->associate(Apprenant_tarif::where("tarif_id",$tarif->id)->where("apprenant_id",$apprenant->id)->first())->save();
+                           $moisPaye->mois()->associate(Mois::where("position",$date->month)->first())->save();
+                           $moisPaye->apprenantTarif()->associate(Apprenant_tarif::where("tarif_id",$tarif->id)->where("apprenant_id",$apprenant->id)->first())->save();
 
+                       }
                    }
+
                }
            }
 

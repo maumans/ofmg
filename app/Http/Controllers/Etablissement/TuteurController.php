@@ -120,10 +120,11 @@ class TuteurController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy($etablissementId,User $user)
+    public function destroy($etablissementId,User $tuteur)
     {
-        $user->status=$user->status==="Actif"?"Inactif":"Actif";
-        $user->save();
+
+        $tuteur->status = $tuteur->status==="Actif"?"Inactif":"Actif";
+        $tuteur->save();
 
         return redirect()->back();
     }

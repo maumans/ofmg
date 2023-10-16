@@ -3,6 +3,14 @@
     --tw-ring-color: transparent;
 }
 
+/*.MuiSelect-select .MuiSelect-outlined .MuiInputBase-input .MuiOutlinedInput-input .MuiInputBase-root:focus
+{
+    --tw-ring-color: transparent;
+    border: transparent !important;
+    outline: transparent !important;
+    box-shadow:none !important;
+}*/
+
 .orangeOrangeColor
 {
     color: #FF7900

@@ -177,11 +177,6 @@ function Index(props) {
         handleSearch()
     },[data.searchText,data.classeSearch])
 
-    useEffect(()=>{
-     console.log(apprenantsSelected)
-    })
-
-
     useEffect(() => {
         setData("tarifs",tarifs)
     },[tarifs])

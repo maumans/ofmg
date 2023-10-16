@@ -45,10 +45,13 @@ class PaiementController extends Controller
 
         foreach ($tuteur->tuteurApprenants as $ta)
         {
-            $etablissements->push($ta->classe->etablissement);
+            if(!$etablissements->contains(function($et) use ($ta){
+                return $et->id == $ta->classe->etablissement->id;
+            }))
+            {
+                $etablissements->push($ta->classe->etablissement()->with('anneeEnCours')->first());
+            }
         }
-
-        //dd($etablissements);
 
         $tuteur=User::where('id',Auth::user()->id)->with(["paiementsTuteur"=>function($query){
             $query->orderByDesc('created_at')->with(["apprenant","typePaiement","modePaiement","tarif"=>function($query){
@@ -56,7 +59,7 @@ class PaiementController extends Controller
             },"etablissement",'paiementGlobal'])->get();
         },"tuteurApprenants"=>function($query){
             $query->whereHas("classe.etablissement.anneeEnCours")->with(["classe.etablissement.anneeEnCours","tarifs"=>function($query){
-                $query->with('typePaiement');
+                $query->where('status',true)->with('typePaiement');
             }])->get();
         }])->first();
 

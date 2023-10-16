@@ -48,10 +48,10 @@ class TarifController extends Controller
     {
         $etablissement=Auth::user()->etablissementAdmin;
 
-        $tarifs=$etablissement->tarifs()->with("classe","typePaiement")->orderByDesc('created_at')->get();
+        $tarifs=$etablissement->tarifs()->where('annee_scolaire_id',Auth::user()->etablissementAdmin->anneeEnCours->id)->with("classe","typePaiement")->orderByDesc('created_at')->get();
 
         $typePaiements=Type_paiement::with(["tarifs"=>function($query){
-            $query->where('etablissement_id',Auth::user()->etablissementAdmin->id)->get();
+            $query->where('annee_scolaire_id',Auth::user()->etablissementAdmin->anneeEnCours->id)->where('etablissement_id',Auth::user()->etablissementAdmin->id)->get();
         }])->get();
 
         $classes=$etablissement->classes()->with("niveau")->orderByDesc('niveau_id')->get();
@@ -101,11 +101,13 @@ class TarifController extends Controller
                 $tarif->etablissement()->associate(Auth::user()->etablissementAdmin)->save();
 
 
+
                 $tarif->anneeScolaire()->associate(Auth::user()->etablissementAdmin->anneeEnCours)->save();
 
                 $tarif->typePaiement()->associate(Type_paiement::find($request->typePaiement["id"]))->save();
 
                 $classe && $tarif->classe()->associate(Classe::find($classe["id"]))->save();
+
             }
 
             DB::commit();

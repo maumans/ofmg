@@ -206,15 +206,17 @@ class PaiementController extends Controller
                 //dd($payeParTarif,$sommeMensuelle,$tarif->montant);
 
 
-                foreach($intervalle as $date)
+                if (strtolower($tarif->frequence) == strtolower('MENSUELLE'))
                 {
+                    foreach($intervalle as $date)
+                    {
 
 
-                    $moisId=Mois::where("position",$date->month)->first()->id;
+                        $moisId=Mois::where("position",$date->month)->first()->id;
 
 
 
-                    $moisPaye=Mois_Paye::where("apprenant_tarif_id",$tarif->pivot->id)->where("mois_id",$moisId)->first();
+                        $moisPaye=Mois_Paye::where("apprenant_tarif_id",$tarif->pivot->id)->where("mois_id",$moisId)->first();
 
 
                         if($repartition>=$sommeMensuelle)
@@ -241,6 +243,7 @@ class PaiementController extends Controller
                             }
                         }
 
+                    }
                 }
 
             }

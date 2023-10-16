@@ -11,10 +11,10 @@ import {
     Autocomplete, Avatar, Checkbox, CircularProgress, Dialog, DialogContent,
     FormControl,
     FormControlLabel,
-    FormGroup, InputAdornment,
+    FormGroup, FormLabel, InputAdornment,
     InputLabel, ListItem, ListItemAvatar, ListItemButton, ListItemText,
     MenuItem, Modal,
-    Pagination,
+    Pagination, Radio, RadioGroup,
     Select,
     TextField
 } from "@mui/material";
@@ -70,6 +70,7 @@ function Create(props) {
         tuteurs:"",
         tuteursSearch:[],
         tuteursAdd:[],
+        type:"",
 
     });
 
@@ -88,6 +89,10 @@ function Create(props) {
         titre:"",
     })
 
+    const handleChangeRadio = (event) => {
+        setData('type',event.target.value)
+    };
+
     const [checked, setChecked] = useState([]);
 
     const handleToggle = (value) => () => {
@@ -103,9 +108,7 @@ function Create(props) {
         setChecked(newChecked);
     };
 
-    useEffect(() => {
-        data.classe && data.classe?.tarifs?.map(tarif => tarif.type_paiement.libelle==="INSCRIPTION" && setData("montant",tarif.montant))
-    },[data.classe])
+
 
     useEffect(() => {
         setData("tuteursSearch",checked);
@@ -270,14 +273,36 @@ function Create(props) {
         setInscriptions(props.inscriptions);
     },[props.inscriptions]);
 
+    /*useEffect(() => {
+        data.classe && data.classe?.tarifs?.map(tarif => {
+            if(data.type === 'inscription')
+            {
+                tarif.type_paiement.libelle==="INSCRIPTION" && setData("montant",tarif.montant)
+            }
+            else if(data.type==='reinscription')
+            {
+                tarif.type_paiement.libelle==="REINSCRIPTION" && setData("montant",tarif.montant)
+
+            }
+        })
+    },[data.classe])*/
+
     useEffect(() => {
         data.classe?.tarifs?.length >0 ?
-            data.classe.tarifs.map((tarif)=>(
-                tarif.type_paiement.libelle.toLowerCase()==="INSCRIPTION".toLowerCase() &&
-                setData("montant",tarif.montant)
-            ))
-            :setData("montant",null)
-    },[data.classe])
+            data.classe.tarifs.map((tarif)=> {
+
+                if (data.type === 'inscription') {
+                    tarif.type_paiement.libelle.toLowerCase() === "INSCRIPTION".toLowerCase() &&
+                    setData("montant", tarif.montant)
+                } else if (data.type === 'reinscription') {
+                    (tarif.type_paiement.libelle.toLowerCase() === "REINSCRIPTION".toLowerCase() || tarif.type_paiement.libelle.toLowerCase() === "Réinscription".toLowerCase()) &&
+                    setData("montant", tarif.montant)
+                }
+            }
+        )
+        :setData("montant",null)
+
+    },[data.classe,data.type])
 
     function handleChange (event){
         setTarifs(tarifs=>({
@@ -326,12 +351,19 @@ function Create(props) {
 
             let list={}
             data.classe.tarifs.map((tarif)=> {
-                list = {...list, [tarif.id]: tarif.obligatoire}
+
+                if(!(data.type === 'reinscription' && tarif.type_paiement.libelle.toLowerCase() === "INSCRIPTION".toLowerCase())
+                    &&
+                    !(data.type === 'inscription' && (tarif.type_paiement.libelle.toLowerCase() === "REINSCRIPTION".toLowerCase() || tarif.type_paiement.libelle.toLowerCase() === "Réinscription".toLowerCase()))
+                )
+                {
+                    list = {...list, [tarif.id]: tarif.obligatoire}
+                }
             })
             setTarifs(list)
         }
 
-    },[data.classe])
+    },[data.classe,data.type])
 
 
 
@@ -351,6 +383,23 @@ function Create(props) {
                     <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5"}>
 
                         <div className={"w-full border p-5 rounded space-y-5"} style={{maxWidth: 1000}}>
+
+                            <div className={"border p-2"}>
+                                <FormControl>
+                                    <FormLabel id="demo-row-radio-buttons-group-label">Type</FormLabel>
+                                    <RadioGroup
+                                        row
+                                        aria-labelledby="demo-row-radio-buttons-group-label"
+                                        name="row-radio-buttons-group"
+                                        value={data.type}
+                                        onChange={handleChangeRadio}
+                                    >
+                                        <FormControlLabel value="inscription" control={<Radio required />} label="Inscription" />
+                                        <FormControlLabel value="reinscription" control={<Radio required />} label="Réinscription" />
+                                    </RadioGroup>
+                                </FormControl>
+                            </div>
+
                             <div className={"space-y-5 p-2 border"}>
                                 <div className={"text-lg font-bold"}>
                                     Infos de {props.anneeEnCours?.etablissement.type_etablissement.libelle.toLowerCase() ==="école"?"l'élève":"l'etudiant"}
@@ -406,6 +455,51 @@ function Create(props) {
                                     </div>
                                 </div>
                             </div>
+
+                            {
+                                data.classe &&
+                                <div className={"border p-5 space-y-5"}>
+                                    <div className={"text-lg font-bold"}>
+                                        Les type de frais
+                                    </div>
+                                    <div className={"flex flex-wrap"}>
+                                        {
+                                            data.classe?.tarifs.map((tarif)=>(
+                                             (!(data.type === 'reinscription' && tarif.type_paiement.libelle.toLowerCase() === "INSCRIPTION".toLowerCase())
+                                                &&
+                                                 !(data.type === 'inscription' && (tarif.type_paiement.libelle.toLowerCase() === "REINSCRIPTION".toLowerCase() || tarif.type_paiement.libelle.toLowerCase() === "Réinscription".toLowerCase()))
+                                             ) &&
+
+                                                <div key={tarif.id} className={"mx-5"}>
+                                                    <FormControlLabel  control={<Checkbox disabled={tarif.obligatoire?true:false} name={tarif.id+""} defaultChecked={tarif.obligatoire?true:false} onChange={handleChange} />} label={<div>{tarif.type_paiement.libelle} <span className={"p-1 rounded orangeOrangeBackground text-white"}>{formatNumber(tarif.montant)} FG/AN</span></div>} />
+                                                </div>
+
+                                                )
+
+                                            /*{
+
+                                                if (data.type === 'inscription') {
+                                                return (
+                                                    <div key={tarif.id} className={"mx-5"}>
+                                                        <FormControlLabel  control={<Checkbox disabled={tarif.obligatoire?true:false} name={tarif.id+""} defaultChecked={tarif.obligatoire?true:false} onChange={handleChange} />} label={<div>{tarif.type_paiement.libelle} <span className={"p-1 rounded orangeOrangeBackground text-white"}>{formatNumber(tarif.montant)} FG/AN</span></div>} />
+                                                    </div>
+                                                )
+                                                } else if (data.type === 'reinscription') {
+                                                    return <div key={tarif.id} className={"mx-5"}>
+                                                            <FormControlLabel  control={<Checkbox disabled={tarif.obligatoire?true:false} name={tarif.id+""} defaultChecked={tarif.obligatoire?true:false} onChange={handleChange} />} label={<div>{tarif.type_paiement.libelle} <span className={"p-1 rounded orangeOrangeBackground text-white"}>{formatNumber(tarif.montant)} FG/AN</span></div>} />
+                                                        </div>
+                                                }
+                                                else
+                                                {
+                                                    return null
+                                                }
+                                            }*/
+
+                                            )
+                                        }
+                                    </div>
+                                </div>
+                            }
 
                             <div className={"border p-2"}>
                                 <div className={"text-lg font-bold"}>
@@ -548,28 +642,10 @@ function Create(props) {
                             </div>
 
 
-
                             {
-                                data.classe &&
-                                <div className={"border p-5 space-y-5"}>
-                                    <div className={"text-lg font-bold"}>
-                                        Les type de frais
-                                    </div>
-                                    <div className={"flex flex-wrap"}>
-                                        {
-                                            data.classe?.tarifs.map((tarif)=>(
-                                            <div key={tarif.id} className={"mx-5"}>
-                                                <FormControlLabel control={<Checkbox disabled={tarif.obligatoire?true:false} name={tarif.id+""} defaultChecked={tarif.obligatoire?true:false} onChange={handleChange} />} label={<div>{tarif.type_paiement.libelle} <span className={"p-1 rounded orangeOrangeBackground text-white"}>{formatNumber(tarif.montant)} FG/AN</span></div>} />
-                                            </div>
-                                            ))
-                                        }
-                                    </div>
-                                </div>
-                            }
-                            {
-                                data.montant &&
+                                (data.montant && data.type) &&
                                 <div className={"my-5 p-2 font-bold"} style={{width:"fit-content"}}>
-                                    Montant de l'inscription:
+                                    Montant de { data.type ==='inscription' ?"l'inscription:": data.type ==='reinscription' && "la réinscription:"}
                                     <span className={"my-5 p-2 text-white  orangeOrangeBackground font-bold"}>{formatNumber(data.montant)} FG</span>
                                 </div>
                             }

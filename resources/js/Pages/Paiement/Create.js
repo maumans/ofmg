@@ -366,13 +366,13 @@ function Create({auth,etablissement,apprenant,matricule,code,nbrMois,modePaiemen
                                                                         {
                                                                             t?.frequence &&
                                                                             <div>
-                                                                                <span className={"font-bold text-lg"}>Frequence de paiement: </span> <span> {t.frequence} </span>
+                                                                                <span className={"font-bold text-lg"}>Fréquence de paiement: </span> <span> {t.frequence} </span>
                                                                             </div>
                                                                         }
                                                                         {
                                                                             t?.echeance &&
                                                                             <div>
-                                                                                <span className={"font-bold"}>Echeance: </span> <span>Le {t.echeance} de chaque mois</span>
+                                                                                <span className={"font-bold"}>Echéance: </span> <span>Le {t.echeance} de chaque mois</span>
                                                                             </div>
                                                                         }
 
@@ -415,8 +415,8 @@ function Create({auth,etablissement,apprenant,matricule,code,nbrMois,modePaiemen
                                                         }
                                                     </div>
                                                     :
-                                                    <div className={"text-red-600 text-xl"}>
-                                                        Aucun tarif disponible
+                                                    <div className={"text-blue-600 text-xl md:col-span-3"}>
+                                                        Aucun tarif disponible pour cet apprenant veuillez contacter l'etablissement pour plus d'informations!
                                                     </div>
                                             )
                                         }
@@ -424,7 +424,7 @@ function Create({auth,etablissement,apprenant,matricule,code,nbrMois,modePaiemen
                                         {
                                             error &&
 
-                                            <div className={"text-red-600 text-xl"}>
+                                            <div className={"text-red-600 text-xl md:col-span-3"}>
                                                 {error}
                                             </div>
                                         }

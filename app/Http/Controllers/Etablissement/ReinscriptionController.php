@@ -151,52 +151,77 @@ class ReinscriptionController extends Controller
 
             $anneeEnCours = Auth::user()->etablissementAdmin->anneeEnCours;
 
-            foreach ($request->tarifs as $key => $value)
+            if($request->tarifs)
             {
-                $apprenantId = explode("-",$key)[0];
-                $tarifId = explode("-",$key)[1];
-                $classeId=$request->classe['id'];
+                $verif=true;
 
-
-                $tarif=Tarif::where('id',$tarifId)->where('status',true)->first();
-
-                $inscription=Inscription::create([
-                    "montant" =>$tarif->montant,
-                    "apprenant_id" =>$apprenantId,
-                    "classe_id" =>$classeId,
-                    "annee_scolaire_id" =>$anneeEnCours->id,
-                    "reinscription"=>true
-                ]);
-
-                $apprenant=Apprenant::where('id',$apprenantId)->first();
-
-                $apprenant->classe_id=$classeId;
-
-                $apprenant->save();
-
-                if($value)
+                foreach ($request->tarifs as $key => $value)
                 {
-                    //$tarif=Tarif::find($key);
+                    $apprenantId = explode("-",$key)[0];
+                    $tarifId = explode("-",$key)[1];
+                    $classeId=$request->classe['id'];
 
-                    $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin)->roundMonth();
 
+                    $tarif=Tarif::where('id',$tarifId)->where('status',true)->first();
 
-                    $anneeScolaire=$tarif->anneeScolaire;
-
-                    $apprenant->tarifs()->syncWithoutDetaching([$tarifId=>["resteApayer"=>$tarif->montant,"nombreMois"=>$intervalle->count(),"annee_scolaire_id"=>$anneeScolaire->id]]);
-
-                    foreach($intervalle as $date)
+                    if(strtolower($tarif->typePaiement->libelle) == strtolower('reinscription') || strtolower($tarif->typePaiement->libelle) == strtolower('réinscription'))
                     {
-                        $moisPaye=Mois_Paye::create([
-                            "montant"=>0
-                        ]);
+                        $verif=false;
+                    }
 
-                        $moisPaye->mois()->associate(Mois::where("position",$date->month)->first())->save();
-                        $moisPaye->apprenantTarif()->associate(Apprenant_tarif::where("tarif_id",$tarif->id)->where("apprenant_id",$apprenant->id)->first())->save();
 
+                    $inscription=Inscription::create([
+                        "montant" =>$tarif->montant,
+                        "apprenant_id" =>$apprenantId,
+                        "classe_id" =>$classeId,
+                        "annee_scolaire_id" =>$anneeEnCours->id,
+                        "reinscription"=>true
+                    ]);
+
+
+                    $apprenant=Apprenant::where('id',$apprenantId)->first();
+
+                    $apprenant->classe_id=$classeId;
+
+                    $apprenant->save();
+
+                    if($value)
+                    {
+                        //$tarif=Tarif::find($key);
+
+                        $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin)->roundMonth();
+
+
+                        $anneeScolaire=$tarif->anneeScolaire;
+
+                        $apprenant->tarifs()->syncWithoutDetaching([$tarifId=>["resteApayer"=>$tarif->montant,"nombreMois"=>$intervalle->count(),"annee_scolaire_id"=>$anneeScolaire->id]]);
+
+                        foreach($intervalle as $date)
+                        {
+                            $moisPaye=Mois_Paye::create([
+                                "montant"=>0
+                            ]);
+
+                            $moisPaye->mois()->associate(Mois::where("position",$date->month)->first())->save();
+                            $moisPaye->apprenantTarif()->associate(Apprenant_tarif::where("tarif_id",$tarif->id)->where("apprenant_id",$apprenant->id)->first())->save();
+
+                        }
                     }
                 }
+
+                if ($verif)
+                {
+                    return redirect()->back()->with("error","Le tarif de la réinscription n'est pas définit pour cette classe");
+                }
             }
+            else
+            {
+                return redirect()->back()->with("error","Aucun tarif définit pour la classe");
+            }
+
+
+
+
 
             DB::commit();
             return redirect()->back()->with("success","Réinscription effectuée avec succès");
@@ -400,15 +425,18 @@ class ReinscriptionController extends Controller
                     $inscription->apprenant->tarifs()->syncWithoutDetaching([$key=>["resteApayer"=>$tarif->montant,"nombreMois"=>$intervalle->count(),"annee_scolaire_id"=>$anneeScolaire->id]]);
 
 
-                    foreach($intervalle as $date)
+                    if (strtolower($tarif->frequence) == strtolower('MENSUELLE'))
                     {
-                        $moisPaye=Mois_Paye::create([
-                            "montant"=>0
-                        ]);
+                        foreach($intervalle as $date)
+                        {
+                            $moisPaye=Mois_Paye::create([
+                                "montant"=>0
+                            ]);
 
-                        $moisPaye->mois()->associate(Mois::where("position",$date->month)->first())->save();
-                        $moisPaye->apprenantTarif()->associate(Apprenant_tarif::where("tarif_id",$tarif->id)->where("apprenant_id",$inscription->apprenant->id)->first())->save();
+                            $moisPaye->mois()->associate(Mois::where("position",$date->month)->first())->save();
+                            $moisPaye->apprenantTarif()->associate(Apprenant_tarif::where("tarif_id",$tarif->id)->where("apprenant_id",$apprenant->id)->first())->save();
 
+                        }
                     }
                 }
             }

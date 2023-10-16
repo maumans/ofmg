@@ -640,13 +640,13 @@ function Index({auth,nbrMois,allEtablissements,success,montantTotal,errors,tuteu
                                                                                 {
                                                                                     t?.frequence &&
                                                                                     <div>
-                                                                                        <span className={"font-bold text-lg"}>Frequence de paiement: </span> <span> {t.frequence} </span>
+                                                                                        <span className={"font-bold text-lg"}>Fréquence de paiement: </span> <span> {t.frequence} </span>
                                                                                     </div>
                                                                                 }
                                                                                 {
                                                                                     t?.echeance &&
                                                                                     <div>
-                                                                                        <span className={"font-bold"}>Echeance: </span> <span>Le {t.echeance} de chaque mois</span>
+                                                                                        <span className={"font-bold"}>Echéance: </span> <span>Le {t.echeance} de chaque mois</span>
                                                                                     </div>
                                                                                 }
 
