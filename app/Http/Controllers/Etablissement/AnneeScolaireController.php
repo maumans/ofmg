@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Etablissement;
 
 use App\Http\Controllers\Controller;
 use App\Models\Annee_scolaire;
+use App\Models\Apprenant;
+use App\Models\Apprenant_tarif;
 use App\Models\Tarif;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class AnneeScolaireController extends Controller
@@ -53,11 +56,24 @@ class AnneeScolaireController extends Controller
             "dateFin"=>"required|date|after_or_equal:dateDebut'",
         ]));
 
-        $anneeScolaire->etablissement()->associate(Auth::user()->etablissementAdmin)->save();
+        DB::beginTransaction();
 
-        $anneeScolaire->etablissement->anneeEnCours()->associate($anneeScolaire)->save();
+        try{
 
-        return redirect()->back();
+            $anneeScolaire->etablissement()->associate(Auth::user()->etablissementAdmin)->save();
+
+            $anneeScolaire->etablissement->anneeEnCours()->associate($anneeScolaire)->save();
+
+            DB::commit();
+
+            return redirect()->back();
+
+        }
+        catch(Throwable $e){
+            DB::rollback();
+        }
+
+
     }
 
     /**
@@ -105,14 +121,34 @@ class AnneeScolaireController extends Controller
 
         ]);
 
-        $anneeScolaire->update([
-            "dateDebut"=>$request->dataEdit["dateDebutEdit"],
-            "dateFin"=>$request->dataEdit["dateFinEdit"],
-        ]);
 
-        $anneeScolaire->save();
+        DB::beginTransaction();
 
-        return redirect()->back()->with("success");
+        try{
+
+            if($anneeScolaire->inscriptions)
+            {
+                return redirect()->back()->with("error","Vous ne pouvez plus modifier l'année scolaire car au moins un apprenant à été inscrit");
+            }
+            else
+            {
+                $anneeScolaire->update([
+                    "dateDebut"=>$request->dataEdit["dateDebutEdit"],
+                    "dateFin"=>$request->dataEdit["dateFinEdit"],
+                ]);
+
+                $anneeScolaire->save();
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with("success")->with("success","Année scolaire modifiée avec succès");
+        }
+        catch(Throwable $e){
+            DB::rollback();
+        }
+
+
     }
 
     /**
@@ -144,22 +180,48 @@ class AnneeScolaireController extends Controller
 
     public function cloture()
     {
-       $anneeEnCours=Annee_scolaire::find(Auth::user()->etablissementAdmin->anneeEnCours->id);
-       $anneeEnCours->actif=false;
-       $anneeEnCours->save();
+        DB::beginTransaction();
 
-        $tarifs=Tarif::where('annee_scolaire_id',$anneeEnCours->id)->where('status',true)->get();
+        try{
 
-        if($tarifs)
-        {
-            foreach ($tarifs as $tarif)
+            $anneeEnCours=Annee_scolaire::find(Auth::user()->etablissementAdmin->anneeEnCours->id);
+            $anneeEnCours->actif=false;
+            $anneeEnCours->save();
+
+            $tarifs=Tarif::where('annee_scolaire_id',$anneeEnCours->id)->where('status',true)->get();
+
+            if($tarifs)
             {
-                $tarif->status=false;
-                $tarif->save();
+                foreach ($tarifs as $tarif)
+                {
+                    /*$tarif->apprenants()->sync(
+                        ['status' =>false]
+                    );*/
+
+                    $aps=Apprenant_tarif::where('tarif_id',$tarif->id)->get();
+
+                    foreach ($aps as $ap)
+                    {
+                      $ap->status=false;
+                      $ap->save();
+                    }
+
+                    $tarif->status=false;
+                    $tarif->save();
+                }
             }
+
+
+            Auth::user()->etablissementAdmin->anneeEnCours()->dissociate()->save();
+
+            DB::commit();
+
+            return redirect()->back()->with("succcess","Année cloturée avec succès à l'année prochaine");
+
+        }
+        catch(Throwable $e){
+            DB::rollback();
         }
 
-        Auth::user()->etablissementAdmin->anneeEnCours()->dissociate()->save();
-        return redirect()->back()->with("succcess","Année cloturée avec succès à l'année prochaine");
     }
 }

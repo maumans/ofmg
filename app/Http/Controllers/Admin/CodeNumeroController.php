@@ -16,7 +16,7 @@ class CodeNumeroController extends Controller
      */
     public function index()
     {
-        $codeNumeros = Code_numero::all();
+        $codeNumeros = Code_numero::orderByDesc('created_at')->get();
 
         return Inertia::render('Admin/CodeNumero/Index',["codeNumeros"=>$codeNumeros]);
     }

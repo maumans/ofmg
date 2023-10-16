@@ -43,11 +43,13 @@ class ReinscriptionController extends Controller
         $tarifs=Auth::user()->etablissementAdmin->tarifs()->where("annee_scolaire_id",$anneeEnCours->id)->with("typePaiement")->get();
 
 
-        $apprenants = Apprenant::where(function ($query) use ($classe){
+        $apprenants = Apprenant::where(function ($query) use ($classe,$anneeEnCours){
             if ($classe)
             {
                 $query->whereRelation("classe",'id',$classe->id);
             }
+
+            //$query->whereRelation('inscriptions','annee_scolaire_id',$anneeEnCours->id);
 
         })->with(["tarifs","tuteurs","classe"=>function($query){
             return $query->with(["tarifs"=>function($query){
@@ -97,7 +99,10 @@ class ReinscriptionController extends Controller
 
         //dd($request->all());
 
-        $apprenants =Apprenant::where(function ($query) use ($classeId,$searchText){
+        $anneeEnCours=Auth::user()->etablissementAdmin->anneeEnCours()->with("etablissement.typeEtablissement")->first();
+
+
+        $apprenants =Apprenant::where(function ($query) use ($classeId,$searchText,$anneeEnCours){
             if ($classeId)
             {
                 $query->whereRelation("classe",'id',$classeId);
@@ -107,7 +112,10 @@ class ReinscriptionController extends Controller
             {
                 $query->where("matricule",'like','%'.$searchText.'%')->orWhere("nom",'like','%'.$searchText.'%')->orWhere("prenom",'like','%'.$searchText.'%');
             }
-            })->with(["tarifs","tuteurs","classe"=>function($query){
+
+            //$query->whereRelation('inscriptions','annee_scolaire_id',$anneeEnCours->id);
+
+        })->with(["tarifs","tuteurs","classe"=>function($query){
                 return $query->with(["tarifs"=>function($query){
                     return $query->with("typePaiement")->get();
             }])->get();
@@ -170,13 +178,27 @@ class ReinscriptionController extends Controller
                     }
 
 
-                    $inscription=Inscription::create([
-                        "montant" =>$tarif->montant,
-                        "apprenant_id" =>$apprenantId,
-                        "classe_id" =>$classeId,
-                        "annee_scolaire_id" =>$anneeEnCours->id,
-                        "reinscription"=>true
-                    ]);
+                    if (Inscription::where('apprenant_id',$classeId)
+                        ->where('apprenant_id',$apprenantId)
+                        ->where('classe_id',$classeId)
+                        ->where("annee_scolaire_id",$anneeEnCours->id)
+                        ->first()
+                    )
+                    {
+
+                    }
+                    else
+                    {
+                        Inscription::create([
+                            "montant" =>$tarif->montant,
+                            "apprenant_id" =>$apprenantId,
+                            "classe_id" =>$classeId,
+                            "annee_scolaire_id" =>$anneeEnCours->id,
+                            "reinscription"=>true
+                        ]);
+                    }
+
+
 
 
                     $apprenant=Apprenant::where('id',$apprenantId)->first();

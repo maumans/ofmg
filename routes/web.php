@@ -52,7 +52,7 @@ Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","pa
     Route::resource('etablissement.classe',\App\Http\Controllers\Etablissement\ClasseController::class)/*->middleware("anneeScolaireIsDefined")*/;
     Route::resource('etablissement.matiere',\App\Http\Controllers\Etablissement\MatiereController::class);
     Route::resource('etablissement.tarif',\App\Http\Controllers\Etablissement\TarifController::class)/*->middleware("anneeScolaireIsDefined")*/;
-    Route::resource('etablissement.paiement',\App\Http\Controllers\Etablissement\PaiementController::class)->middleware("anneeScolaireIsDefined");
+    Route::resource('etablissement.paiement',\App\Http\Controllers\Etablissement\PaiementController::class)/*->middleware("anneeScolaireIsDefined")*/;
     Route::post("etablissement/{userId}/paiement/search/{matricule?}",[\App\Http\Controllers\Etablissement\PaiementController::class,"search"])->middleware("anneeScolaireIsDefined")->name("etablissement.paiement.search");
     Route::get("etablissement/{userId}/paiement/{idApprenant}/tarif",[\App\Http\Controllers\Etablissement\PaiementController::class,"tarif"])->middleware("anneeScolaireIsDefined")->name("etablissement.paiement.tarif");
 
@@ -82,12 +82,12 @@ Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","pa
     Route::post("etablissement/{etablissementId}/personnel/historique/filtre",[\App\Http\Controllers\Etablissement\PersonnelController::class,"filtre"])->name("etablissement.personnel.historique.filter");
 
 
-    Route::get("etablissement/{userId}/personnel/paiement/salaire",[\App\Http\Controllers\Etablissement\PersonnelController::class,"salaire"])->name("etablissement.personnel.paiement.salaire")->middleware("anneeScolaireIsDefined");
+    Route::get("etablissement/{userId}/personnel/paiement/salaire",[\App\Http\Controllers\Etablissement\PersonnelController::class,"salaire"])->name("etablissement.personnel.paiement.salaire")/*->middleware("anneeScolaireIsDefined")*/;
     Route::get("etablissement/{userId}/personnel/paiement/validationSalaire",[\App\Http\Controllers\Etablissement\PersonnelController::class,"validationSalaire"])->name("etablissement.personnel.paiement.validationSalaire")->middleware("anneeScolaireIsDefined");
-    Route::get("etablissement/{userId}/personnel/paiement/historique/{ok?}",[\App\Http\Controllers\Etablissement\PersonnelController::class,"historique"])->name("etablissement.personnel.paiement.historique")->middleware("anneeScolaireIsDefined");
+    Route::get("etablissement/{userId}/personnel/paiement/historique/{ok?}",[\App\Http\Controllers\Etablissement\PersonnelController::class,"historique"])->name("etablissement.personnel.paiement.historique")/*->middleware("anneeScolaireIsDefined")*/;
     Route::get("etablissement/{userId}/personnel/paiement/listePaiementRapport/{ok?}",[\App\Http\Controllers\Etablissement\PersonnelController::class,"listePaiementRapport"])->name("etablissement.personnel.paiement.ListePaiementRapport");
     Route::post("etablissement/{userId}/personnel/paiement/salaire/{moisId}",[\App\Http\Controllers\Etablissement\PersonnelController::class,"salaireStore"])->name("etablissement.personnel.paiement.salaire.store")->middleware("anneeScolaireIsDefined");
-    Route::post("etablissement/{userId}/personnel/paiementOccasionel",[\App\Http\Controllers\Etablissement\PersonnelController::class,"salaireOccasionnelStore"])->name("etablissement.personnel.paiementeOccasionnel")->middleware("anneeScolaireIsDefined");
+    Route::post("etablissement/{userId}/personnel/paiementOccasionel",[\App\Http\Controllers\Etablissement\PersonnelController::class,"salaireOccasionnelStore"])->name("etablissement.personnel.paiementOccasionnel")->middleware("anneeScolaireIsDefined");
 
     Route::post("etablissement/{userId}/personnel/paiement/validationSalaireStore",[\App\Http\Controllers\Etablissement\PersonnelController::class,"validationStore"])->name("etablissement.personnel.paiement.validationSalaire.store")->middleware("anneeScolaireIsDefined");
     Route::post("etablissement/{userId}/personnel/paiement/validationCancel",[\App\Http\Controllers\Etablissement\PersonnelController::class,"validationCancel"])->name("etablissement.personnel.paiement.validationCancel")->middleware("anneeScolaireIsDefined");

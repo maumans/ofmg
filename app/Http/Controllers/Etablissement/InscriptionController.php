@@ -167,7 +167,7 @@ class InscriptionController extends Controller
             else{
                 if($classeId)
                 {
-                    $inscriptions =Inscription::whereRelation("classe",'id',$classeId)->with(["apprenant"=>function($query){
+                    $inscriptions = Inscription::whereRelation("classe",'id',$classeId)->with(["apprenant"=>function($query){
                         return $query->with("tarifs","tuteurs")->get();
                     },"classe"=>function($query){
                         return $query->with(["tarifs"=>function($query){

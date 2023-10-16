@@ -8,7 +8,7 @@ import {
     useGridSelector
 } from '@mui/x-data-grid';
 import {
-    Autocomplete,
+    Autocomplete, Backdrop, CircularProgress,
     FormControl,
     InputLabel,
     MenuItem,
@@ -45,6 +45,15 @@ function Index(props) {
     const [anneeScolaires,setAnneeScolaires] = useState();
 
     const [open, setOpen] = React.useState(false);
+
+
+    const [openBackdrop, setOpenBackdrop] = React.useState(false);
+    const handleCloseBackdrop = () => {
+        setOpenBackdrop(false);
+    };
+    const handleOpenBackdrop = () => {
+        setOpenBackdrop(true);
+    };
 
     const {data:dataEdit,setData:setDataEdit}=useForm({
         dateDebutEdit:"",
@@ -114,13 +123,21 @@ function Index(props) {
 
     }
 
+    useEffect(()=>{
+        handleCloseBackdrop()
+    },[])
+
     useEffect(() => {
         setAnneeScolaires(props.anneeScolaires);
     },[props.anneeScolaires]);
 
     function handleCloture()
     {
-        confirm("Voulez-vous vraiment cloturer l'année encours?") && Inertia.get(route("etablissement.anneeScolaire.cloture"));
+        if(confirm("Voulez-vous vraiment cloturer l'année encours?"))
+        {
+            handleOpenBackdrop()
+            Inertia.get(route("etablissement.anneeScolaire.cloture"));
+        }
     }
 
     ////// SnackBar
@@ -225,7 +242,7 @@ function Index(props) {
                         <Box sx={style}>
                             <form action="" onSubmit={handleEdit} className={"space-y-5 my-5 p-2 border rounded"}>
                                 <div className={"text-lg font-bold mb-5"}>
-                                    Modifier une anneee scolaire
+                                    Modifier une année scolaire
                                 </div>
                                 <div className={"flex flex-wrap gap-4"}>
                                     <div className={"w-full"}>
@@ -302,6 +319,15 @@ function Index(props) {
                             />
                         }
                     </motion.div>
+
+                    <Backdrop
+                        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                        open={openBackdrop}
+                        onClick={handleCloseBackdrop}
+                    >
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
+
                     <SnackBar error={error} update={update} success={success} />                </div>
             </div>
         </AdminPanel>

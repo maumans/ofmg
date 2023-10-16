@@ -72,10 +72,6 @@ function Validation({auth,error,apprenants,classe}) {
 
     }
 
-    useEffect(()=>{
-        console.log(tarifs)
-    },[tarifs])
-
     /*const columns = [
         { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'prenom', headerName: 'PRENOM', width:150,renderCell:(cellValues)=>cellValues.row?.prenom},

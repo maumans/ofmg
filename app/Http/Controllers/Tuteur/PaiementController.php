@@ -33,7 +33,7 @@ class PaiementController extends Controller
     public function index()
     {
 
-        $codeNumeros=Code_numero::all();
+        $codeNumeros=Code_numero::where('status',true)->get();
 
         $totalAll=0;
         $resteApayerAll=0;
@@ -53,17 +53,17 @@ class PaiementController extends Controller
             }
         }
 
-        $tuteur=User::where('id',Auth::user()->id)->with(["paiementsTuteur"=>function($query){
+        $tuteur=User::where('id',Auth::user()->id)->with([
+            "paiementsTuteur"=>function($query){
             $query->orderByDesc('created_at')->with(["apprenant","typePaiement","modePaiement","tarif"=>function($query){
                 $query->where('status',true);
             },"etablissement",'paiementGlobal'])->get();
-        },"tuteurApprenants"=>function($query){
-            $query->whereHas("classe.etablissement.anneeEnCours")->with(["classe.etablissement.anneeEnCours","tarifs"=>function($query){
-                $query->where('status',true)->with('typePaiement');
-            }])->get();
+        },
+            "tuteurApprenants"=>function($query){
+            $query->whereRelation("tarifs",'tarifs.status',true)->with(["classe.etablissement.anneeEnCours","tarifs"=>function($query){
+                $query->where('tarifs.status',true)->with('typePaiement');
+            }]);
         }])->first();
-
-
 
         $transactions=Transaction::whereRelation('paiementGlobal.tuteur',"id",$tuteur->id)->with('paiementGlobal.tuteur',"paiementGlobal.etablissement","paiementGlobal.paiements.apprenant","paiementGlobal.paiements.typePaiement")->orderByDesc('created_at')->get();
 
@@ -80,10 +80,10 @@ class PaiementController extends Controller
 
         $donneesParFrais= new Collection();
 
-        foreach(Type_paiement::all() as $typePaiement)
+        foreach(Type_paiement::where('status',true)->get() as $typePaiement)
         {
             $montant=$tuteur->tuteurApprenants->sum(function($apprenant) use ($typePaiement){
-                return $apprenant->tarifs()->where("type_paiement_id",$typePaiement->id)->first()?$apprenant->tarifs()->where("type_paiement_id",$typePaiement->id)->first()->montant:0;
+                return $apprenant->tarifs()->where('tarifs.status',true)->where("type_paiement_id",$typePaiement->id)->first()?$apprenant->tarifs()->where('tarifs.status',true)->where("type_paiement_id",$typePaiement->id)->first()->montant:0;
             });
 
             $resteApayer=$tuteur->tuteurApprenants->sum(function($apprenant) use ($typePaiement){
@@ -221,7 +221,6 @@ class PaiementController extends Controller
 
                 if($value)
                 {
-
                     $paiement=Paiement::create([
                         "montant"=>$request->montants[$info[0]."_".$info[1]],
                         "numero_retrait"=>$request->numero_retrait,

@@ -21,6 +21,11 @@ use Inertia\Inertia;
 
 class PaiementController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('anneeScolaireIsDefined')->only('create');
+    }
     /**
      * Display a listing of the resource.
      *

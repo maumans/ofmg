@@ -116,7 +116,7 @@ function Index({auth,nbrMois,allEtablissements,success,montantTotal,errors,tuteu
         "montants":[],
         "total":montantTotal?montantTotal:0,
         "numero_retrait":"",
-        "etablissement":""
+        "etablissement":allEtablissements[0]
     });
 
     function handleClose()
@@ -334,10 +334,6 @@ function Index({auth,nbrMois,allEtablissements,success,montantTotal,errors,tuteu
         setEtablissements(allEtablissements)
     },[])
 
-    useEffect(() => {
-        setData("etablissement",etablissements?.find((et,i) => i===valueEt))
-    },[valueEt,etablissements])
-
 
     const [openBackdrop, setOpenBackdrop] = useState(false);
 
@@ -374,10 +370,6 @@ function Index({auth,nbrMois,allEtablissements,success,montantTotal,errors,tuteu
                 setFiltre(true)
                 setOpenBackdrop(false)
             })
-
-        /*
-                        Inertia.post(route("etablissement.personnel.historique.filter",auth.user.etablissement_admin.id),data)
-        */
     }
 
     function handleCloseFiltre()
@@ -700,7 +692,7 @@ function Index({auth,nbrMois,allEtablissements,success,montantTotal,errors,tuteu
                                         }
 
                                         {
-                                            tarifs && Object.values(tarifs).find(value=>value===true)  && codeNumerosSt!=="" &&
+                                            tarifs && Object.values(tarifs).find(value=>value===true)  /*&& codeNumerosSt!==""*/ &&
                                             <div className={"ml-5"}>
                                                 <TextField
                                                     inputProps={{
@@ -865,7 +857,7 @@ function Index({auth,nbrMois,allEtablissements,success,montantTotal,errors,tuteu
 
                     <Dialog
                         fullWidth={true}
-                        fullHeight={true}
+                        //fullHeight={true}
                         keepMounted
                         open={openModal}
                         onClose={handleCloseModal}

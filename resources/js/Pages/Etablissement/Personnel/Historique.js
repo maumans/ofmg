@@ -60,7 +60,7 @@ function Historique({auth,error,salaires,paiementOccasionnel,success,mois}) {
 
     const [moisSt,setMoisSt]=useState("");
 
-    console.log(salaires)
+    //console.log(salaires)
 
     const columns = [
         { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },

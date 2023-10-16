@@ -66,7 +66,7 @@ class EtablissementController extends Controller
             "nomEtablissement"=>"required",
             "code"=>"required|string|unique:etablissements",
             "posId"=>"required|string|unique:etablissements",
-            "msisdn"=>"required|string|unique:etablissements",
+            "msisdn" =>"required|string|unique:etablissements",
             'login' => 'required|string|unique:users',
             'telephone' => 'required|string|unique:etablissements',
             'telephoneAdmin' => 'required|string|unique:users,telephone',

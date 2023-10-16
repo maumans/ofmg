@@ -24,6 +24,12 @@ use Inertia\Inertia;
 
 class PersonnelController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('anneeScolaireIsDefined')->only('create','salaire');
+    }
+
     /**
      * Display a listing of the resource.
      *

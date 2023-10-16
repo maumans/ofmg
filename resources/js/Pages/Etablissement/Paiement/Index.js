@@ -111,7 +111,7 @@ function Index({auth,error,paiements,success}) {
                 setPaiementsSt(data);
                 setFiltre(true)
                 setOpen(false)
-                setTimeout(()=>{console.log(1)},1000)
+                //setTimeout(()=>{console.log(1)},1000)
                 setLoading(false)
             })
 

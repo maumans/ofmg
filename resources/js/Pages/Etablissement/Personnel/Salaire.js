@@ -234,7 +234,7 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires,codeN
 
     function handleOccasionnelSubmit(e) {
         e.preventDefault();
-        Inertia.post(route("etablissement.personnel.paiementeOccasionnel",[auth.user.id]),dataOccasionnel,{preserveState:false});
+        Inertia.post(route("etablissement.personnel.paiementOccasionnel",[auth.user.id]),dataOccasionnel,{preserveState:false});
     }
 
     return (
