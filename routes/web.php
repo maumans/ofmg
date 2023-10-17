@@ -105,7 +105,9 @@ Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","pa
     Route::post("etablissement/{userId}/inscription/searchInscription",[\App\Http\Controllers\Etablissement\InscriptionController::class,"searchInscription"])->name("etablissement.inscription.searchInscription");
     Route::post("etablissement/{userId}/reinscription/searchApprenant",[\App\Http\Controllers\Etablissement\ReinscriptionController::class,"searchApprenant"])->name("etablissement.reinscription.searchApprenant");
 
-    Route::post("etablissement/{userId}/reinscription/validation",[\App\Http\Controllers\Etablissement\ReinscriptionController::class,"validation"])->name("etablissement.reinscription.validation");
+    Route::post("etablissement/{userId}/reinscription/validationAttente",[\App\Http\Controllers\Etablissement\ReinscriptionController::class,"validationAttente"])->name("etablissement.reinscription.validationAttente");
+
+    Route::get("etablissement/{userId}/reinscription/{classeId}/validation",[\App\Http\Controllers\Etablissement\ReinscriptionController::class,"validation"])->name("etablissement.reinscription.validation");
 
     Route::post("etablissement/{userId}/reinscription/validationSubmit",[\App\Http\Controllers\Etablissement\ReinscriptionController::class,"validationSubmit"])->name("etablissement.reinscription.validationSubmit");
 

@@ -113,7 +113,7 @@ function Index(props) {
     function handleExport(e)
     {
         e.preventDefault();
-        post(route("etablissement.rereinscription.import",props.auth.user.id), {data:data.apprenants,preserveScroll: true})
+        post(route("etablissement.reinscription.import",props.auth.user.id), {data:data.apprenants,preserveScroll: true})
     }
 
 
@@ -227,7 +227,7 @@ function Index(props) {
 
                     <form onSubmit={(e)=>{
                             e.preventDefault();
-                            Inertia.post(route('etablissement.reinscription.validation',[props.auth.user?.id]),{apprenants:apprenantsSelected,'classe':data.classeReinscription})
+                            Inertia.post(route('etablissement.reinscription.validationAttente',[props.auth.user?.id]),{apprenants:apprenantsSelected,'classe':data.classeReinscription})
                         }}
                     >
 

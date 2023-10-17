@@ -129,17 +129,47 @@ class ReinscriptionController extends Controller
     }
 
 
-    public function validation(Request $request,$userId)
+    public function validationAttente(Request $request,$userId)
     {
-        $apprenants=collect();
+        /*$apprenants=collect();
 
         $classe=Classe::where("id",$request->classe['id'])->with(['tarifs'=>function ($query){
             $query->where("status",true)->with('typePaiement');
         }])->first();
 
+        foreach ($request->apprenants as $id)
+        {
+            $apprenant=Apprenant::where('id',$id)->with("classe")->first();
+
+            if ($apprenant)
+            {
+                $apprenants->push($apprenant);
+            }
+        }*/
+
+        $classeId =$request->classe['id'];
+
+        session()->put('apprenants',$request->apprenants);
+
+        return redirect()->route('etablissement.reinscription.validation',[Auth::id(),$classeId]);
+
+        //return Inertia::render('Etablissement/Reinscription/Validation',["classe"=>$classe,"anneeEnCours"=>$anneeEnCours,"apprenants"=>$apprenants]);
+
+    }
+    public function validation($userId,$classeId)
+    {
+
+        $apprenantTab=session('apprenants');
+
+        $classe=Classe::where("id",$classeId)->with(['tarifs'=>function ($query){
+            $query->where("status",true)->with('typePaiement');
+        }])->first();
+
         $anneeEnCours=$classe->etablissement->anneeEnCours;
 
-        foreach ($request->apprenants as $id)
+        $apprenants=collect();
+
+        foreach ($apprenantTab as $id)
         {
             $apprenant=Apprenant::where('id',$id)->with("classe")->first();
 
@@ -196,10 +226,6 @@ class ReinscriptionController extends Controller
                         ]);
                     }
 
-
-
-
-
                     $apprenant=Apprenant::where('id',$apprenantId)->first();
 
                     $apprenant->classe_id=$classeId;
@@ -240,11 +266,10 @@ class ReinscriptionController extends Controller
                 return redirect()->back()->with("error","Aucun tarif définit pour la classe");
             }
 
-
-
-
-
             DB::commit();
+
+            session()->pull('apprenants');
+
             return redirect()->route('etablissement.inscription.index',[Auth::id()])->with("success","Réinscription effectuée avec succès");
         }
         catch(Exception $e)
