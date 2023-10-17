@@ -27,6 +27,6 @@ class DatabaseSeeder extends Seeder
         $this->call(EtablissementSeeder::class);
         $this->call(TypePaiementSeeder::class);
         $this->call(MoisSeeder::class);
-         $this->call(PassportUserSeeder::class);
+        $this->call(PassportUserSeeder::class);
     }
 }

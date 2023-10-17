@@ -8,7 +8,7 @@ import {
     useGridSelector
 } from '@mui/x-data-grid';
 import {
-    Autocomplete, Avatar, Checkbox, CircularProgress, Dialog, DialogContent,
+    Autocomplete, Avatar, Button, Checkbox, CircularProgress, Dialog, DialogContent,
     FormControl,
     FormControlLabel,
     FormGroup, FormLabel, InputAdornment,
@@ -385,8 +385,10 @@ function Create(props) {
                         <div className={"w-full border p-5 rounded space-y-5"} style={{maxWidth: 1000}}>
 
                             <div className={"border p-2"}>
+                                <div className={"text-lg font-bold"}>
+                                    Type
+                                </div>
                                 <FormControl>
-                                    <FormLabel id="demo-row-radio-buttons-group-label">Type</FormLabel>
                                     <RadioGroup
                                         row
                                         aria-labelledby="demo-row-radio-buttons-group-label"
@@ -457,13 +459,14 @@ function Create(props) {
                             </div>
 
                             {
-                                data.classe &&
+                                (data.classe && data.type) &&
                                 <div className={"border p-5 space-y-5"}>
                                     <div className={"text-lg font-bold"}>
                                         Les type de frais
                                     </div>
                                     <div className={"flex flex-wrap"}>
                                         {
+                                            data.classe?.tarifs?.length >0 ?
                                             data.classe?.tarifs.map((tarif)=>(
                                              (!(data.type === 'reinscription' && tarif.type_paiement.libelle.toLowerCase() === "INSCRIPTION".toLowerCase())
                                                 &&
@@ -496,6 +499,10 @@ function Create(props) {
                                             }*/
 
                                             )
+                                                :
+                                                <div className={'text-red-600'}>
+                                                    Aucun type de frais définit pour cette classe!!! Veuillez définir les types de frais
+                                                </div>
                                         }
                                     </div>
                                 </div>
@@ -509,7 +516,7 @@ function Create(props) {
                                 {
                                     !(data.tuteursAdd && data.tuteursAdd.length) > 0 &&
                                     <div className="mb-5 text-red-600">
-                                        Aucun tuteur associée
+                                        Aucun tuteur associé
                                         <div className="text-red-600">
                                             {props.errors?.tuteursAdd}
                                         </div>
@@ -650,11 +657,19 @@ function Create(props) {
                                 </div>
                             }
 
-
                             <div className={"flex col-span-3 justify-end"}>
-                                <button className={"p-3 text-white orangeVertBackground rounded"}  type={"submit"}>
+                                <Button disabled={
+                                    !data?.type
+                                    ||
+                                    !data?.classe
+                                    ||
+                                    (data?.type ==='reinscription' && !data?.classe?.tarifs?.find((tarif)=>(tarif?.type_paiement?.libelle.toLowerCase() ==='réinscription')))
+                                    ||
+                                    (data?.type ==='inscription' && !data?.classe?.tarifs?.find((tarif)=>(tarif?.type_paiement?.libelle.toLowerCase() ==='inscription')))
+
+                                } color={'success'} variant={'contained'}  type={"submit"}>
                                     Enregistrer
-                                </button>
+                                </Button>
                             </div>
                         </div>
 

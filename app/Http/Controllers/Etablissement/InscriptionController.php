@@ -78,14 +78,15 @@ class InscriptionController extends Controller
      */
     public function create()
     {
+        $anneeEnCours=Auth::user()->etablissementAdmin->anneeEnCours()->with("etablissement.typeEtablissement")->first();
 
-        $classes=Auth::user()->etablissementAdmin->classes()->with(["tarifs"=>function ($query){
-            $query->whereRelation("typePaiement","concerne","APPRENANT")->with("typePaiement",)->get();
+
+        $classes=Auth::user()->etablissementAdmin->classes()->with(["tarifs"=>function ($query) use ($anneeEnCours){
+            $query->whereRelation("anneeScolaire",'id',$anneeEnCours->id)->whereRelation("typePaiement","concerne","APPRENANT")->with("typePaiement",)->get();
         },"etablissement.typeEtablissement"])->get();
 
         $villes=Ville::all();
 
-        $anneeEnCours=Auth::user()->etablissementAdmin->anneeEnCours()->with("etablissement.typeEtablissement")->first();
 
         $tarifs=Auth::user()->etablissementAdmin->tarifs()->where("annee_scolaire_id",$anneeEnCours->id)->with("typePaiement")->get();
 
