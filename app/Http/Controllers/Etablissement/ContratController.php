@@ -165,7 +165,7 @@ class ContratController extends Controller
                     "user_id" =>$user->id,
                     "etablissement_id"=>Auth::user()->etablissementAdmin->id,
                 ]);
-                
+
 
                 $user->contratEnCours()->associate($contrat)->save();
             }

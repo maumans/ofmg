@@ -40,6 +40,8 @@ function Validation({auth,error,apprenants,classe}) {
             { field: 'classe', headerName: 'CLASSE', width:150, renderCell:(cellValues)=>cellValues.row.classe?.libelle },
         ]
         classe?.tarifs?.map((tarif)=>(
+                tarif?.type_paiement?.libelle?.toLowerCase() !=='inscription'.toLowerCase()
+                &&
                 tab.push({
                     field: tarif?.type_paiement?.libelle,
                     headerName: tarif?.type_paiement?.libelle.toUpperCase(),

@@ -108,7 +108,7 @@ class PersonnelController extends Controller
     {
 
         $personnel=User::where('id',$userId)->where('status','Actif')
-            ->with('contratEnCours')
+            ->with('contratEnCours','cours','contratFonction.contratFonctionMois')
             ->first();
 
         $fonctions=Fonction::where('status',true)->get();
@@ -116,7 +116,7 @@ class PersonnelController extends Controller
         $classes=Classe::where('status',true)->get();
         $matieres=Matiere::where('status',true)->get();
 
-        dd($personnel,$fonctions,$classes,$matieres);
+        dd($personnel);
 
         return Inertia::render('Etablissement/Personnel/Create',["fonctions"=>$fonctions]);
     }
