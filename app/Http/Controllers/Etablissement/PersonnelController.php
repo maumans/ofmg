@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Etablissement;
 
 use App\Http\Controllers\Controller;
+use App\Models\Classe;
 use App\Models\Code_numero;
 use App\Models\Contrat_fonction;
 use App\Models\Contrat_fonction_mois;
 use App\Models\Fonction;
+use App\Models\Matiere;
 use App\Models\Mois;
 use App\Models\Mois_Paye;
 use App\Models\Paiement;
@@ -102,9 +104,21 @@ class PersonnelController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($userId,User $personnel)
     {
-        //
+
+        $personnel=User::where('id',$userId)->where('status','Actif')
+            ->with('contratEnCours')
+            ->first();
+
+        $fonctions=Fonction::where('status',true)->get();
+
+        $classes=Classe::where('status',true)->get();
+        $matieres=Matiere::where('status',true)->get();
+
+        dd($personnel,$fonctions,$classes,$matieres);
+
+        return Inertia::render('Etablissement/Personnel/Create',["fonctions"=>$fonctions]);
     }
 
     /**

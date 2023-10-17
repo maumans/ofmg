@@ -46,10 +46,10 @@ class ContratController extends Controller
      */
     public function create()
     {
-        $fonctions=Fonction::all();
+        $fonctions=Fonction::where('status',true)->get();
 
-        $classes=Classe::all();
-        $matieres=Matiere::all();
+        $classes=Classe::where('status',true)->get();
+        $matieres=Matiere::where('status',true)->get();
 
         return Inertia::render("Etablissement/Contrat/Create",["fonctions"=>$fonctions,"matieres"=>$matieres,"classes"=>$classes]);
     }
@@ -165,6 +165,7 @@ class ContratController extends Controller
                     "user_id" =>$user->id,
                     "etablissement_id"=>Auth::user()->etablissementAdmin->id,
                 ]);
+                
 
                 $user->contratEnCours()->associate($contrat)->save();
             }

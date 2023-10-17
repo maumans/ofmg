@@ -289,8 +289,6 @@ class ReinscriptionController extends Controller
     public function store(Request $request)
     {
 
-        dd("Store");
-
         $apprenant=Apprenant::where('matricule', $request->matricule)->first();
 
         $validator=$request->validate([

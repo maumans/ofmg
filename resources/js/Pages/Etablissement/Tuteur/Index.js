@@ -74,7 +74,7 @@ function Index(props) {
             )
         },
 
-        { field: 'action', headerName: 'ACTION',width:250,
+        /*{ field: 'action', headerName: 'ACTION',width:250,
             renderCell:(cellValues,i)=>(
                 <div key={i} className={"space-x-2"}>
                     <button onClick={()=>handleShow(cellValues.row.id)} className={"p-2 text-white orangeVioletBackground rounded hover:text-blue-500 hover:bg-white transition duration-500"}>
@@ -91,7 +91,7 @@ function Index(props) {
 
                 </div>
             )
-        },
+        },*/
 
     ];
 

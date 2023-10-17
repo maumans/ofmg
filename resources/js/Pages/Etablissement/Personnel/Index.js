@@ -54,7 +54,7 @@ function Index({auth,error,personnels,success}) {
     }
 
     function handleEdit(id){
-        alert("EDIT"+id)
+        Inertia.get(route("etablissement.personnel.edit",[auth.user.id,id]))
     }
 
     function handleShow(id){
@@ -81,7 +81,7 @@ function Index({auth,error,personnels,success}) {
                        type:"spring",
                    }}
 
-                   style={{height:450, width: '100%' }} className={"flex justify-center"}
+                   style={{width: '100%' }} className={"flex justify-center"}
                >
                    {
                        personnels &&
@@ -96,8 +96,8 @@ function Index({auth,error,personnels,success}) {
                            }}
                            rows={personnels}
                            columns={columns}
-                           pageSize={5}
-                           rowsPerPageOptions={[5]}
+                           pageSize={10}
+                           rowsPerPageOptions={[10,30,100]}
                            autoHeight
                        />
                    }
