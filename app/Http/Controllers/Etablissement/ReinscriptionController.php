@@ -49,7 +49,9 @@ class ReinscriptionController extends Controller
                 $query->whereRelation("classe",'id',$classe->id);
             }
 
-            //$query->whereRelation('inscriptions','annee_scolaire_id',$anneeEnCours->id);
+            $query->whereDoesntHave('inscriptions',function ($query) use ($anneeEnCours){
+                $query->where('annee_scolaire_id',$anneeEnCours->id)->where('status',true);
+            });
 
         })->with(["tarifs","tuteurs","classe"=>function($query){
             return $query->with(["tarifs"=>function($query){
@@ -113,7 +115,9 @@ class ReinscriptionController extends Controller
                 $query->where("matricule",'like','%'.$searchText.'%')->orWhere("nom",'like','%'.$searchText.'%')->orWhere("prenom",'like','%'.$searchText.'%');
             }
 
-            //$query->whereRelation('inscriptions','annee_scolaire_id',$anneeEnCours->id);
+            $query->whereDoesntHave('inscriptions',function ($query) use ($anneeEnCours){
+                $query->where('annee_scolaire_id',$anneeEnCours->id)->where('status',true);
+            });
 
         })->with(["tarifs","tuteurs","classe"=>function($query){
                 return $query->with(["tarifs"=>function($query){
@@ -143,7 +147,6 @@ class ReinscriptionController extends Controller
             {
                 $apprenants->push($apprenant);
             }
-
         }
 
         return Inertia::render('Etablissement/Reinscription/Validation',["classe"=>$classe,"anneeEnCours"=>$anneeEnCours,"apprenants"=>$apprenants]);
@@ -178,16 +181,11 @@ class ReinscriptionController extends Controller
                     }
 
 
-                    if (Inscription::where('apprenant_id',$classeId)
-                        ->where('apprenant_id',$apprenantId)
+                    if (! Inscription::where('apprenant_id',$apprenantId)
                         ->where('classe_id',$classeId)
                         ->where("annee_scolaire_id",$anneeEnCours->id)
                         ->first()
                     )
-                    {
-
-                    }
-                    else
                     {
                         Inscription::create([
                             "montant" =>$tarif->montant,
@@ -197,6 +195,7 @@ class ReinscriptionController extends Controller
                             "reinscription"=>true
                         ]);
                     }
+
 
 
 
@@ -246,7 +245,7 @@ class ReinscriptionController extends Controller
 
 
             DB::commit();
-            return redirect()->back()->with("success","Réinscription effectuée avec succès");
+            return redirect()->route('etablissement.inscription.index',[Auth::id()])->with("success","Réinscription effectuée avec succès");
         }
         catch(Exception $e)
         {
@@ -436,7 +435,6 @@ class ReinscriptionController extends Controller
                     $tarif=Tarif::find($key);
                     $inscription->apprenant->tarifs()->syncWithoutDetaching([$tarif->id=>["resteApayer"=>$tarif->montant]]);
 
-
                     //////////////////
 
                     $intervalle=CarbonPeriod::create($tarif->anneeScolaire->dateDebut,"1 month",$tarif->anneeScolaire->dateFin)->roundMonth();
@@ -456,7 +454,7 @@ class ReinscriptionController extends Controller
                             ]);
 
                             $moisPaye->mois()->associate(Mois::where("position",$date->month)->first())->save();
-                            $moisPaye->apprenantTarif()->associate(Apprenant_tarif::where("tarif_id",$tarif->id)->where("apprenant_id",$apprenant->id)->first())->save();
+                            $moisPaye->apprenantTarif()->associate(Apprenant_tarif::where("tarif_id",$tarif->id)->where("apprenant_id",$inscription->apprenant->id)->first())->save();
 
                         }
                     }

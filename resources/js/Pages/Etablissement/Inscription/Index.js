@@ -93,7 +93,7 @@ function Index(props) {
         "lieuNaissance":"",
         "montant":"",
         "tarifs":{},
-        anneeScolaireSearch:null,
+        anneeScolaireSearch:props.anneeEnCours,
         matriculeSearch:"",
         classeSearch:null,
         tuteurs:"",
@@ -373,7 +373,11 @@ function Index(props) {
         setInscriptions(props.inscriptions)
     },[props.inscriptions])
 
-    const [loading,setLoading] = useState(false)
+    const [loading,setLoading] = useState(true)
+
+    useEffect(() => {
+        setLoading(false)
+    },[])
 
 
     function handleSearchButton()
@@ -451,6 +455,7 @@ function Index(props) {
                         <div className={"flex space-x-5"}>
                             <FormControl  className={"w-full"}>
                                 <Autocomplete
+                                    value={data.anneeScolaireSearch}
                                     onChange={(e,val)=>{
                                         setData("anneeScolaireSearch",val)
                                     }}

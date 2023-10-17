@@ -52,14 +52,13 @@ class InscriptionController extends Controller
             $query->whereRelation("typePaiement","concerne","APPRENANT")->with("typePaiement",)->get();
         })->get();
 
-        $villes=Ville::all();
-        $anneeEnCours=Auth::user()->etablissementAdmin->anneeScolaires->last();
-
+        $villes=Ville::where("status",true)->get();;
         $anneeScolaires=Auth::user()->etablissementAdmin->anneeScolaires()->orderByDesc('created_at')->get();
+        $anneeEnCours=Auth::user()->etablissementAdmin->anneeEnCours;
 
         $tarifs=Auth::user()->etablissementAdmin->tarifs()->where("annee_scolaire_id",$anneeEnCours->id)->with("typePaiement")->get();
 
-        $inscriptions=Inscription::whereRelation('classe.etablissement',"etablissement_id",Auth::user()->etablissementAdmin->id)->with(["apprenant"=>function($query){
+        $inscriptions=Inscription::whereRelation('classe.etablissement',"etablissement_id",Auth::user()->etablissementAdmin->id)->where('annee_scolaire_id',$anneeEnCours->id)->with(["apprenant"=>function($query){
             return $query->with("tarifs")->get();
         },"classe"=>function($query){
             return $query->with(["tarifs"=>function($query){
