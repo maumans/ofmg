@@ -5,6 +5,7 @@ import {DataGrid, GridToolbar} from "@mui/x-data-grid";
 import {Button, Checkbox} from "@mui/material";
 import {Inertia} from "@inertiajs/inertia";
 import {motion} from "framer-motion";
+import SnackBar from "@/Components/SnackBar";
 
 function Validation({auth,error,apprenants,classe}) {
 
@@ -21,6 +22,8 @@ function Validation({auth,error,apprenants,classe}) {
         apprenants.map((apprenant) => {
 
             classe?.tarifs?.map((tarif)=>(
+                tarif?.type_paiement?.libelle.toLowerCase() !=='inscription'
+                &&
                 setTarifs((tarifs)=>({
                     ...tarifs,
                     [apprenant.id+"-"+tarif.id]:!!tarif.obligatoire
@@ -147,6 +150,7 @@ function Validation({auth,error,apprenants,classe}) {
 
 
                     </motion.div>
+                    <SnackBar success={error}/>
                 </div>
             </div>
         </AdminPanel>

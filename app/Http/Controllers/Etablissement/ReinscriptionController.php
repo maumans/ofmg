@@ -185,7 +185,6 @@ class ReinscriptionController extends Controller
 
     public function validationSubmit(Request $request,$userId)
     {
-
         DB::beginTransaction();
 
         try{
