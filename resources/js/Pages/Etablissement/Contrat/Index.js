@@ -66,14 +66,14 @@ function Index({auth,error,users,success}) {
             { field: 'classe', headerName: "CLASSE", flex: 2, minWidth: 150, renderCell:(cellValues)=>(
                     cellValues.row.cours?.classe?.libelle
                 )},
-            { field: 'Debut', headerName: "Debut de fonction", flex: 1, minWidth: 250,  renderCell:(cellValues)=>(
+            { field: 'Debut', headerName: "DEBUT DE FONCTION", flex: 1, minWidth: 250,  renderCell:(cellValues)=>(
                     contrat.dateDebut
                 ) },
             { field: 'Montant', headerName: "MONTANT", flex: 1, minWidth: 250,  renderCell:(cellValues)=>(
                     cellValues.row?.montant && formatNumber(cellValues.row?.montant)+" FG/"+(cellValues.row?.frequence==="MENSUELLE"?"mois":cellValues.row?.frequence==="HORAIRE"?"heure":"")
                 ) },
 
-            { field: 'anneeScolaire', headerName: "Année Scolaire", flex: 1, minWidth: 150, renderCell:(cellValues)=>(
+            { field: 'anneeScolaire', headerName: "ANNEE SCOLAIRE", flex: 1, minWidth: 150, renderCell:(cellValues)=>(
                     cellValues.row.annee_scolaire && cellValues.row.annee_scolaire?.dateDebut.split("-")[0]+"/"+cellValues.row.annee_scolaire?.dateFin.split("-")[0]
                 ) },
             { field: 'action', headerName: 'ACTION',minWidth:200,flex:1,
