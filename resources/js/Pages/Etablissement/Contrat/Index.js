@@ -17,12 +17,10 @@ function Index({auth,error,users,success}) {
 
     function handleShow(user) {
         setUserContrat(user)
-
     }
 
     function handleFin(user) {
-        confirm("Voulez-vous mettre à cette fonction") && alert("Retirer")
-
+        confirm("Voulez-vous mettre fin à cette fonction") && alert("Retirer")
     }
 
     const columns = [
@@ -95,7 +93,7 @@ function Index({auth,error,users,success}) {
 
 
     return (
-        <AdminPanel auth={auth} error={error} active={"personnel"} sousActive={"listeContrat"}>
+        <AdminPanel auth={auth} error={error} active={"personnel"} sousActive={"listePersonnel"}>
             {
                 userContrat ?
                     <div className={"p-5"}>

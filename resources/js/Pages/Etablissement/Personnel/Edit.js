@@ -20,6 +20,7 @@ import NumberFormat from "react-number-format";
 import {DataGrid, GridToolbar} from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SnackBar from "@/Components/SnackBar";
+import {Inertia} from "@inertiajs/inertia";
 
 const NumberFormatCustomMontant = React.forwardRef(function NumberFormatCustom(props, ref) {
     const { onChange, ...other } = props;
@@ -51,27 +52,28 @@ const NumberFormatCustomMontant = React.forwardRef(function NumberFormatCustom(p
 });
 
 
-function Create({auth,errors,fonctions,classes,matieres}) {
+function Create({auth,errors,success,fonctions,classes,matieres,personnel,connexion,enseignant,comptable,directeur}) {
 
     const [newEmp, setNewEmp] =useState(false)
 
-    const {data,setData,post}=useForm({
-        "nom":"",
-        "prenom":"",
-        "telephone":"",
-        "adresse":"",
-        "email":"",
+    const {data,setData,post,put}=useForm({
+        "nom":personnel.nom || "",
+        "prenom":personnel.prenom || "",
+        "telephone":personnel.telephone || "",
+        "adresse":personnel.adresse || "",
+        "login":personnel.login || "",
+        "email":personnel.email || "",
         "password":"",
         "fonction":null,
-        "niveauValidation":"",
+        "niveauValidation":personnel.niveauValidation || 1,
         "search":"",
         "personnels":"",
-        "personnel":null,
+        "personnel":personnel,
         "classe":null,
         "matiere":null,
         "montant":"",
         "frequence":"",
-        "coursList":null
+        "coursList":personnel.cours
 
     });
 
@@ -91,7 +93,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
     {
         e.preventDefault();
 
-        post(route("etablissement.contrat.store",auth.user.id), {data:data})
+        put(route("etablissement.personnel.update",[auth.user.id,personnel.id]), {data})
     }
 
     const [checked, setChecked] = useState(null);
@@ -117,7 +119,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
         data.personnel && setData("personnels",null)
     },[data.personnel])
 
-    const [coursList,setCoursList]=useState([])
+    const [coursList,setCoursList]=useState(personnel.cours)
 
     function handleDelete(id) {
         setCoursList(coursList.filter(cours=>cours.id!==id))
@@ -146,7 +148,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
 
     ];
 
-    const [success,setSuccess]=useState(null)
+    //const [success,setSuccess]=useState(null)
     const [error,setError]=useState(null)
 
     function handleAdd() {
@@ -188,16 +190,16 @@ function Create({auth,errors,fonctions,classes,matieres}) {
     },[coursList])
 
     return (
-        <AdminPanel auth={auth} error={errors} active={"personnel"} sousActive={"creerContrat"}>
+        <AdminPanel auth={auth} error={errors} active={"personnel"} sousActive={"listePersonnel"}>
             <div className={"p-5"}>
                 <div>
                     <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
-                        Gestion des contrats
+                        Modification du personnel
                     </div>
                      <div className={"p-5 border rounded"}>
 
                          <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 rounded"} >
-                             <div className={"text-lg font-bold mb-5"}>
+                             {/*<div className={"text-lg font-bold mb-5"}>
                                  Contrat
                              </div>
 
@@ -319,14 +321,11 @@ function Create({auth,errors,fonctions,classes,matieres}) {
                                          </div>
                                      </div>
                                  }
-                             </AnimatePresence>
-
-
-
+                             </AnimatePresence>*/}
 
                              <AnimatePresence>
                                  {
-                                     (newEmp || data.personnel) &&
+                                     (newEmp || data.personnel ) &&
                                      <motion.div
                                          initial={{x: -10, opacity: 0}}
                                          animate={{x: 0, opacity: 1}}
@@ -334,53 +333,53 @@ function Create({auth,errors,fonctions,classes,matieres}) {
                                      >
                                          <div className={"grid md:grid-cols-2 grid-cols-1 gap-4 bg-white p-4"} >
                                              <div className={"md:col-span-2"}>
-                                                 Creation de l'employé
+                                                 Info de base
                                              </div>
                                              <div>
-                                                 <TextField disabled={data.personnel!==null} className={"w-full"}  name={"prenom"} label={"Prenom"} value={data.personnel ?data.personnel.prenom:data.prenom} onChange={(e)=>setData("prenom",e.target.value)} required/>
+                                                 <TextField className={"w-full"}  name={"prenom"} label={"Prenom"} value={data.personnel ?data.personnel.prenom:data.prenom} onChange={(e)=>setData("prenom",e.target.value)} required/>
                                                  <div className={"my-2 text-red-600"}>{errors?.prenom}</div>
                                              </div>
 
                                              <div>
-                                                 <TextField disabled={data.personnel!==null} className={"w-full"}  name={"nom"} label={"Nom"} value={data.personnel ?data.personnel.nom:data.nom} onChange={(e)=>setData("nom",e.target.value)} required/>
+                                                 <TextField className={"w-full"}  name={"nom"} label={"Nom"} value={data.nom} onChange={(e)=>setData("nom",e.target.value)} required/>
                                                  <div className={"my-2 text-red-600"}>{errors?.nom}</div>
                                              </div>
                                              <div>
-                                                 <TextField disabled={data.personnel!==null} className={"w-full"}  name={"adresse"} label={"Adresse"} value={data.personnel ?data.personnel.adresse:data.adresse} onChange={(e)=>setData("adresse",e.target.value)} required/>
+                                                 <TextField className={"w-full"}  name={"adresse"} label={"Adresse"} value={data.adresse} onChange={(e)=>setData("adresse",e.target.value)} required/>
                                                  <div className={"my-2 text-red-600"}>{errors?.adresse}</div>
                                              </div>
 
                                              <div>
-                                                 <TextField disabled={data.personnel!==null} className={"w-full"}  name={"telephone"} label={"Telephone"} value={data.personnel ?data.personnel.telephone:data.telephone} onChange={(e)=>setData("telephone",e.target.value)} required/>
+                                                 <TextField className={"w-full"}  name={"telephone"} label={"Telephone"} value={data.telephone} onChange={(e)=>setData("telephone",e.target.value)} required/>
                                                  <div className={"my-2 text-red-600"}>{errors?.telephone}</div>
                                              </div>
 
                                              {
-                                                 (data.fonction?.libelle.toLowerCase() === "directeur" || data.fonction?.libelle.toLowerCase() === "comptable")
+                                                 connexion || (data.fonction && data.fonction?.libelle != 'enseignant')
                                                  &&
                                                  <>
                                                      <div>
-                                                         <TextField /*disabled={data.personnel?.email!==""}*/  className={"w-full"}  name={"login"} label={"Identifiant"} value={data.personnel?.login?data.personnel?.login:data.login} onChange={(e)=>setData("login",e.target.value)} required/>
+                                                         <TextField /*disabled={data.personnel?.email!==""}*/  className={"w-full"}  name={"login"} label={"Identifiant"} value={data.login} onChange={(e)=>setData("login",e.target.value)} required/>
                                                          <div className={"my-2 text-red-600"}>{errors?.login}</div>
                                                      </div>
 
                                                      <div>
-                                                         <TextField /*disabled={data.personnel?.email!==""}*/  className={"w-full"}  name={"email"} label={"Email"} value={data.personnel?.email?data.personnel?.email:data.email} onChange={(e)=>setData("email",e.target.value)}/>
+                                                         <TextField /*disabled={data.personnel?.email!==""}*/  className={"w-full"}  name={"email"} label={"Email"} value={data.email} onChange={(e)=>setData("email",e.target.value)}/>
                                                          <div className={"my-2 text-red-600"}>{errors?.email}</div>
                                                      </div>
 
-                                                     {
+                                                     {/*{
                                                          !data.personnel?.email &&
                                                          <div>
                                                              <TextField value={data.password} className={"w-full"}  name={"password"} label={"Mot de passe"} onChange={(e)=>setData("password",e.target.value)} required/>
                                                              <div className={"my-2 text-red-600"}>{errors?.password}</div>
                                                          </div>
-                                                     }
+                                                     }*/}
                                                  </>
                                              }
 
                                              {
-                                                 data.fonction?.libelle.toLowerCase()==="comptable" &&
+                                                 (data.fonction?.libelle.toLowerCase()==="comptable" || comptable) &&
                                                  <div>
                                                      <TextField className={"w-full"}
                                                                 inputProps={{
@@ -425,7 +424,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
 
                              <AnimatePresence>
                                  {
-                                     (newEmp || data.personnel) &&
+                                     (newEmp || data.personnel ) &&
                                      <motion.div
                                          initial={{x: -10, opacity: 0}}
                                          animate={{x: 0, opacity: 1}}
@@ -434,7 +433,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
                                          <div className={"bg-white p-4"} >
 
                                              {
-                                                 data.fonction?.libelle.toLowerCase() ==="enseignant" &&
+                                                 (data.fonction?.libelle.toLowerCase() ==="enseignant" /*|| enseignant*/) &&
                                                      <div className={"grid md:grid-cols-2 gap-4 w-full"}>
                                                          <div className={"md:col-span-2"}>
                                                              Attribution de cours
@@ -510,7 +509,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
                                              </div>
 
                                              {
-                                                 data.fonction?.libelle.toLowerCase() ==="enseignant" &&
+                                                 (data.fonction?.libelle.toLowerCase() ==="enseignant" /*|| enseignant*/) &&
                                                      <>
                                                          <div className={"md:col-span-3 sm:col-span-2"}>
                                                              <button onClick={handleAdd} type="button" className={"text-white border p-2 orangeBlueBackground rounded hover:orangeBlueBackground transition duration-500 mb-4"}>Ajouter</button>
@@ -535,6 +534,8 @@ function Create({auth,errors,fonctions,classes,matieres}) {
 
 
                                              <SnackBar update={update} error={error}/>
+
+                                             <SnackBar success={success}/>
 
                                          </div>
                                      </motion.div>

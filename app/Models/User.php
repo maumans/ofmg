@@ -205,4 +205,9 @@ class User extends Authenticatable // implements MustVerifyEmail
         return $this->hasMany(Contrat_fonction_mois::class);
     }
 
+    public function cours()
+    {
+        return $this->hasMany(Cours::class,'personnel_id');
+    }
+
 }

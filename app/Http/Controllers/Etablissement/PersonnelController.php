@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Etablissement;
 use App\Http\Controllers\Controller;
 use App\Models\Classe;
 use App\Models\Code_numero;
+use App\Models\Contrat;
 use App\Models\Contrat_fonction;
 use App\Models\Contrat_fonction_mois;
+use App\Models\Cours;
 use App\Models\Fonction;
 use App\Models\Matiere;
 use App\Models\Mois;
@@ -14,6 +16,7 @@ use App\Models\Mois_Paye;
 use App\Models\Paiement;
 use App\Models\Paiement_occasionnel;
 use App\Models\Personnel;
+use App\Models\Role;
 use App\Models\Salaire;
 use App\Models\User;
 use Carbon\Carbon;
@@ -22,6 +25,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class PersonnelController extends Controller
@@ -104,34 +109,254 @@ class PersonnelController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($userId,User $personnel)
+    public function edit($userId,$personnelId)
     {
 
-        $personnel=User::where('id',$userId)->where('status','Actif')
-            ->with('contratEnCours','cours','contratFonction.contratFonctionMois')
+        $anneeEnCours = Auth::user()->etablissementAdmin->anneeEnCours;
+
+        $personnel=User::where('id',$personnelId)->where('status','Actif')
+            ->with(['contratEnCours'=>function($query) use($anneeEnCours){
+                $query->where('annee_scolaire_id',$anneeEnCours->id);
+            },
+                'cours'=>function($query) use($anneeEnCours){
+                    $query->where('annee_scolaire_id',$anneeEnCours->id)->with('classe','matiere');
+                }
+                ,'contratFonctions'=>function($query) use($anneeEnCours){
+                    $query->where('annee_scolaire_id',$anneeEnCours->id)->with("contratFonctionMois");
+                }])
             ->first();
 
-        $fonctions=Fonction::where('status',true)->get();
+        $fonctions = Fonction::where('status',true)->get();
+
+        $connexion = $personnel->contratFonctions->contains(function($cf){
+            return strtolower($cf->fonction->libelle) === strtolower('Comptable') || strtolower($cf->fonction->libelle) === strtolower('Directeur');
+        });
+
+        $enseignant = $personnel->contratFonctions->contains(function($cf){
+            return strtolower($cf->fonction->libelle) === strtolower('Enseignant');
+        });
+
+        $directeur = $personnel->contratFonctions->contains(function($cf){
+            return strtolower($cf->fonction->libelle) === strtolower('Directeur');
+        });
+
+        $comptable = $personnel->contratFonctions->contains(function($cf){
+            return strtolower($cf->fonction->libelle) === strtolower('Comptable');
+        });
 
         $classes=Classe::where('status',true)->get();
         $matieres=Matiere::where('status',true)->get();
 
-        dd($personnel);
+        //dd($personnel->cours,$enseignant,$comptable,$directeur);
 
-        return Inertia::render('Etablissement/Personnel/Create',["fonctions"=>$fonctions]);
+
+        return Inertia::render('Etablissement/Personnel/Edit',["fonctions"=>$fonctions,
+            "personnel"=>$personnel,
+            "classes"=>$classes,
+            "matieres"=>$matieres,
+            "connexion"=>$connexion,
+            "enseignant"=>$enseignant,
+            "directeur"=>$directeur,
+            "comptable"=>$comptable,
+        ]);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request,$userId,User $personnel)
     {
-        //
+
+        //dd($personnel->contratEnCours()->where("annee_scolaire_id",Auth::user()->etablissementAdmin->anneeEnCours)->where('status','true')->first());
+
+        if (!$request->personnel)
+        {
+            if(strtolower($request->fonction["libelle"])=="directeur" || strtolower($request->fonction["libelle"])=="comptable")
+            {
+                $request->validate([
+                    "nom" =>"required|min:1",
+                    "prenom" =>"required|min:1",
+                    "telephone" =>"required|min:1",
+                    "adresse" =>"required",
+                    "email" =>["nullable","email",Rule::unique(User::class)->ignore(Auth::id())],
+                    "login" =>["nullable","min:1",Rule::unique(User::class)->ignore(Auth::id())],
+                    //"password" =>"required",
+                    "niveauValidation"=>strtolower($request->fonction["libelle"])=="COMPTABLE" ?"required":""
+                ]);
+            }
+            else
+            {
+                $request->validate([
+                    "nom" =>"required|min:1",
+                    "prenom" =>"required|min:1",
+                    "telephone" =>"required|min:1",
+                    "adresse" =>"required",
+                ]);
+            }
+        }
+
+        DB::beginTransaction();
+
+
+        try{
+
+            if (!$request->personnel)
+            {
+                $user=$personnel->update([
+                    "nom" =>$request->nom,
+                    "prenom" =>$request->prenom,
+                    "telephone" =>$request->telephone,
+                    "adresse" =>$request->adresse,
+                    "login" =>$request->login,
+                    "email" =>$request->email,
+                    //"password" =>Hash::make($request->password),
+                ]);
+            }
+            else
+            {
+                /*if(strtolower($request->fonction["libelle"])=="comptable" || strtolower($request->fonction["libelle"])=="directeur")
+                {
+
+                    $request->validate([
+                        "email" =>["nullable","email",Rule::unique(User::class)->ignore(Auth::id())],
+                        "login" =>["nullable","min:1",Rule::unique(User::class)->ignore(Auth::id())],
+                        //"password" =>"required",
+                    ]);
+
+                    dd(12);
+                }*/
+
+                $user=User::find($request->personnel["id"]);
+
+                $user->login=$request->login;
+                $user->email=$request->email;
+                //$user->password=$request->password;
+
+                if(strtolower($request->fonction["libelle"])=="COMPTABLE")
+                {
+                    $user->niveauValidation=$request->niveauValidation;
+                }
+                $user->save();
+            }
+
+
+
+            $user->etablissement()->associate(Auth::user()->etablissementAdmin->id)->save();
+
+            $user->roles()->syncWithoutDetaching(Role::where("libelle","personnel")->first());
+
+            $anneeScolaire=Auth::user()->etablissementAdmin->anneeEnCours;
+
+            $contrat = $user->contratEnCours()->where("annee_scolaire_id",$anneeScolaire->id)->where('actif',true)->first();
+
+            //dd($contrat,$user->contratEnCours,$anneeScolaire);
+
+            if (!$contrat)
+            {
+                $contrat=Contrat::create([
+                    "dateDebut"=> \Illuminate\Support\Carbon::now(),
+                    "annee_scolaire_id" =>$anneeScolaire->id,
+                    "user_id" =>$user->id,
+                    "etablissement_id"=>Auth::user()->etablissementAdmin->id,
+                ]);
+
+
+                $user->contratEnCours()->associate($contrat)->save();
+            }
+
+            if(strtolower($request->fonction["libelle"])==="COMPTABLE")
+            {
+                $user->update([
+                    'niveauValidation'=>$request->niveauValidation
+                ]);
+            }
+
+
+            if(strtolower($request->fonction["libelle"])=="enseignant")
+            {
+                foreach($request->coursList as $cours)
+                {
+
+
+                    $cours=Cours::create([
+                        "montant" =>$cours["montant"],
+                        "frequence"=>$cours["frequence"],
+                        "contrat_id"=>$contrat->id,
+                        "personnel_id" =>$user->id,
+                        "classe_id" =>$cours["classe"]["id"],
+                        "matiere_id" =>$cours["matiere"]["id"],
+                        "annee_scolaire_id" =>$anneeScolaire->id
+                    ]);
+
+                    $contratFonction=Contrat_fonction::create([
+                        "montant" =>$cours["montant"],
+                        "frequence"=>$cours["frequence"],
+                        "contrat_id"=>$contrat->id,
+                        "fonction_id"=>$request->fonction["id"],
+                        "annee_scolaire_id"=>$anneeScolaire->id,
+                        "user_id" =>$user->id,
+                        "cours_id"=>$cours["id"],
+                    ]);
+
+                    $intervalle=CarbonPeriod::create($anneeScolaire->dateDebut,"1 month",$anneeScolaire->dateFin);
+
+                    foreach($intervalle as $date)
+                    {
+                        $contratFonctionMois=Contrat_fonction_mois::create([
+                            "montant"=>0,
+                            "nombreHeures" =>0
+                        ]);
+
+                        $contratFonctionMois->mois()->associate(Mois::where("position",$date->month)->first())->save();
+                        $contratFonctionMois->contratFonction()->associate(Contrat_fonction::where("id",$contratFonction->id)->first())->save();
+                        $contratFonctionMois->personnel()->associate(User::where("id",$user->id)->first())->save();
+
+                    }
+                }
+
+            }
+            else
+            {
+                $contratFonction=Contrat_fonction::create([
+                    "montant" =>$request->montant,
+                    "frequence"=>$request->frequence,
+                    "contrat_id"=>$contrat->id,
+                    "fonction_id"=>$request->fonction["id"],
+                    "annee_scolaire_id"=>$anneeScolaire->id,
+                    "user_id" =>$user->id,
+                ]);
+
+                $intervalle=CarbonPeriod::create($anneeScolaire->dateDebut,"1 month",$anneeScolaire->dateFin);
+
+                foreach($intervalle as $date)
+                {
+                    $contratFonctionMois=Contrat_fonction_mois::create([
+                        "montant"=>0,
+                        "nombreHeures" =>0,
+                    ]);
+
+                    $contratFonctionMois->mois()->associate(Mois::where("position",$date->month)->first())->save();
+                    $contratFonctionMois->contratFonction()->associate(Contrat_fonction::where("id",$contratFonction->id)->first())->save();
+                    $contratFonctionMois->personnel()->associate(User::where("id",$user->id)->first())->save();
+
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('etablissement.personnel.edit',[Auth::user()->id,$personnel->id])->with("success","Personnel modifié avec succès");
+
+        }
+        catch(Exception $e){
+
+            echo($e);
+            DB::rollback();
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.

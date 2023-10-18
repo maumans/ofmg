@@ -658,16 +658,18 @@ function Create(props) {
                             }
 
                             <div className={"flex col-span-3 justify-end"}>
-                                <Button disabled={
-                                    !data?.type
-                                    ||
-                                    !data?.classe
-                                    ||
-                                    (data?.type ==='reinscription' && !data?.classe?.tarifs?.find((tarif)=>(tarif?.type_paiement?.libelle.toLowerCase() ==='réinscription')))
-                                    ||
-                                    (data?.type ==='inscription' && !data?.classe?.tarifs?.find((tarif)=>(tarif?.type_paiement?.libelle.toLowerCase() ==='inscription')))
+                                <Button
+                                    disabled={
+                                        !data?.type
+                                        ||
+                                        !data?.classe
+                                        ||
+                                        (data?.type ==='reinscription' && !data?.classe?.tarifs?.find((tarif)=>(tarif?.type_paiement?.libelle.toLowerCase() ==='réinscription')))
+                                        ||
+                                        (data?.type ==='inscription' && !data?.classe?.tarifs?.find((tarif)=>(tarif?.type_paiement?.libelle.toLowerCase() ==='inscription')))
 
-                                } color={'success'} variant={'contained'}  type={"submit"}>
+                                    }
+                                    color={'success'} variant={'contained'} type={"submit"}>
                                     Enregistrer
                                 </Button>
                             </div>

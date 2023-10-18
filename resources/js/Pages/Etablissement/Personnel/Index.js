@@ -9,6 +9,7 @@ import {motion} from "framer-motion";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import {Block, Check} from "@mui/icons-material";
 import MuiConfirmDialogDelete from "@/Components/MuiConfirmDialog";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 function Index({auth,error,personnels,success}) {
 
@@ -23,9 +24,13 @@ function Index({auth,error,personnels,success}) {
         { field: 'nom', headerName: 'NOM', minWidth: 130, flex: 1 },
         { field: 'adresse', headerName: 'ADRESSE', minWidth: 130, flex: 1 },
         { field: 'telephone', headerName: 'TELEPHONE', minWidth: 130, flex: 1 },
-        { field: 'action', headerName: 'ACTION',minWidth: 300, flex: 1,
+        { field: 'action', headerName: 'ACTION',minWidth: 400, flex: 1,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
+
+                    <button onClick={()=>handleShow(cellValues.row)} className={"p-2 text-white orangeBlueBackground orangeBlueBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
+                        Contrats <VisibilityIcon/>
+                    </button>
                     <button onClick={()=>handleFonctions(cellValues.row.id)} className={"p-2 text-white orangeVioletBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
                         <ListAltIcon/>
                     </button>
@@ -58,7 +63,7 @@ function Index({auth,error,personnels,success}) {
     }
 
     function handleShow(id){
-        alert("SHOW"+id)
+        Inertia.get(route("etablissement.personnel.contrat.index",[auth.user.id,id]))
     }
 
     function handleSubmit(e)

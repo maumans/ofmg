@@ -8,7 +8,7 @@ import SnackBar from "@/Components/SnackBar";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import formatNumber from "@/Utils/formatNumber";
 
-function Index({auth,error,users,success}) {
+function Index({auth,error,users,success,personnel}) {
 
     const [userInfos,setUserInfos] =useState(0);
     const [userContrat,setUserContrat] =useState(null);
@@ -95,13 +95,13 @@ function Index({auth,error,users,success}) {
     return (
         <AdminPanel auth={auth} error={error} active={"personnel"} sousActive={"listePersonnel"}>
             {
-                userContrat ?
+                personnel ?
                     <div className={"p-5"}>
                         <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
-                            Gestion des contrats
+                            Liste des contrats
                         </div>
                         <div className={"text-2xl p-3 rounded bg-black text-white mb-5"} style={{width:"fit-content"}}>
-                            {userContrat.prenom} {userContrat.nom}
+                            {personnel.prenom} {personnel.nom}
                         </div>
                         <div className={"text-lg font-bold mb-5"}>
                             Liste des fonctions par contrat
@@ -119,7 +119,7 @@ function Index({auth,error,users,success}) {
                                     className={"mt-5"}
                                 >
                                     {
-                                        userContrat?.contrats?.map(contrat=>(
+                                        personnel?.contrats?.map(contrat=>(
                                             <div className={"my-5"} key={contrat.id}>
                                                 <div className="my-5 font-bold">
                                                     Contrat N° {contrat.id}

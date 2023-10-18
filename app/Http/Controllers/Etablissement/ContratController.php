@@ -123,14 +123,14 @@ class ContratController extends Controller
             }
             else
             {
-                if(strtolower($request->fonction["libelle"])=="comptable" || strtolower($request->fonction["libelle"])=="directeur")
+                /*if(strtolower($request->fonction["libelle"])=="comptable" || strtolower($request->fonction["libelle"])=="directeur")
                 {
                     $request->validate([
                         "login" =>"required|min:1|unique:users",
                         "email" =>"nullable|email|unique:users",
                         "password" =>"required",
                     ]);
-                }
+                }*/
 
                 $user=User::find($request->personnel["id"]);
 
@@ -153,14 +153,12 @@ class ContratController extends Controller
 
             $anneeScolaire=Auth::user()->etablissementAdmin->anneeEnCours;
 
-            if ($user->contratEnCours)
-            {
-                $contrat=$user->contratEnCours;
-            }
-            else
+            $contrat = $user->contratEnCours()->where("annee_scolaire_id",$anneeScolaire->id)->where('actif',true)->first();
+
+            if (!$contrat)
             {
                 $contrat=Contrat::create([
-                    "dateDebut"=>Carbon::now(),
+                    "dateDebut"=> \Illuminate\Support\Carbon::now(),
                     "annee_scolaire_id" =>$anneeScolaire->id,
                     "user_id" =>$user->id,
                     "etablissement_id"=>Auth::user()->etablissementAdmin->id,

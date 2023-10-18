@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import AdminPanel from "@/Layouts/AdminPanel";
 import {
     Autocomplete,
-    Checkbox,
+    Checkbox, CircularProgress,
     FormControl,
     InputLabel,
     ListItem,
@@ -20,6 +20,7 @@ import NumberFormat from "react-number-format";
 import {DataGrid, GridToolbar} from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SnackBar from "@/Components/SnackBar";
+import Box from "@mui/material/Box";
 
 const NumberFormatCustomMontant = React.forwardRef(function NumberFormatCustom(props, ref) {
     const { onChange, ...other } = props;
@@ -75,8 +76,18 @@ function Create({auth,errors,fonctions,classes,matieres}) {
 
     });
 
+    const [declancheur,setDeclancheur]=useState(null)
+
+    useEffect(() => {
+        if(data.personnels)
+        {
+            setDeclancheur(false)
+        }
+    },[data.personnels])
+
     function handleSearchButton()
     {
+        setDeclancheur(true)
         data.search?
             axios.get(route("etablissement.contrat.personnel.search",[auth.user.id,data.search]),{preserveState:true,preserveScroll:true}).then((response)=>{
                 setData("personnels",response.data)
@@ -186,6 +197,10 @@ function Create({auth,errors,fonctions,classes,matieres}) {
     useEffect(() => {
         setData("coursList",coursList)
     },[coursList])
+
+    useEffect(() => {
+        data.fonction?.libelle?.toLowerCase() === 'comptable' ? setData("niveauValidation",1) : setData("niveauValidation","")
+    },[data.fonction])
 
     return (
         <AdminPanel auth={auth} error={errors} active={"personnel"} sousActive={"creerContrat"}>
@@ -303,6 +318,14 @@ function Create({auth,errors,fonctions,classes,matieres}) {
                                              Choisir
                                          </button>
                                      </div>
+                                 }
+
+                                 {
+                                     declancheur &&
+                                     <Box className={"text-center"}>
+                                         <CircularProgress />
+                                     </Box>
+
                                  }
                              </div>
                              <AnimatePresence>

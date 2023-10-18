@@ -25,4 +25,9 @@ class Cours extends Model
     {
         return $this->belongsTo(Matiere::class);
     }
+
+    public function personnel()
+    {
+        return $this->belongsTo(User::class,'cours_id');
+    }
 }

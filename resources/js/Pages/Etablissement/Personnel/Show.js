@@ -61,6 +61,9 @@ function Show({auth,error,personnel,success,mois}) {
         { field: 'classe', headerName: 'CLASSE', minWidth: 250, flex: 1,renderCell:cellValues =>(
                 cellValues.row?.cours?.classe?.libelle
             )},
+        { field: 'montant', headerName: "MONTANT", flex: 1, minWidth: 250,  renderCell:(cellValues)=>(
+                cellValues.row?.montant+" FG/"+(cellValues.row?.frequence==="MENSUELLE"?"mois":"heure")
+            ) },
 
     ]
 
@@ -80,7 +83,7 @@ function Show({auth,error,personnel,success,mois}) {
                 <div className={"grid grid-cols-1 gap-4"}>
                     {
                         personnelSt?.contrat_en_cours?.contrat_fonctions.map(cf=>(
-                            cf.fonction.libelle.toLowerCase() !=="enseignant" &&
+                            cf.fonction.libelle.toLowerCase() !=="enseignant" ?
                             <Accordion key={cf.id}
                                        defaultExpanded={true}
                             >
@@ -127,42 +130,56 @@ function Show({auth,error,personnel,success,mois}) {
                                     </div>
                                 </AccordionDetails>
                             </Accordion>
+                                :
+                                tabEnseignant?.length>0 &&
+
+                                <Accordion defaultExpanded={true}>
+                                    <AccordionSummary
+                                        expandIcon={<button type={'button'} className="orangeOrangeBackground text-white p-2 rounded-full">
+                                            <ExpandMoreIcon />
+                                        </button>}
+                                        aria-controls="panel1a-content"
+                                        id="panel1a-header"
+                                        sx={{backgroundColor:"#f8f1eb"}}
+                                    >
+                                        Enseignant
+                                    </AccordionSummary>
+
+                                    <AccordionDetails
+                                        aria-expanded={true}
+                                    >
+
+                                        <div className="grid grid-cols-3 gap-4 w-full">
+                                            <div>
+                                                <div className="font-bold">Date de debut:</div>
+                                                <div>
+                                                    {personnelSt?.contrat_en_cours?.dateDebut}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className="font-bold">Annee scolaire:</div>
+                                                <div>
+                                                    {cf?.annee_scolaire.dateDebut.split("-")[0]+"/"+cf?.annee_scolaire.dateFin.split("-")[0]}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className={"my-5"}>
+                                            <DataGrid
+
+                                                rows={tabEnseignant?tabEnseignant:[]}
+                                                columns={columnsEnseignant}
+                                                pageSize={5}
+                                                rowsPerPageOptions={[5]}
+                                                autoHeight
+                                            />
+                                        </div>
+                                    </AccordionDetails>
+                                </Accordion>
                         ) )
                     }
                 </div>
 
-                {
-                    tabEnseignant?.length>0 &&
-                    <div>
-                        <Accordion defaultExpanded={true}>
-                            <AccordionSummary
-                                expandIcon={<button type={'button'} className="orangeOrangeBackground text-white p-2 rounded-full">
-                                    <ExpandMoreIcon />
-                                </button>}
-                                aria-controls="panel1a-content"
-                                id="panel1a-header"
-                                sx={{backgroundColor:"#f8f1eb"}}
-                            >
-                                Enseignant
-                            </AccordionSummary>
-
-                            <AccordionDetails
-                                aria-expanded={true}
-                            >
-                                <div className={"my-5"}>
-                                    <DataGrid
-
-                                        rows={tabEnseignant?tabEnseignant:[]}
-                                        columns={columnsEnseignant}
-                                        pageSize={5}
-                                        rowsPerPageOptions={[5]}
-                                        autoHeight
-                                    />
-                                </div>
-                            </AccordionDetails>
-                        </Accordion>
-                    </div>
-                }
 
             </div>
         </AdminPanel>
