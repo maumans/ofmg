@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -42,6 +43,7 @@ class HandleInertiaRequests extends Middleware
                 'admin'=>$request->user() && $request->user()->isAdmin(),
                 'ofmg' =>$request->user() && $request->user()->isOfmg(),
                 'etablissement'=>$request->user() && $request->user()->isEtablissement(),
+                'anneeEnCours'=> isset(Auth::user()->etablissementAdmin) ? Auth::user()->etablissementAdmin->anneeEnCours : null,
                 'tuteur'=>$request->user() && $request->user()->isTuteur(),
                 'comptable'=>$request->user() && $request->user()->isComptable(),
                 'directeur'=>$request->user() && $request->user()->isDirecteur(),

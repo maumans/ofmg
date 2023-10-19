@@ -114,19 +114,23 @@ class PersonnelController extends Controller
 
         $anneeEnCours = Auth::user()->etablissementAdmin->anneeEnCours;
 
-        $personnel=User::where('id',$personnelId)->where('status','Actif')
+        $personnel = User::where('id',$personnelId)->where('status','Actif')
             ->with(['contratEnCours'=>function($query) use($anneeEnCours){
-                $query->where('annee_scolaire_id',$anneeEnCours->id);
+                $query->where('annee_scolaire_id',$anneeEnCours->id)->where('status',true);
             },
-                'cours'=>function($query) use($anneeEnCours){
-                    $query->where('annee_scolaire_id',$anneeEnCours->id)->with('classe','matiere');
-                }
-                ,'contratFonctions'=>function($query) use($anneeEnCours){
-                    $query->where('annee_scolaire_id',$anneeEnCours->id)->with("contratFonctionMois");
-                }])
+            'cours'=>function($query) use($anneeEnCours){
+                $query->where('annee_scolaire_id',$anneeEnCours->id)->where('status',true)->with('classe','matiere');
+            }
+            ,'contratFonctions'=>function($query) use($anneeEnCours){
+                $query->where('annee_scolaire_id',$anneeEnCours->id)->where('status',true)->with("contratFonctionMois");
+            }])
             ->first();
 
-        $fonctions = Fonction::where('status',true)->get();
+        $fonctions = Fonction::where('status',true)->where(function ($query) use($anneeEnCours,$personnel){
+            $query->whereDoesntHave('contratFonctions',function($query) use($anneeEnCours,$personnel){
+                $query->where('annee_scolaire_id',$anneeEnCours->id)->where('user_id',$personnel->id);
+            })->orWhere('libelle',"ENSEIGNANT");
+        })->get();
 
         $connexion = $personnel->contratFonctions->contains(function($cf){
             return strtolower($cf->fonction->libelle) === strtolower('Comptable') || strtolower($cf->fonction->libelle) === strtolower('Directeur');
@@ -235,11 +239,14 @@ class PersonnelController extends Controller
                 $user->email=$request->email;
                 //$user->password=$request->password;
 
-                if(strtolower($request->fonction["libelle"])=="COMPTABLE")
+                if ($request->fonction)
                 {
-                    $user->niveauValidation=$request->niveauValidation;
+                    if(strtolower($request->fonction["libelle"])=="COMPTABLE")
+                    {
+                        $user->niveauValidation=$request->niveauValidation;
+                    }
+                    $user->save();
                 }
-                $user->save();
             }
 
 
@@ -267,38 +274,94 @@ class PersonnelController extends Controller
                 $user->contratEnCours()->associate($contrat)->save();
             }
 
-            if(strtolower($request->fonction["libelle"])==="COMPTABLE")
+            if ($request->fonction)
             {
-                $user->update([
-                    'niveauValidation'=>$request->niveauValidation
-                ]);
-            }
-
-
-            if(strtolower($request->fonction["libelle"])=="enseignant")
-            {
-                foreach($request->coursList as $cours)
+                if(strtolower($request->fonction["libelle"])==="COMPTABLE")
                 {
-
-
-                    $cours=Cours::create([
-                        "montant" =>$cours["montant"],
-                        "frequence"=>$cours["frequence"],
-                        "contrat_id"=>$contrat->id,
-                        "personnel_id" =>$user->id,
-                        "classe_id" =>$cours["classe"]["id"],
-                        "matiere_id" =>$cours["matiere"]["id"],
-                        "annee_scolaire_id" =>$anneeScolaire->id
+                    $user->update([
+                        'niveauValidation'=>$request->niveauValidation
                     ]);
+                }
 
+
+                if(strtolower($request->fonction["libelle"])=="enseignant")
+                {
+                    //dd($request->coursList,$request->coursDeleted);
+                    foreach($request->coursList as $cours)
+                    {
+                        isset($cours['nouveau']) ? $nouveau = $cours['nouveau'] : $nouveau=false;
+
+                        if($nouveau)
+                        {
+                            $cours = Cours::create([
+                                "montant" =>$cours["montant"],
+                                "frequence"=>$cours["frequence"],
+                                "contrat_id"=>$contrat->id,
+                                "personnel_id" =>$user->id,
+                                "classe_id" =>$cours["classe"]["id"],
+                                "matiere_id" =>$cours["matiere"]["id"],
+                                "annee_scolaire_id" =>$anneeScolaire->id
+                            ]);
+
+                            $contratFonction=Contrat_fonction::create([
+                                "montant" =>$cours["montant"],
+                                "frequence"=>$cours["frequence"],
+                                "contrat_id"=>$contrat->id,
+                                "fonction_id"=>$request->fonction["id"],
+                                "annee_scolaire_id"=>$anneeScolaire->id,
+                                "user_id" =>$user->id,
+                                "cours_id"=>$cours["id"],
+                            ]);
+
+                            $intervalle=CarbonPeriod::create($anneeScolaire->dateDebut,"1 month",$anneeScolaire->dateFin);
+
+                            foreach($intervalle as $date)
+                            {
+                                $contratFonctionMois=Contrat_fonction_mois::create([
+                                    "montant"=>0,
+                                    "nombreHeures" =>0
+                                ]);
+
+                                $contratFonctionMois->mois()->associate(Mois::where("position",$date->month)->first())->save();
+                                $contratFonctionMois->contratFonction()->associate(Contrat_fonction::where("id",$contratFonction->id)->first())->save();
+                                $contratFonctionMois->personnel()->associate(User::where("id",$user->id)->first())->save();
+
+                            }
+                        }
+
+
+                    }
+
+                    foreach($request->coursDeleted as $cours)
+                    {
+                        $cours=Cours::find($cours["id"]);
+
+                        if($cours)
+                        {
+                            $cours->status=false;
+                            $cours->save();
+
+                            $cf=Contrat_fonction::where("cours_id",$cours["id"])->where("status",true)->first();
+                            $cf->status=false;
+                            $cf->save();
+
+                            $cfm=Contrat_fonction_mois::where("contrat_fonction_id",$cours["id"])->where("status",true)->first();
+                            $cfm->status=false;
+                            $cfm->save();
+                        }
+
+                    }
+
+                }
+                else
+                {
                     $contratFonction=Contrat_fonction::create([
-                        "montant" =>$cours["montant"],
-                        "frequence"=>$cours["frequence"],
+                        "montant" =>$request->montant,
+                        "frequence"=>$request->frequence,
                         "contrat_id"=>$contrat->id,
                         "fonction_id"=>$request->fonction["id"],
                         "annee_scolaire_id"=>$anneeScolaire->id,
                         "user_id" =>$user->id,
-                        "cours_id"=>$cours["id"],
                     ]);
 
                     $intervalle=CarbonPeriod::create($anneeScolaire->dateDebut,"1 month",$anneeScolaire->dateFin);
@@ -307,7 +370,7 @@ class PersonnelController extends Controller
                     {
                         $contratFonctionMois=Contrat_fonction_mois::create([
                             "montant"=>0,
-                            "nombreHeures" =>0
+                            "nombreHeures" =>0,
                         ]);
 
                         $contratFonctionMois->mois()->associate(Mois::where("position",$date->month)->first())->save();
@@ -316,38 +379,13 @@ class PersonnelController extends Controller
 
                     }
                 }
-
             }
-            else
-            {
-                $contratFonction=Contrat_fonction::create([
-                    "montant" =>$request->montant,
-                    "frequence"=>$request->frequence,
-                    "contrat_id"=>$contrat->id,
-                    "fonction_id"=>$request->fonction["id"],
-                    "annee_scolaire_id"=>$anneeScolaire->id,
-                    "user_id" =>$user->id,
-                ]);
 
-                $intervalle=CarbonPeriod::create($anneeScolaire->dateDebut,"1 month",$anneeScolaire->dateFin);
 
-                foreach($intervalle as $date)
-                {
-                    $contratFonctionMois=Contrat_fonction_mois::create([
-                        "montant"=>0,
-                        "nombreHeures" =>0,
-                    ]);
-
-                    $contratFonctionMois->mois()->associate(Mois::where("position",$date->month)->first())->save();
-                    $contratFonctionMois->contratFonction()->associate(Contrat_fonction::where("id",$contratFonction->id)->first())->save();
-                    $contratFonctionMois->personnel()->associate(User::where("id",$user->id)->first())->save();
-
-                }
-            }
 
             DB::commit();
 
-            return redirect()->route('etablissement.personnel.edit',[Auth::user()->id,$personnel->id])->with("success","Personnel modifié avec succès");
+            return redirect()->route('etablissement.personnel.contrat.index',[Auth::user()->id,$personnel->id])->with("success","Personnel modifié avec succès");
 
         }
         catch(Exception $e){

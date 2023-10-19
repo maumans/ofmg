@@ -7,6 +7,7 @@ import SnackBar from "@/Components/SnackBar";
 
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import formatNumber from "@/Utils/formatNumber";
+import {Inertia} from "@inertiajs/inertia";
 
 function Index({auth,error,users,success,personnel}) {
 
@@ -19,9 +20,12 @@ function Index({auth,error,users,success,personnel}) {
         setUserContrat(user)
     }
 
-    function handleFin(user) {
-        confirm("Voulez-vous mettre fin à cette fonction") && alert("Retirer")
+    function handleFin(contratId,fonctionId) {
+        console.log(auth.user.id,personnel.id,contratId,fonctionId)
+        confirm("Voulez-vous mettre fin à cette fonction") && Inertia.delete(route("etablissement.personnel.contrat.fonction.destroy",[auth.user.id,personnel.id,contratId,fonctionId]))
+
     }
+
 
     const columns = [
         { field: 'Nom_complet', headerName: "NOM COMPLET",headerClassName:"header", flex: 1, minWidth: 300, fontWeight:"bold", renderCell:(cellValues)=>(
@@ -66,24 +70,32 @@ function Index({auth,error,users,success,personnel}) {
             { field: 'classe', headerName: "CLASSE", flex: 2, minWidth: 150, renderCell:(cellValues)=>(
                     cellValues.row.cours?.classe?.libelle
                 )},
-            { field: 'Debut', headerName: "Debut de fonction", flex: 1, minWidth: 250,  renderCell:(cellValues)=>(
+            { field: 'Debut', headerName: "DEBUT DE LA FONCTION", flex: 1, minWidth: 250,  renderCell:(cellValues)=>(
                     contrat.dateDebut
                 ) },
             { field: 'Montant', headerName: "MONTANT", flex: 1, minWidth: 250,  renderCell:(cellValues)=>(
                     cellValues.row?.montant && formatNumber(cellValues.row?.montant)+" FG/"+(cellValues.row?.frequence==="MENSUELLE"?"mois":cellValues.row?.frequence==="HORAIRE"?"heure":"")
                 ) },
 
-            { field: 'anneeScolaire', headerName: "Année Scolaire", flex: 1, minWidth: 150, renderCell:(cellValues)=>(
+            { field: 'anneeScolaire', headerName: "ANNEE SCOLAIRE", flex: 1, minWidth: 150, renderCell:(cellValues)=>(
                     cellValues.row.annee_scolaire && cellValues.row.annee_scolaire?.dateDebut.split("-")[0]+"/"+cellValues.row.annee_scolaire?.dateFin.split("-")[0]
+                ) },
+
+            { field: 'status', headerName: "STATUS", flex: 1, minWidth: 150, renderCell:(cellValues)=>(
+                    cellValues.row.status ? <span className={'text-green-600'}>En cours</span> : <span className={'text-red-600'}>Terminée</span>
                 ) },
             { field: 'action', headerName: 'ACTION',minWidth:200,flex:1,
                 renderCell:(cellValues)=>(
+                    (auth.anneeEnCours?.id === cellValues.row.annee_scolaire?.id && cellValues.row.status) ?
                     <div className={"space-x-2"}>
-                        <button onClick={()=>handleFin(cellValues.row)} className={"p-2 text-white bg-red-400 bg-red-400 rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
+                        <button onClick={()=>handleFin(contrat.id,cellValues.row.id)} className={"p-2 text-white bg-red-400 bg-red-400 rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
                             Fin de la fonction
                         </button>
                     </div>
-                )
+                        :
+                        ""
+                ),
+                hide:(auth.anneeEnCours?.id !== contrat.annee_scolaire?.id)
             },
 
         ];
@@ -179,7 +191,7 @@ function Index({auth,error,users,success,personnel}) {
                             }
                         </AnimatePresence>
 
-                        <SnackBar success={successSt}/>
+                        <SnackBar success={success}/>
 
                     </div>
             }

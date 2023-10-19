@@ -70,6 +70,7 @@ Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","pa
     Route::resource('etablissement.contrat',\App\Http\Controllers\Etablissement\ContratController::class)->middleware("anneeScolaireIsDefined");
     Route::resource('etablissement.personnel',\App\Http\Controllers\Etablissement\PersonnelController::class)/*->middleware("anneeScolaireIsDefined")*/;
     Route::resource('etablissement.personnel.contrat',\App\Http\Controllers\Etablissement\Personnel\ContratController::class)/*->middleware("anneeScolaireIsDefined")*/;
+    Route::resource('etablissement.personnel.contrat.fonction',\App\Http\Controllers\Etablissement\Personnel\Contrat\FonctionController::class)/*->middleware("anneeScolaireIsDefined")*/;
     Route::resource('etablissement.fonction',\App\Http\Controllers\Etablissement\FonctionController::class);
 
 

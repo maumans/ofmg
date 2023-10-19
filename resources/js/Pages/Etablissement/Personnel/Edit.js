@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import AdminPanel from "@/Layouts/AdminPanel";
 import {
-    Autocomplete,
-    Checkbox,
+    Autocomplete, Backdrop,
+    Checkbox, CircularProgress,
     FormControl,
     InputLabel,
     ListItem,
@@ -72,10 +72,19 @@ function Create({auth,errors,success,fonctions,classes,matieres,personnel,connex
         "classe":null,
         "matiere":null,
         "montant":"",
-        "frequence":"",
-        "coursList":personnel.cours
+        "frequence":'',
+        "coursList":personnel.cours,
+        "coursDeleted":[]
 
     });
+
+    const [openBackdrop, setOpenBackdrop] = React.useState(false);
+    const handleCloseBackdrop = () => {
+        setOpenBackdrop(false);
+    };
+    const handleOpenBackdrop = () => {
+        setOpenBackdrop(true);
+    };
 
     function handleSearchButton()
     {
@@ -92,7 +101,7 @@ function Create({auth,errors,success,fonctions,classes,matieres,personnel,connex
     function handleSubmit(e)
     {
         e.preventDefault();
-
+        setOpenBackdrop(true)
         put(route("etablissement.personnel.update",[auth.user.id,personnel.id]), {data})
     }
 
@@ -121,7 +130,15 @@ function Create({auth,errors,success,fonctions,classes,matieres,personnel,connex
 
     const [coursList,setCoursList]=useState(personnel.cours)
 
+
+    useEffect(() => {
+        setOpenBackdrop(false)
+    },[]);
+
     function handleDelete(id) {
+
+        setData('coursDeleted',[...data.coursDeleted, coursList.find(cours=>cours.id===id && cours.status)])
+
         setCoursList(coursList.filter(cours=>cours.id!==id))
     }
 
@@ -163,11 +180,12 @@ function Create({auth,errors,success,fonctions,classes,matieres,personnel,connex
                 setCoursList((coursList)=>([
                     ...coursList,
                     {
-                        "id":coursList.length!==0?coursList[coursList.length-1].id+1:coursList.length+1,
+                        "id":coursList.length !== 0?coursList[coursList.length-1].id+1:coursList.length+1,
                         "classe":data.classe,
                         "matiere":data.matiere,
                         "montant":data.montant,
                         "frequence":data.frequence,
+                        "nouveau":true,
                     }
                 ]))
             }
@@ -189,6 +207,16 @@ function Create({auth,errors,success,fonctions,classes,matieres,personnel,connex
         setData("coursList",coursList)
     },[coursList])
 
+    useEffect(() => {
+        setData((data)=>({
+                ...data,
+                "classe":null,
+                "matiere":null,
+                "montant":"",
+                "frequence":"",
+        }))
+    },[coursList])
+
     return (
         <AdminPanel auth={auth} error={errors} active={"personnel"} sousActive={"listePersonnel"}>
             <div className={"p-5"}>
@@ -199,129 +227,6 @@ function Create({auth,errors,success,fonctions,classes,matieres,personnel,connex
                      <div className={"p-5 border rounded"}>
 
                          <form action="" onSubmit={handleSubmit} className={"space-y-5 my-5 rounded"} >
-                             {/*<div className={"text-lg font-bold mb-5"}>
-                                 Contrat
-                             </div>
-
-
-
-                             <div className={"p-4 rounded space-y-3 items-center w-full bg-white"} >
-
-                                 <div className={"w-full space-y-2 py-4"} >
-                                     <div>
-                                         Recherchez l'employé s'il existe déjà
-                                     </div>
-                                     <div className={"flex w-full space-x-2"}>
-                                         <TextField
-                                             className={"flex-1"}
-                                             value={data.search}
-                                             onChange={(e) => setData("search", e.target.value)}
-                                             label={"Nom, prenom ou le tel"}
-
-                                         />
-                                         <button type="button" onClick={handleSearchButton} className={"rounded bg-gray-600 p-2 text-white"}>
-                                             <SearchIcon/>
-                                         </button>
-                                     </div>
-                                 </div>
-                                 <AnimatePresence>
-                                     {
-                                         data.personnel &&
-
-                                         <motion.div
-                                             initial={{x: -10, opacity: 0}}
-                                             animate={{x: 0, opacity: 1}}
-                                             exit={{opacity: 0, x: -10}}
-
-                                             className={"bg-gray-200 p-4 mt-3 w-6/12 flex justify-between rounded"}
-                                         >
-                                             <div>
-                                                 <div className="font-bold capitalize">
-                                                     {data.personnel.prenom + " " + data.personnel.nom}
-                                                 </div>
-                                                 <div>
-                                                     <span className="font-bold capitalize">Fonctions:</span> {(data.personnel.contrat_fonctions.find((cf,i,j) => cf.fonction?.libelle.toLowerCase()==="directeur") && "Directeur") } {(data.personnel.contrat_fonctions.find((cf,i,j) => cf.fonction?.libelle.toLowerCase()==="comptable") && "COMPTABLE")} {data.personnel.contrat_fonctions.find((cf,i,j) => cf.fonction?.libelle.toLowerCase()==="enseignant") && "Enseignant"}
-                                                 </div>
-
-                                                 <div>
-                                                     <span className="font-bold capitalize">Tel: </span> {data.personnel.telephone}
-                                                 </div>
-                                             </div>
-                                             <div>
-                                                 <button onClick={() => setData("personnel", null)}
-                                                         className={"p-1 rounded-full bg-red-600 text-white flex text-center items-center"}
-                                                         type={"button"}>
-                                                     <CloseIcon/>
-                                                 </button>
-                                             </div>
-                                         </motion.div>
-                                     }
-                                 </AnimatePresence>
-
-                                 {
-                                     data.personnels?.length >0 &&
-                                     <div>
-
-                                         <List dense sx={{ width: '100%', bgcolor: 'background.paper' }}>
-                                             { data.personnels.map((t,i) => {
-
-                                                 const labelId = `checkbox-list-secondary-label-${t.id}`;
-                                                 return (
-
-                                                     <motion.div
-                                                         key={t.id}
-                                                         initial={{y:-100,opacity:0}}
-                                                         animate={{y:0,opacity:1}}
-                                                         transition={{
-                                                             duration: 0.5,
-                                                             type: "spring",
-                                                             delay: i * 0.1
-                                                         }}
-                                                     >
-                                                         <ListItem
-                                                             onClick={handleToggle(t.id)}
-
-                                                             secondaryAction={
-                                                                 <Checkbox
-                                                                     edge="end"
-                                                                     onChange={handleToggle(t.id)}
-                                                                     checked={checked===t.id}
-                                                                     inputProps={{ 'aria-labelledby': labelId }}
-                                                                 />
-                                                             }
-                                                             disablePadding
-                                                         >
-                                                             <ListItemButton>
-                                                                 <ListItemText id={labelId} primary={capitalize(t?.prenom)+" "+capitalize(t?.nom)} secondary={"Tel: "+t.telephone}
-                                                                 />
-                                                             </ListItemButton>
-                                                         </ListItem>
-
-                                                     </motion.div>
-                                                 );
-                                             })}
-                                         </List>
-                                         <button onClick={handleSelectPersonnel} className={"p-3 rounded orangeVertBackground text-white flex text-center items-center mt-4"}>
-                                             Choisir
-                                         </button>
-                                     </div>
-                                 }
-                             </div>
-                             <AnimatePresence>
-                                 {
-                                     (!newEmp && !data.personnel) &&
-                                     <div className={"grid md:grid-cols-2 grid-cols-1 gap-4 bg-white p-4"} >
-                                         <div className={"col-span-2 space-y-4"}>
-                                             <div>
-                                                 L'employé n'existe pas? Veuillez le créer
-                                             </div>
-                                             <button onClick={()=>setNewEmp(true)} type="button" className={"p-2 text-white orangeBlueBackground rounded"}>
-                                                 Creer un employé
-                                             </button>
-                                         </div>
-                                     </div>
-                                 }
-                             </AnimatePresence>*/}
 
                              <AnimatePresence>
                                  {
@@ -355,7 +260,7 @@ function Create({auth,errors,success,fonctions,classes,matieres,personnel,connex
                                              </div>
 
                                              {
-                                                 connexion || (data.fonction && data.fonction?.libelle != 'enseignant')
+                                                 connexion || (data.fonction && data.fonction?.libelle?.toLowerCase() !== 'enseignant')
                                                  &&
                                                  <>
                                                      <div>
@@ -416,8 +321,8 @@ function Create({auth,errors,success,fonctions,classes,matieres,personnel,connex
                                      options={fonctions}
                                      getOptionLabel={option=>option.libelle}
                                      isOptionEqualToValue={(option, value) => option.id === value.id}
-                                     renderInput={(params)=><TextField autoComplete={"Fonction"}  fullWidth {...params} label={"Fonction"} required/>}
-                                     required
+                                     renderInput={(params)=><TextField autoComplete={"Fonction"}  fullWidth {...params} label={"Fonction"} />}
+
                                  />
                                  <div className={"text-red-600"}>{errors?.fonction}</div>
                              </div>
@@ -440,6 +345,7 @@ function Create({auth,errors,success,fonctions,classes,matieres,personnel,connex
                                                          </div>
                                                          <div className={"w-full"}>
                                                              <Autocomplete
+                                                                 value={data.classe}
                                                                  className={"w-full"}
                                                                  onChange={(e,val)=>setData("classe",val)}
                                                                  disablePortal={true}
@@ -455,6 +361,7 @@ function Create({auth,errors,success,fonctions,classes,matieres,personnel,connex
 
                                                          <div className={"w-full"}>
                                                              <Autocomplete
+                                                                 value={data.matiere}
                                                                  className={"w-full"}
                                                                  onChange={(e,val)=>setData("matiere",val)}
                                                                  disablePortal={true}
@@ -477,7 +384,7 @@ function Create({auth,errors,success,fonctions,classes,matieres,personnel,connex
                                                  </div>
 
                                                  <div className={"w-full"}>
-                                                     <TextField className={"w-full"}  name={"montant"} label={"Montant"} value={data.montant} onChange={(e)=>setData("montant",e.target.value)} required
+                                                     <TextField className={"w-full"}  name={"montant"} label={"Montant"} value={data.montant} onChange={(e)=>setData("montant",e.target.value)}
                                                                 InputProps={{
                                                                     inputComponent: NumberFormatCustomMontant,
                                                                     inputProps:{
@@ -498,7 +405,6 @@ function Create({auth,errors,success,fonctions,classes,matieres,personnel,connex
                                                              label={"Frequence"}
                                                              value={data.frequence}
                                                              onChange={(e)=>setData("frequence",e.target.value)}
-                                                             required
                                                          >
                                                              <MenuItem value={"HORAIRE"}>HORAIRE</MenuItem>
                                                              <MenuItem value={"MENSUELLE"}>MENSUELLE</MenuItem>
@@ -554,6 +460,14 @@ function Create({auth,errors,success,fonctions,classes,matieres,personnel,connex
 
                          </form>
                      </div>
+
+                    <Backdrop
+                        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                        open={openBackdrop}
+                        onClick={handleCloseBackdrop}
+                    >
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
                 </div>
             </div>
 

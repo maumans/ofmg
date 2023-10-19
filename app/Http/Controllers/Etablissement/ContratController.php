@@ -32,7 +32,7 @@ class ContratController extends Controller
      */
     public function index()
     {
-        $users=User::has("contrats.contratFonctions")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with(["contrats"=>function($query){
+        $users = User::has("contrats.contratFonctions")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with(["contrats"=>function($query){
             $query->with("contratFonctions.fonction","anneeScolaire","contratFonctions.anneeScolaire","user","contratFonctions.cours.matiere","contratFonctions.cours.classe")->orderByDesc("created_at")->get();
         }])->orderByDesc('created_at')->get();
 
@@ -64,9 +64,7 @@ class ContratController extends Controller
             }])->get();
         }])->orderByDesc("created_at")->get();
 
-
         return $personnels;
-
     }
 
     /**
