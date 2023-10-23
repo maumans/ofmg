@@ -21,6 +21,7 @@ import {DataGrid, GridToolbar} from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SnackBar from "@/Components/SnackBar";
 import Box from "@mui/material/Box";
+import {Inertia} from "@inertiajs/inertia";
 
 const NumberFormatCustomMontant = React.forwardRef(function NumberFormatCustom(props, ref) {
     const { onChange, ...other } = props;
@@ -90,13 +91,24 @@ function Create({auth,errors,fonctions,classes,matieres}) {
         setDeclancheur(true)
         data.search?
             axios.get(route("etablissement.contrat.personnel.search",[auth.user.id,data.search]),{preserveState:true,preserveScroll:true}).then((response)=>{
+                /*setData((data)=>({
+                   ...data,
+                    "personnels":response.data,
+                    "coursList":response.data?.cours
+                }))*/
+
                 setData("personnels",response.data)
+                //setData("coursList",response.data.cours)
             }).catch(error=>{
                 console.log(error)
             })
             :
             setData("personnelsSearch",null)
     }
+
+    useEffect(()=>{
+        data.personnel && setCoursList(data.personnel?.cours)
+    },[data.personnel])
 
     function handleSubmit(e)
     {
@@ -135,7 +147,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
     }
 
     const columns = [
-        { field: 'id', headerName: 'N°', width: 70},
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'classe', headerName: "CLASSE",headerClassName:"header", flex: 1, minWidth: 300, fontWeight:"bold", renderCell:(cellValues)=>(
                 cellValues.row.classe?.libelle
             ) },
@@ -177,6 +189,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
                         "matiere":data.matiere,
                         "montant":data.montant,
                         "frequence":data.frequence,
+                        "nouveau":true,
                     }
                 ]))
             }
@@ -203,7 +216,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
     },[data.fonction])
 
     return (
-        <AdminPanel auth={auth} error={errors} active={"personnel"} sousActive={"creerContrat"}>
+        <AdminPanel auth={auth} error={errors} active={"gestionPersonnel"} /*sousActive={"creerContrat"}*/>
             <div className={"p-5"}>
                 <div>
                     <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>

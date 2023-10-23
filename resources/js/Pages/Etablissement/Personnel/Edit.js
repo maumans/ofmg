@@ -143,7 +143,7 @@ function Create({auth,errors,success,fonctions,classes,matieres,personnel,connex
     }
 
     const columns = [
-        { field: 'id', headerName: 'N°', width: 70},
+        { field: 'numero', headerName: 'N°', minWidth: 100,renderCell:cellValues=>cellValues.api.getRowIndex(cellValues.row.id)+1 },
         { field: 'classe', headerName: "CLASSE",headerClassName:"header", flex: 1, minWidth: 300, fontWeight:"bold", renderCell:(cellValues)=>(
                 cellValues.row.classe?.libelle
             ) },
@@ -218,7 +218,7 @@ function Create({auth,errors,success,fonctions,classes,matieres,personnel,connex
     },[coursList])
 
     return (
-        <AdminPanel auth={auth} error={errors} active={"personnel"} sousActive={"listePersonnel"}>
+        <AdminPanel auth={auth} error={errors} active={"gestionPersonnel"} /*sousActive={"listePersonnel"}*/>
             <div className={"p-5"}>
                 <div>
                     <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>

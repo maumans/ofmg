@@ -57,12 +57,15 @@ class ContratController extends Controller
     public function search(Request $request,$userId)
     {
         $personnels=User::where(function($query) use ($request){
-            $query->where("prenom","like","%".$request->search."%")->orWhere("nom","like","%".$request->search."%")->orWhere("telephone","like","%".$request->search."%")->get();
+            $query->where('status','Actif')->where("prenom","like","%".$request->search."%")->orWhere("nom","like","%".$request->search."%")->orWhere("telephone","like","%".$request->search."%");
         })->whereRelation("roles","libelle","personnel")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with(["contratFonctions"=>function($query){
-            $query->whereRelation("anneeScolaire","id",Auth::user()->etablissementAdmin->anneeEnCours->id)->with(["fonction"=>function($query){
+            $query->where('status',true)->whereRelation("anneeScolaire","id",Auth::user()->etablissementAdmin->anneeEnCours->id)->with(["fonction"=>function($query){
                 $query->get();
             }])->get();
-        }])->orderByDesc("created_at")->get();
+        },'cours'=>function($query){
+            $query->where('annee_scolaire_id',Auth::user()->etablissementAdmin->anneeEnCours->id)->where('status',true)->with('classe','matiere');
+            }
+        ])->orderByDesc("created_at")->get();
 
         return $personnels;
     }
@@ -176,43 +179,48 @@ class ContratController extends Controller
 
             if(strtolower($request->fonction["libelle"])=="enseignant")
             {
+
                 foreach($request->coursList as $cours)
                 {
 
+                    isset($cours['nouveau']) ? $nouveau = $cours['nouveau'] : $nouveau=false;
 
-                    $cours=Cours::create([
-                        "montant" =>$cours["montant"],
-                        "frequence"=>$cours["frequence"],
-                        "contrat_id"=>$contrat->id,
-                        "personnel_id" =>$user->id,
-                        "classe_id" =>$cours["classe"]["id"],
-                        "matiere_id" =>$cours["matiere"]["id"],
-                        "annee_scolaire_id" =>$anneeScolaire->id
-                    ]);
-
-                    $contratFonction=Contrat_fonction::create([
-                        "montant" =>$cours["montant"],
-                        "frequence"=>$cours["frequence"],
-                        "contrat_id"=>$contrat->id,
-                        "fonction_id"=>$request->fonction["id"],
-                        "annee_scolaire_id"=>$anneeScolaire->id,
-                        "user_id" =>$user->id,
-                        "cours_id"=>$cours["id"],
-                    ]);
-
-                    $intervalle=CarbonPeriod::create($anneeScolaire->dateDebut,"1 month",$anneeScolaire->dateFin);
-
-                    foreach($intervalle as $date)
+                    if($nouveau)
                     {
-                        $contratFonctionMois=Contrat_fonction_mois::create([
-                            "montant"=>0,
-                            "nombreHeures" =>0
+                        $cours=Cours::create([
+                            "montant" =>$cours["montant"],
+                            "frequence"=>$cours["frequence"],
+                            "contrat_id"=>$contrat->id,
+                            "personnel_id" =>$user->id,
+                            "classe_id" =>$cours["classe"]["id"],
+                            "matiere_id" =>$cours["matiere"]["id"],
+                            "annee_scolaire_id" =>$anneeScolaire->id
                         ]);
 
-                        $contratFonctionMois->mois()->associate(Mois::where("position",$date->month)->first())->save();
-                        $contratFonctionMois->contratFonction()->associate(Contrat_fonction::where("id",$contratFonction->id)->first())->save();
-                        $contratFonctionMois->personnel()->associate(User::where("id",$user->id)->first())->save();
+                        $contratFonction=Contrat_fonction::create([
+                            "montant" =>$cours["montant"],
+                            "frequence"=>$cours["frequence"],
+                            "contrat_id"=>$contrat->id,
+                            "fonction_id"=>$request->fonction["id"],
+                            "annee_scolaire_id"=>$anneeScolaire->id,
+                            "user_id" =>$user->id,
+                            "cours_id"=>$cours["id"],
+                        ]);
 
+                        $intervalle=CarbonPeriod::create($anneeScolaire->dateDebut,"1 month",$anneeScolaire->dateFin);
+
+                        foreach($intervalle as $date)
+                        {
+                            $contratFonctionMois=Contrat_fonction_mois::create([
+                                "montant"=>0,
+                                "nombreHeures" =>0
+                            ]);
+
+                            $contratFonctionMois->mois()->associate(Mois::where("position",$date->month)->first())->save();
+                            $contratFonctionMois->contratFonction()->associate(Contrat_fonction::where("id",$contratFonction->id)->first())->save();
+                            $contratFonctionMois->personnel()->associate(User::where("id",$user->id)->first())->save();
+
+                        }
                     }
                 }
 

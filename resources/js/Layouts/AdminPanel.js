@@ -221,7 +221,15 @@ function ResponsiveDrawer(props) {
 
                         <Divider component="li"/>
 
-                        <ListItemButton sx={props.active==="personnel" ?{backgroundColor:"#bc5610",color:"white"}:null} onClick={()=>handleClick("personnel")}>
+                        <Link href={route("etablissement.personnel.index",props.auth.user.id)}>
+                            <ListItemButton sx={props.active==="gestionPersonnel"?{backgroundColor:"#bc5610",color:"white"}:null}>
+                                <ListItemText primary="Gestion du personnel" />
+                            </ListItemButton>
+                        </Link>
+
+                        <Divider component="li"/>
+
+                        {/*<ListItemButton sx={props.active==="personnel" ?{backgroundColor:"#bc5610",color:"white"}:null} onClick={()=>handleClick("personnel")}>
                             <ListItemText primary="Gestion du personnel"/>
                             {(open==="personnel" || props.active==="personnel") ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
@@ -259,7 +267,7 @@ function ResponsiveDrawer(props) {
                         </Collapse>
 
 
-                        <Divider component="li"/>
+                        <Divider component="li"/>*/}
 
                         <ListItemButton sx={props.active==="salaire" ?{backgroundColor:"#bc5610",color:"white"}:null} onClick={()=>handleClick("salaire")}>
                             <ListItemText primary="Salaires"/>
@@ -402,7 +410,7 @@ function ResponsiveDrawer(props) {
                 component="nav"
             >
                 <Link href={route("admin.user.index",props.auth.user.id)}>
-                    <ListItemButton sx={props.active==="utilisateur" ?{backgroundColor:"#bc5610",color:"white"}:{backgroundColor:"#bc5610"}}>
+                    <ListItemButton sx={props.active === "utilisateur" ? {backgroundColor:"#bc5610",color:"white"}:{backgroundColor:"#bc5610"}}>
                         <ListItemText primary="Utilisateurs" />
                     </ListItemButton>
                 </Link>

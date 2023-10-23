@@ -110,7 +110,7 @@ function Show({auth,error,personnel,success,mois}) {
     }
 
     return (
-        <AdminPanel auth={auth} error={error} active={"personnel"} sousActive={"gestionHoraire"}>
+        <AdminPanel auth={auth} error={error} active={"gestionPersonnel"}>
             <div className={"p-5 grid gap-4 rounded"}>
                 <div className={"text-2xl p-3 rounded bg-black text-white"} style={{width:"fit-content"}}>
                     {personnelSt?.prenom} {personnelSt?.nom}
