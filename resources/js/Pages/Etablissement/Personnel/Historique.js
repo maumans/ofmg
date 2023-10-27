@@ -6,7 +6,16 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {Inertia} from "@inertiajs/inertia";
 import {motion} from "framer-motion";
-import {Autocomplete, Backdrop, CircularProgress, FormControl, Modal, TextareaAutosize, TextField} from "@mui/material";
+import {
+    Autocomplete,
+    Backdrop,
+    CircularProgress,
+    FormControl,
+    Modal,
+    TextareaAutosize,
+    TextField,
+    Tooltip
+} from "@mui/material";
 import {CheckIcon} from "@mui/icons-material/Check";
 import NumberFormat from "react-number-format";
 import {useForm} from "@inertiajs/inertia-react";
@@ -70,10 +79,10 @@ function Historique({auth,error,salaires,paiementOccasionnel,success,mois}) {
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
         { field: 'telephone', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.telephone) },
         { field: 'montant', headerName: 'MONTANT', width: 130, renderCell:(cellValues)=>(formatNumber(cellValues.row.montant)+" FG")  },
-        { field: 'status', headerName: 'STATUS', width: 130, renderCell:(cellValues)=>(
-            cellValues.row.transaction_status==="SUCCESS"?"SUCCES":cellValues.row.transaction_status==="PENDING"?"EN ATTENTE":cellValues.row.transaction_status==="FAILED" && "ECHEC"
-        ) },
         { field: 'mois', headerName: 'MOIS', width: 130, renderCell:(cellValues)=>(cellValues.row.mois?.libelle)  },
+        { field: 'status', headerName: 'STATUS', width: 130, renderCell:(cellValues)=>(
+                cellValues.row.transaction_status==="SUCCESS"?"SUCCES":cellValues.row.transaction_status==="PENDING"?"EN ATTENTE":cellValues.row.transaction_status==="FAILED" && "ECHEC"
+            ) },
     ];
 
     const columnsOccasionnel = [
@@ -83,11 +92,11 @@ function Historique({auth,error,salaires,paiementOccasionnel,success,mois}) {
         { field: 'prenom', headerName: 'PRENOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.prenom) },
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
         { field: 'telephone', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.numero_depot) },
+        { field: 'montant', headerName: 'MONTANT', width: 130, renderCell:(cellValues)=>(formatNumber(cellValues.row.montant)+" FG")  },
+        { field: 'motif', headerName: 'MOTIF', maxWidth: 300, renderCell:(cellValues)=><Tooltip title={cellValues.row.motif}><div className={'cursor-pointer'}>{cellValues.row.motif}</div></Tooltip> },
         { field: 'status', headerName: 'STATUS', width: 130, renderCell:(cellValues)=>(
                 cellValues.row.transaction_status==="SUCCESS"?"SUCCES":cellValues.row.transaction_status==="PENDING"?"EN ATTENTE":cellValues.row.transaction_status==="FAILED" && "ECHEC"
             ) },
-        { field: 'montant', headerName: 'MONTANT', width: 130, renderCell:(cellValues)=>(formatNumber(cellValues.row.montant)+" FG")  },
-        { field: 'motif', headerName: 'MOTIF', maxWidth: 300, renderCell:(cellValues)=>(cellValues.row.motif) },
     ];
 
 

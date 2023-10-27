@@ -11,6 +11,11 @@
     box-shadow:none !important;
 }*/
 
+.dec
+{
+    pointer-events: none;
+}
+
 .orangeOrangeColor
 {
     color: #FF7900

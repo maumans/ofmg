@@ -53,6 +53,8 @@ Route::middleware(['auth', 'verified',"userIsEtablissement","firstConnexion","pa
     Route::resource('etablissement.matiere',\App\Http\Controllers\Etablissement\MatiereController::class);
     Route::resource('etablissement.tarif',\App\Http\Controllers\Etablissement\TarifController::class)/*->middleware("anneeScolaireIsDefined")*/;
     Route::resource('etablissement.paiement',\App\Http\Controllers\Etablissement\PaiementController::class)/*->middleware("anneeScolaireIsDefined")*/;
+    Route::resource('etablissement.transaction',\App\Http\Controllers\Etablissement\TransactionController::class)/*->middleware("anneeScolaireIsDefined")*/;
+    Route::post("etablissement/{userId}/transaction/filtre",[\App\Http\Controllers\Etablissement\TransactionController::class,"filtre"])->name("etablissement.transaction.filtre");
     Route::post("etablissement/{userId}/paiement/search/{matricule?}",[\App\Http\Controllers\Etablissement\PaiementController::class,"search"])->middleware("anneeScolaireIsDefined")->name("etablissement.paiement.search");
     Route::get("etablissement/{userId}/paiement/{idApprenant}/tarif",[\App\Http\Controllers\Etablissement\PaiementController::class,"tarif"])->middleware("anneeScolaireIsDefined")->name("etablissement.paiement.tarif");
 

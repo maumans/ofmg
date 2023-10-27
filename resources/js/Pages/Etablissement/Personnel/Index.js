@@ -30,16 +30,19 @@ function Index({auth,error,personnels,success}) {
         { field: 'nom', headerName: 'NOM', minWidth: 130, flex: 1 },
         { field: 'adresse', headerName: 'ADRESSE', minWidth: 130, flex: 1 },
         { field: 'telephone', headerName: 'TELEPHONE', minWidth: 130, flex: 1 },
-        { field: 'action', headerName: 'ACTION',minWidth: 5500, flex: 1,
+        { field: 'action', headerName: 'ACTION',minWidth: 550, flex: 1,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
 
                     <button onClick={()=>handleShow(cellValues.row)} className={"p-2 text-white orangeBlueBackground orangeBlueBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
                         Contrats <VisibilityIcon/>
                     </button>
-                    <button onClick={()=>handleHoraire(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
-                        Ajout horaire <AlarmAdd/>
-                    </button>
+                    {
+                        cellValues.row.horairePersonnel &&
+                        <button onClick={()=>handleHoraire(cellValues.row.id)} className={"p-2 text-white orangeBlueBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
+                            Ajout horaire <AlarmAdd/>
+                        </button>
+                    }
                     <button onClick={()=>handleFonctions(cellValues.row.id)} className={"p-2 text-white orangeVioletBackground rounded hover:text-blue-400 hover:bg-white transition duration-500"}>
                         <ListAltIcon/>
                     </button>

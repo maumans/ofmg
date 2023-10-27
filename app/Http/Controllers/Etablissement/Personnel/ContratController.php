@@ -18,7 +18,9 @@ class ContratController extends Controller
     public function index($user,$personnelId)
     {
         $personnel=User::where("id",$personnelId)->where('status',"Actif")->with(["contrats"=>function($query){
-            $query->with("contratFonctions.fonction","anneeScolaire","contratFonctions.anneeScolaire","user","contratFonctions.cours.matiere","contratFonctions.cours.classe")->orderByDesc("created_at")->get();
+            $query->with(["contratFonctions"=>function($query){
+                $query->with(["fonction",'anneeScolaire','cours.matiere','cours.classe'])->orderByDesc("created_at");
+            },"anneeScolaire","user"])->orderByDesc("created_at");
         }])->orderByDesc('created_at')->first();
 
         return Inertia::render("Etablissement/Personnel/Contrat/Index",["personnel"=>$personnel]);

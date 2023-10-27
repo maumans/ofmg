@@ -136,7 +136,7 @@ function Edit(props) {
                                     value={data.telephone}
                                     inputProps={{
 
-                                        pattern:"(^"+codeNumerosSt+")[0-9]{6}"
+                                        pattern:"^6("+codeNumerosSt+")[0-9]{6}"
                                     }}
                                     className={"w-full"}  name={"telephone"} label={"Telephone"} onChange={(e)=>setData("telephone",e.target.value)} required/>
                                 <div className={"flex my-2 text-red-600"}>{props.errors?.telephone}</div>

@@ -85,18 +85,16 @@ class TarifController extends Controller
         DB::beginTransaction();
 
         try{
-
             $anneeEnCours=Auth::user()->etablissementAdmin->anneeEnCours;
 
             $intervalle=CarbonPeriod::create($anneeEnCours->dateDebut,"1 month",$anneeEnCours->dateFin)->roundMonth();
 
             $nombreMois=$intervalle->count();
 
-
-
             foreach($request->classes as $classe)
             {
                 $tarif=Tarif::create([
+                    "nombreMois"=>$nombreMois,
                     "montant"=>$request->frequence==="MENSUELLE"?$request->montant*$nombreMois :$request->montant,
                     "obligatoire"=>$request->obligatoire,
                     "frequence"=>$request->frequence,
@@ -156,9 +154,51 @@ class TarifController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $userId,$id)
     {
-        //
+        $tarif=Tarif::find($id);
+
+        $request->validate([
+            "montant" =>"required",
+            "classe" =>"required",
+            "typePaiement" =>['required',function ($attribute, $value, $fail) use ($tarif,$request){
+                if (Tarif::where('id','<>', $tarif->id)->where('type_paiement_id', $request->typePaiement['id'])->where('classe_id', $request->classe['id'])->where("etablissement_id",Auth::user()->etablissementAdmin->id)->first()) {
+                    $fail('Ce tarif existe déja pour cette classe');
+                }
+            }]
+        ]);
+
+        DB::beginTransaction();
+
+        try{
+
+            $anneeEnCours=Auth::user()->etablissementAdmin->anneeEnCours;
+
+            $intervalle=CarbonPeriod::create($anneeEnCours->dateDebut,"1 month",$anneeEnCours->dateFin)->roundMonth();
+
+            $nombreMois=$intervalle->count();
+
+            //dd($request->montant,$request->frequence,$nombreMois,$request->montant*$nombreMois);
+
+            $tarif->update([
+                "nombreMois"=>$nombreMois,
+                "montant"=>$request->frequence=="MENSUELLE" ? $request->montant*$nombreMois :$request->montant,
+                "obligatoire"=>$request->obligatoire,
+                "frequence"=>$request->frequence,
+                "echeance"=>$request->echeance,
+                "type_paiement_id"=>$request->typePaiement ? $request->typePaiement['id'] : null,
+                "classe_id"=>$request->classe ? $request->classe['id'] : null,
+            ]);
+
+            DB::commit();
+
+            return redirect()->back()->with("success","Service modifié avec succès");
+        }
+        catch(Exception $e){
+
+            echo($e);
+            DB::rollback();
+        }
     }
 
     /**

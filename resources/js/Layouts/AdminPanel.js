@@ -332,6 +332,12 @@ function ResponsiveDrawer(props) {
                                         <ListItemText primary="Liste paiement salaires" />
                                     </ListItemButton>
                                 </Link>
+
+                                <Link href={route("etablissement.transaction.index",props.auth.user.id)}>
+                                    <ListItemButton sx={props.sousActive==="transaction"?{color:"#e1c9bd",pl:4}:{pl:4}}>
+                                        <ListItemText primary="Transactions" />
+                                    </ListItemButton>
+                                </Link>
                             </List>
                         </Collapse>
                         <Divider component="li"/>

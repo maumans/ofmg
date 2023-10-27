@@ -38,10 +38,9 @@ class User extends Authenticatable // implements MustVerifyEmail
 
     protected $guarded=[];
 
-    protected $appends = ['salairesAp','userName'];
+    protected $appends = ['salairesAp','userName','horairePersonnel'];
 
-    protected $salairesAp;
-    protected $userName;
+    protected $salairesAp,$userName,$horairePersonnel;
 
     /**
      * The attributes that should be hidden for serialization.
@@ -72,6 +71,13 @@ class User extends Authenticatable // implements MustVerifyEmail
 
     public function setSalairesApAttribute($salairesAp){
         $this->salairesAp = $salairesAp;
+    }
+
+    public function getHorairePersonnelAttribute(){
+
+        $cf=Contrat_fonction::where('user_id',$this->id)->where('status',true)->whereRelation('fonction','libelle','ENSEIGNANT')->first();
+
+        return (bool)$cf;
     }
 
     public function roles()

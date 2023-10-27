@@ -697,7 +697,7 @@ function Index({auth,nbrMois,allEtablissements,success,montantTotal,errors,tuteu
                                                 <TextField
                                                     inputProps={{
 
-                                                        pattern:"(^"+codeNumerosSt+")[0-9]{6}"
+                                                        pattern:"^6("+codeNumerosSt+")[0-9]{6}"
                                                     }}
                                                     className={"w-6/12"}  name={"numero_retrait"} label={"Entrez le numéro à débiter"} onChange={(e)=>setData("numero_retrait",e.target.value)}
                                                     required

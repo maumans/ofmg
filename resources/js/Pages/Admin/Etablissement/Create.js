@@ -176,7 +176,7 @@ function Create(props) {
                                 <TextField
                                     inputProps={{
 
-                                        pattern:"(^"+codeNumerosSt+")[0-9]{6}"
+                                        pattern:"^6("+codeNumerosSt+")[0-9]{6}"
                                     }}
 
                                     className={"w-full"}  name={"telephone"} label={"Telephone"} onChange={(e)=>setData("telephone",e.target.value)} required/>
@@ -201,7 +201,7 @@ function Create(props) {
                                 <TextField
                                     inputProps={{
 
-                                        pattern:"(^"+codeNumerosSt+")[0-9]{6}"
+                                        pattern:"^6("+codeNumerosSt+")[0-9]{6}"
                                     }}
 
                                     className={"w-full"}  name={"telephoneAdmin"} label={"Telephone"} onChange={(e)=>setData("telephoneAdmin",e.target.value)} required/>

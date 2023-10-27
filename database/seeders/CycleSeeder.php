@@ -18,7 +18,7 @@ class CycleSeeder extends Seeder
         DB::table('cycles')->delete();
 
         Cycle::create([
-            "libelle" =>"Garderie",
+            "libelle" =>"GARDERIE",
         ]);
 
         Cycle::create([

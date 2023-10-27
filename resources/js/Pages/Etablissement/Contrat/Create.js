@@ -391,51 +391,6 @@ function Create({auth,errors,fonctions,classes,matieres}) {
                                                  <div className={"my-2 text-red-600"}>{errors?.telephone}</div>
                                              </div>
 
-                                             {
-                                                 (data.fonction?.libelle.toLowerCase() === "directeur" || data.fonction?.libelle.toLowerCase() === "comptable")
-                                                 &&
-                                                 <>
-                                                     <div>
-                                                         <TextField /*disabled={data.personnel?.email!==""}*/  className={"w-full"}  name={"login"} label={"Identifiant"} value={data.personnel?.login?data.personnel?.login:data.login} onChange={(e)=>setData("login",e.target.value)} required/>
-                                                         <div className={"my-2 text-red-600"}>{errors?.login}</div>
-                                                     </div>
-
-                                                     <div>
-                                                         <TextField /*disabled={data.personnel?.email!==""}*/  className={"w-full"}  name={"email"} label={"Email"} value={data.personnel?.email?data.personnel?.email:data.email} onChange={(e)=>setData("email",e.target.value)}/>
-                                                         <div className={"my-2 text-red-600"}>{errors?.email}</div>
-                                                     </div>
-
-                                                     {
-                                                         !data.personnel?.email &&
-                                                         <div>
-                                                             <TextField value={data.password} className={"w-full"}  name={"password"} label={"Mot de passe"} onChange={(e)=>setData("password",e.target.value)} required/>
-                                                             <div className={"my-2 text-red-600"}>{errors?.password}</div>
-                                                         </div>
-                                                     }
-                                                 </>
-                                             }
-
-                                             {
-                                                 data.fonction?.libelle.toLowerCase()==="comptable" &&
-                                                 <div>
-                                                     <TextField className={"w-full"}
-                                                                inputProps={{
-                                                                    min:1,
-                                                                    max:2
-                                                                }}
-                                                                type={"number"}
-                                                                min={1}
-                                                                max={2}
-                                                                name={"niveauValidation"}
-                                                                label={"Niveau de validation (comptable)"}
-                                                                value={data.niveauValidation}
-                                                                onChange={(e)=>setData("niveauValidation",e.target.value)}
-                                                                required
-                                                     />
-                                                     <div className={"my-2 text-red-600"}>{errors?.niveauValidation}</div>
-                                                 </div>
-                                             }
-
                                          </div>
                                      </motion.div>
                                  }
@@ -458,6 +413,55 @@ function Create({auth,errors,fonctions,classes,matieres}) {
                                  />
                                  <div className={"text-red-600"}>{errors?.fonction}</div>
                              </div>
+
+                             {
+                                 (data.fonction?.libelle.toLowerCase() === "directeur" || data.fonction?.libelle.toLowerCase() === "comptable")
+                                 &&
+                                 <div className={"grid md:grid-cols-2 grid-cols-1 gap-4 bg-white p-4"} >
+                                     <>
+                                         <div>
+                                             <TextField /*disabled={data.personnel?.email!==""}*/  className={"w-full"}  name={"login"} label={"Identifiant"} value={data.personnel?.login?data.personnel?.login:data.login} onChange={(e)=>setData("login",e.target.value)} required/>
+                                             <div className={"my-2 text-red-600"}>{errors?.login}</div>
+                                         </div>
+
+                                         <div>
+                                             <TextField /*disabled={data.personnel?.email!==""}*/  className={"w-full"}  name={"email"} label={"Email"} value={data.personnel?.email?data.personnel?.email:data.email} onChange={(e)=>setData("email",e.target.value)}/>
+                                             <div className={"my-2 text-red-600"}>{errors?.email}</div>
+                                         </div>
+
+                                         {
+                                             !data.personnel?.email &&
+                                             <div>
+                                                 <TextField value={data.password} className={"w-full"}  name={"password"} label={"Mot de passe"} onChange={(e)=>setData("password",e.target.value)} required/>
+                                                 <div className={"my-2 text-red-600"}>{errors?.password}</div>
+                                             </div>
+                                         }
+                                     </>
+
+                                     {
+                                         data.fonction?.libelle.toLowerCase()==="comptable" &&
+                                         <div>
+                                             <TextField className={"w-full"}
+                                                        inputProps={{
+                                                            min:1,
+                                                            max:2
+                                                        }}
+                                                        type={"number"}
+                                                        min={1}
+                                                        max={2}
+                                                        name={"niveauValidation"}
+                                                        label={"Niveau de validation (comptable)"}
+                                                        value={data.niveauValidation}
+                                                        onChange={(e)=>setData("niveauValidation",e.target.value)}
+                                                        required
+                                             />
+                                             <div className={"my-2 text-red-600"}>{errors?.niveauValidation}</div>
+                                         </div>
+                                     }
+                                 </div>
+
+                             }
+
 
                              <AnimatePresence>
                                  {

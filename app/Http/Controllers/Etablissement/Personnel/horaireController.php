@@ -19,8 +19,11 @@ class horaireController extends Controller
      */
     public function index()
     {
+        //dd(1);
         $personnels=User::has("contrats.contratFonctions")->whereRelation("contratEnCours.contratFonctions.fonction","libelle","ENSEIGNANT")->whereRelation("etablissement","id",Auth::user()->etablissementAdmin->id)->with(["contrats"=>function($query){
-            $query->with("contratFonctions.fonction","anneeScolaire","user")->orderByDesc("created_at")->get();
+            $query->with(["contratFonctions"=>function($query){
+                $query->where('frequence','HORAIRE')->where('status',true)->with('fonction');
+            },"anneeScolaire","user"])->orderByDesc("created_at");
         }])->where('status',"Actif")->orderByDesc("created_at")->get();
 
         return Inertia::render('Etablissement/Personnel/Horaire/Index',["personnels"=>$personnels]);
@@ -68,10 +71,10 @@ class horaireController extends Controller
     public function show($userId,$id)
     {
         $personnel=User::where("id",$id)->with(["contratEnCours.contratFonctions"=>function($query){
-            $query->with(["fonction","anneeScolaire","cours.matiere","cours.classe","contratFonctionMois.mois"])->orderByDesc("created_at")->get();
+            $query->where('frequence','HORAIRE')->where('status',true)->with(["fonction","anneeScolaire","cours.matiere","cours.classe","contratFonctionMois.mois"])->orderByDesc("created_at")->get();
         }])->first();
 
-        $mois=Mois::whereRelation("contratFonctionMois.contratFonction.user","id",$personnel->id)->whereRelation("contratFonctionMois.contratFonction.anneeScolaire","id",Auth::user()->etablissementAdmin->anneeEnCours->id)->get();
+        $mois=Mois::whereRelation("contratFonctionMois.contratFonction.user","id",$personnel->id)->whereRelation("contratFonctionMois.contratFonction.anneeScolaire","id",Auth::user()->etablissementAdmin->anneeEnCours->id)->where('status',true)->get();
 
         return Inertia::render("Etablissement/Personnel/Horaire/Show",["personnel"=>$personnel,"mois"=>$mois]);
     }

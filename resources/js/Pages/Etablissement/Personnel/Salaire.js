@@ -6,7 +6,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {Inertia} from "@inertiajs/inertia";
 import {motion} from "framer-motion";
-import {Autocomplete, FormControl, Modal, Step, StepLabel, TextareaAutosize, TextField} from "@mui/material";
+import {Autocomplete, FormControl, Modal, Step, StepLabel, TextareaAutosize, TextField, Tooltip} from "@mui/material";
 import {CheckIcon} from "@mui/icons-material/Check";
 import NumberFormat from "react-number-format";
 import {useForm} from "@inertiajs/inertia-react";
@@ -117,6 +117,7 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires,codeN
             renderCell:(cellValues)=> {
                 return <div hidden={cellValues.row.salaires.find((salaire) => (salaire.mois?.id === moisSt?.id)) === null} className={"space-x-2"}>
                     <TextField
+                        disabled={!tabPersonnelSelected.includes(cellValues.row.id)}
                         variant="standard"
                         name={cellValues.row.id + ""}
                         onChange={(e) => onHandleChange(e, cellValues.row.id)}
@@ -124,7 +125,7 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires,codeN
                         InputProps={{
                             inputComponent: NumberFormatCustom,
                             inputProps: {
-                                max: 100000000,
+                                max: (cellValues.row.salairesAp?.filter(salaire => salaire.mois.id === moisSt?.id)[0]?.salaire || 0)
                             },
                         }}
                     />
@@ -154,7 +155,7 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires,codeN
         { field: 'telephone', headerName: 'TELEPHONE', width: 130,flex:1, renderCell:(cellValues)=>(cellValues.row.personnel?.telephone) },
         { field: 'mois', headerName: 'MOIS', width: 130,flex:1, renderCell:(cellValues)=>(cellValues.row.mois?.libelle)  },
         { field: 'montant', headerName: 'MONTANT', width: 130,flex:1, renderCell:(cellValues)=>(formatNumber(cellValues.row.montant)+ " FG")  },
-        { field: 'motif', headerName: 'MOTIF', width: 200,flex:1, renderCell:(cellValues)=><div>{cellValues.row.motifAnnulation}</div>  },
+        { field: 'motif', headerName: 'MOTIF', width: 200,flex:1, renderCell:(cellValues)=><Tooltip title={cellValues.row?.motifAnnulation}><div className={'cursor-pointer'}>{cellValues.row.motifAnnulation}</div></Tooltip>  },
 
     ];
 
@@ -280,7 +281,7 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires,codeN
                                         <Autocomplete
                                             onChange={(e,val)=>{
                                                 setMoisSt(val)
-                                                val ?setPersonnelsSt(personnels.filter((personnel)=>(personnel.salaires.find((salaire)=>salaire.mois?.id===val?.id)===undefined))):setPersonnelsSt(personnels)
+                                                val ?setPersonnelsSt(personnels.filter((personnel)=>(personnel.salaires.find((salaire)=>salaire.mois?.id===val?.id && salaire.status !=="ANNULE")===undefined))):setPersonnelsSt(personnels)
                                             }}
                                             label="Mois"
                                             disablePortal={true}
@@ -301,13 +302,18 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires,codeN
                                         rows={personnelsSt}
                                         columns={columns}
                                        initialState={{
-                                        pagination: {
-                                            pageSize: 10,
-                                        },
-                                    }}
+                                            pagination: {
+                                                pageSize: 10,
+                                            },
+                                         }}
                                         rowsPerPageOptions={[10]}
                                         autoHeight
                                         checkboxSelection
+                                        disableSelectionOnClick
+
+                                        disableColumnReorder
+                                        disableColumnSelector
+
                                         onSelectionModelChange={(tab)=>setTabPersonnelSelected(tab)}
                                     />
                                 }
@@ -377,7 +383,7 @@ function Salaire({auth,error,personnels,success,mois,anneeEnCours,salaires,codeN
                                 <TextField className={"w-full"}  name={"telephone"} label={"Telephone"} onChange={(e)=>setDataOccasionnel("telephone",e.target.value)}
                                            inputProps={{
 
-                                               pattern:"(^"+codeNumerosSt+")[0-9]{6}"
+                                               pattern:"^6("+codeNumerosSt+")[0-9]{6}"
                                            }}
                                            autoComplete="telephone"
                                            required
