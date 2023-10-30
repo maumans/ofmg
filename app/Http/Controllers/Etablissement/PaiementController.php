@@ -105,10 +105,12 @@ class PaiementController extends Controller
 
         $classes=Classe::where('etablissement_id',Auth::user()->etablissementAdmin->id)->with("apprenants")->get();
 
-        //dd(Auth::user()->etablissementAdmin->id);
+        $anneeEnCours=Auth::user()->etablissementAdmin->anneeEnCours;
 
         $apprenants=Apprenant::whereRelation("classe.etablissement","id",Auth::user()->etablissementAdmin->id)->whereRelation("inscriptions",function ($query){
             $query->whereRelation("anneeScolaire",'id',Auth::user()->etablissementAdmin->anneeEncours->id,)->where('status',true);
+        })->whereRelation("tarifs",function($query) use($anneeEnCours){
+            $query->whereRelation('anneeScolaire','id', $anneeEnCours->id)->where('tarifs.status',true)->with("typePaiement");
         })->with("classe")->orderByDesc('created_at')->get();
 
 
