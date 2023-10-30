@@ -100,6 +100,7 @@ class PaiementController extends Controller
      */
     public function create()
     {
+        //dd(1);
         $codeNumeros=Code_numero::all();
 
         $classes=Classe::where('etablissement_id',Auth::user()->etablissementAdmin->id)->with("apprenants")->get();
@@ -122,16 +123,16 @@ class PaiementController extends Controller
 
         $anneeEnCours=$etablissement ? $etablissement->anneeScolaires->last():null;
 
-        $apprenant=$apprenant ? Apprenant::where("id",$id)->with(["tarifs"=>function($query){
-            $query->with("typePaiement")->get();
-        },"classe"=>function($query){
-            $query->with(["tarifs"=>function($query){
-                $query->with("typePaiement")->get();
+        $apprenant=$apprenant ? Apprenant::where("id",$id)->with(["tarifs"=>function($query) use($anneeEnCours){
+            $query->where('annee_scolaire_id', $anneeEnCours->id)->where('status',true)->with("typePaiement");
+        },"classe"=>function($query) use ($anneeEnCours){
+            $query->with(["tarifs"=>function($query) use ($anneeEnCours){
+                $query->where('annee_scolaire_id', $anneeEnCours->id)->where('status',true)->with("typePaiement");
             },"etablissement"]);
         },
             "paiements"=>function($query) use ($anneeEnCours,$apprenant){
                 $query->whereHas("tarif",function ($query) use ($anneeEnCours,$apprenant){
-                    $query->where('annee_scolaire_id', $anneeEnCours->id);
+                    $query->where('annee_scolaire_id', $anneeEnCours->id)->where('status',true);
                 })->with("typePaiement","tarif")->get();
 
             }

@@ -3180,18 +3180,13 @@ select{
   }
 
 
-  .sm\:ml-10{
-    margin-left: 2.5rem;
+  .sm\:ml-20{
+    margin-left: 5rem;
   }
 
 
   .sm\:ml-6{
     margin-left: 1.5rem;
-  }
-
-
-  .sm\:ml-20{
-    margin-left: 5rem;
   }
 
 
