@@ -81,7 +81,6 @@ class TarifController extends Controller
             "montant" =>"required",
         ]);
 
-
         DB::beginTransaction();
 
         try{
@@ -93,17 +92,17 @@ class TarifController extends Controller
 
             foreach($request->classes as $classe)
             {
+                $montant= $request->frequence==="MENSUELLE" ? $request->montant*$nombreMois : $request->montant;
+
                 $tarif=Tarif::create([
                     "nombreMois"=>$nombreMois,
-                    "montant"=>$request->frequence==="MENSUELLE"?$request->montant*$nombreMois :$request->montant,
+                    "montant"=>$montant,
                     "obligatoire"=>$request->obligatoire,
                     "frequence"=>$request->frequence,
                     "echeance"=>$request->echeance,
                 ]);
 
                 $tarif->etablissement()->associate(Auth::user()->etablissementAdmin)->save();
-
-
 
                 $tarif->anneeScolaire()->associate(Auth::user()->etablissementAdmin->anneeEnCours)->save();
 
