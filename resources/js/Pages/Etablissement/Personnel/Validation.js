@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import {Inertia} from "@inertiajs/inertia";
 import formatNumber from "@/Utils/formatNumber";
 import {motion} from "framer-motion";
-import {Modal, TextareaAutosize} from "@mui/material";
+import {Modal, TextareaAutosize, Tooltip} from "@mui/material";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
@@ -101,7 +101,7 @@ function Validation({auth,error,salaires,paiementsOccasionnels,success}) {
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
         { field: 'numero_depot', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.numero_retrait) },
         { field: 'montant', headerName: 'MONTANT', width: 130, renderCell:(cellValues)=>(formatNumber(cellValues.row.montant)+" FG")  },
-        { field: 'motif', headerName: 'MOTIF', maxWidth: 300, renderCell:(cellValues)=>(cellValues.row.motif) },
+        { field: 'motif', headerName: 'MOTIF', width: 200, renderCell:(cellValues)=><Tooltip title={cellValues.row?.motif}><div className={'cursor-pointer'}>{cellValues.row.motif}</div></Tooltip>  },
         { field: 'action', headerName: 'ACTION',width:200,
             renderCell:(cellValues)=>(
                 <div className={"space-x-2"}>
@@ -131,7 +131,7 @@ function Validation({auth,error,salaires,paiementsOccasionnels,success}) {
         { field: 'nom', headerName: 'NOM', width: 130, renderCell:(cellValues)=>(cellValues.row.personnel?.nom) },
         { field: 'telephone', headerName: 'TELEPHONE', width: 130, renderCell:(cellValues)=>(cellValues.row.numero_retrait) },
         { field: 'montant', headerName: 'MONTANT', width: 130, renderCell:(cellValues)=>(formatNumber(cellValues.row.montant)+" FG") },
-        { field: 'motif', headerName: 'MOTIF', maxWidth: 300, renderCell:(cellValues)=>(cellValues.row.motif) },
+        { field: 'motif', headerName: 'MOTIF', width: 200, renderCell:(cellValues)=><Tooltip title={cellValues.row?.motif}><div className={'cursor-pointer'}>{cellValues.row.motif}</div></Tooltip>  },
     ];
 
     function handleSubmit(e)

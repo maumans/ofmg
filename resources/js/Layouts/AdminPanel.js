@@ -586,7 +586,7 @@ function ResponsiveDrawer(props) {
                 </Drawer>
             </Box>
             <Box
-                className={"bg-gray-100 min-h-screen flex flex-col justify-between"}
+                className={"bg-gray-100 min-h-screen flex flex-col"}
                 component="main"
                 sx={{flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
                 >
@@ -596,7 +596,7 @@ function ResponsiveDrawer(props) {
                 </div>
                 {/*<div className={'text-center'}>
                     <span>
-                        Copyright © 2022, by Addvalis Enterprise
+                        Copyright © 2023, by Addvalis Enterprise
                     </span>
                 </div>*/}
             </Box>

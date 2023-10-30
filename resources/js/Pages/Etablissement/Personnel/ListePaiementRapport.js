@@ -158,8 +158,8 @@ function ListePaiementRapport({auth,error,salaires,paiementOccasionnel,success,m
 
     return (
         <AdminPanel auth={auth} error={error} active={"rapport"} sousActive={"listePaiement"}>
-            <div className={"p-5"}>
-                <div className="text-2xl my-5 font-bold">
+            <div>
+                <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
                     Liste des paiements
                 </div>
 
@@ -187,14 +187,14 @@ function ListePaiementRapport({auth,error,salaires,paiementOccasionnel,success,m
 
                         <div className={"gap-3 flex flex-wrap my-5"}>
                             <DesktopDatePicker
-                                className="sm:w-5/12 w-full"
+                                className="w-full"
                                 value={data.dateDebut}
                                 label="Date debut"
                                 inputFormat="dd/MM/yyyy"
                                 renderInput={(params) => <TextField {...params} />}
                                 onChange={(date)=>setData('dateDebut',date)}/>
                             <DesktopDatePicker
-                                className="sm:w-5/12 w-full"
+                                className="w-full"
                                 value={data.dateFin}
                                 label="Date debut"
                                 inputFormat="dd/MM/yyyy"

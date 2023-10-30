@@ -96,7 +96,7 @@ function Create({auth,etablissement,tuteur,apprenant,nbrMois,modePaiements,succe
         classeSearch:"",
         tuteurSearch:"",
         searchText:"",
-        "tuteurSelectedId":null
+        "tuteurSelectedId":apprenant?.tuteurs[0]?.id
     });
 
 
@@ -378,13 +378,13 @@ function Create({auth,etablissement,tuteur,apprenant,nbrMois,modePaiements,succe
                                                                                     {
                                                                                         apprenant?.tuteurs?.length >0 &&
                                                                                         <div>
-                                                                                            <span className={"font-bold text-lg"}>Selectionnez l'auteur du paiement</span>
+                                                                                            <span className={"font-bold text-lg"}>Sélectionnez l'auteur du paiement</span>
                                                                                         </div>
                                                                                     }
 
                                                                                     <List className="grid md:grid-cols-2 sm:grid-cols-2 grid-cols-1 divide-x" dense >
                                                                                         {
-                                                                                            apprenant?.tuteurs.map((t) => {
+                                                                                            apprenant?.tuteurs.map((t,index) => {
                                                                                             const labelId = `checkbox-list-secondary-label-${t.id}`;
                                                                                             return (
                                                                                                 <ListItem

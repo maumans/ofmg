@@ -255,7 +255,7 @@ class PaiementController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with(["success"=>"Paiements effectués","montantTotal"=>$request->total]);
+            return redirect()->route('etablissement.paiement.index',[Auth::id()])->with(["success"=>"Paiements effectués","montantTotal"=>$request->total]);
         }
         catch(Exception $e){
 

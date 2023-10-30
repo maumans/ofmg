@@ -88,12 +88,12 @@ function Index({auth,error,transactions}) {
     return (
         <AdminPanel auth={auth} error={error} sousActive={"transaction"} active={"rapport"}>
             <div>
-                <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
-                    Liste des transctions
+                <div className={"text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
+                    Liste des transactions
                 </div>
-                <div className="mx-auto sm:px-6 lg:px-8 space-y-5">
+                <div className="space-y-5">
 
-                    <div className={"gap-3 flex flex-wrap my-5"}>
+                    <div className={"gap-3 grid md:grid-cols-2 my-5"}>
                         <DesktopDatePicker
                             className="w-full"
                             value={data.dateDebut}
