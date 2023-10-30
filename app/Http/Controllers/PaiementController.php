@@ -46,17 +46,17 @@ class PaiementController extends Controller
         {
 
             $apprenant=$apprenant ? Apprenant::where("matricule",$matricule)->whereRelation("classe.etablissement","code",$code)->with(["tarifs"=>function($query) use ($anneeEnCours){
-                $query->whereRelation('anneeScolaire','id',$anneeEnCours->id)->with(["typePaiement",'apprenantTarif.moisPayes'])->get();
+                $query->whereRelation('anneeScolaire','id',$anneeEnCours->id)->where('tarifs.status',true)->with(["typePaiement",'apprenantTarif.moisPayes']);
             },"classe"=>function($query) use ($anneeEnCours){
                 $query->with(["tarifs"=>function($query) use ($anneeEnCours){
-                    $query->whereRelation('anneeScolaire','id',$anneeEnCours->id)->where('status',true)->with("typePaiement")->get();
+                    $query->whereRelation('anneeScolaire','id',$anneeEnCours->id)->where('tarifs.status',true)->with("typePaiement")->get();
                 }]);
             },
                "paiements"=>function($query) use ($anneeEnCours,$apprenant){
               $query->whereHas("tarif",function ($query) use ($anneeEnCours,$apprenant){
                   $query->where('annee_scolaire_id', $anneeEnCours->id)->where('status',true);
-              })->with(["typePaiement","tarif"=>function($query){
-                  $query->where('status',true);
+              })->with(["typePaiement","tarif"=>function($query,$anneeEnCours){
+                  $query->whereRelation('anneeScolaire','id',$anneeEnCours->id)->where('tarifs.status',true);
               }])->get();
 
             }

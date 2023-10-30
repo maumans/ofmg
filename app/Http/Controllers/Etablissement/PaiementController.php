@@ -107,7 +107,9 @@ class PaiementController extends Controller
 
         //dd(Auth::user()->etablissementAdmin->id);
 
-        $apprenants=Apprenant::whereRelation("classe.etablissement","id",Auth::user()->etablissementAdmin->id)->with("classe")->orderByDesc('created_at')->get();
+        $apprenants=Apprenant::whereRelation("classe.etablissement","id",Auth::user()->etablissementAdmin->id)->whereRelation("inscriptions",function ($query){
+            $query->whereRelation("anneeScolaire",'id',Auth::user()->etablissementAdmin->anneeEncours->id,)->where('status',true);
+        })->with("classe")->orderByDesc('created_at')->get();
 
 
         return Inertia::render("Etablissement/Paiement/Create",["classes"=>$classes,"apprenants"=>$apprenants,"codeNumeros"=>$codeNumeros]);
@@ -121,18 +123,18 @@ class PaiementController extends Controller
 
         $etablissement=$apprenant ? $apprenant->classe->etablissement:null;
 
-        $anneeEnCours=$etablissement ? $etablissement->anneeScolaires->last():null;
+        $anneeEnCours=$etablissement->anneeEnCours;
 
         $apprenant=$apprenant ? Apprenant::where("id",$id)->with(["tarifs"=>function($query) use($anneeEnCours){
-            $query->where('annee_scolaire_id', $anneeEnCours->id)->where('status',true)->with("typePaiement");
+            $query->whereRelation('anneeScolaire','id', $anneeEnCours->id)->where('tarifs.status',true)->with("typePaiement");
         },"classe"=>function($query) use ($anneeEnCours){
             $query->with(["tarifs"=>function($query) use ($anneeEnCours){
-                $query->where('annee_scolaire_id', $anneeEnCours->id)->where('status',true)->with("typePaiement");
+                $query->whereRelation('anneeScolaire','id', $anneeEnCours->id)->where('status',true)->with("typePaiement");
             },"etablissement"]);
         },
             "paiements"=>function($query) use ($anneeEnCours,$apprenant){
                 $query->whereHas("tarif",function ($query) use ($anneeEnCours,$apprenant){
-                    $query->where('annee_scolaire_id', $anneeEnCours->id)->where('status',true);
+                    $query->whereRelation('anneeScolaire','id', $anneeEnCours->id)->where('status',true);
                 })->with("typePaiement","tarif")->get();
 
             }
