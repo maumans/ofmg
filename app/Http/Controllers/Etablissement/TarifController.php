@@ -161,7 +161,7 @@ class TarifController extends Controller
             "montant" =>"required",
             "classe" =>"required",
             "typePaiement" =>['required',function ($attribute, $value, $fail) use ($tarif,$request){
-                if (Tarif::where('id','<>', $tarif->id)->where('type_paiement_id', $request->typePaiement['id'])->where('classe_id', $request->classe['id'])->where("etablissement_id",Auth::user()->etablissementAdmin->id)->first()) {
+                if (Tarif::where('id','<>', $tarif->id)->where('type_paiement_id', $request->typePaiement['id'])->where('classe_id', $request->classe['id'])->where("etablissement_id",Auth::user()->etablissementAdmin->id)->where('status',true)->first()) {
                     $fail('Ce tarif existe déja pour cette classe');
                 }
             }]
