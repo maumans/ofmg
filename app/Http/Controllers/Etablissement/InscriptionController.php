@@ -56,14 +56,16 @@ class InscriptionController extends Controller
         $anneeScolaires=Auth::user()->etablissementAdmin->anneeScolaires()->orderByDesc('created_at')->get();
         $anneeEnCours=Auth::user()->etablissementAdmin->anneeEnCours;
 
-        $tarifs=Auth::user()->etablissementAdmin->tarifs()->where("annee_scolaire_id",$anneeEnCours->id)->with("typePaiement")->get();
+        $tarifs=Auth::user()->etablissementAdmin->tarifs()->where('status',true)->where("annee_scolaire_id",$anneeEnCours->id)->with("typePaiement")->get();
 
-        $inscriptions=Inscription::whereRelation('classe.etablissement',"etablissement_id",Auth::user()->etablissementAdmin->id)->where('annee_scolaire_id',$anneeEnCours->id)->with(["apprenant"=>function($query){
-            return $query->with("tarifs")->get();
-        },"classe"=>function($query){
-            return $query->with(["tarifs"=>function($query){
-                return $query->with("typePaiement")->get();
-            }])->get();
+        $inscriptions=Inscription::whereRelation('classe.etablissement',"etablissement_id",Auth::user()->etablissementAdmin->id)->where('annee_scolaire_id',$anneeEnCours->id)->with(["apprenant"=>function($query) use ($anneeEnCours){
+            $query->with(["tarifs"=>function($query) use($anneeEnCours){
+                return $query->whereRelation('anneeScolaire','id',$anneeEnCours->id)->where('tarifs.status',true)->with("typePaiement");
+            }]);
+        },"classe"=>function($query) use($anneeEnCours){
+            $query->with(["tarifs"=>function($query) use($anneeEnCours){
+                return $query->whereRelation('anneeScolaire','id',$anneeEnCours->id)->where('tarifs.status',true)->with("typePaiement");
+            }]);
         },"anneeScolaire"])->orderByDesc('created_at')->get();
 
         $tuteurs =User::whereRelation("roles","libelle","tuteur")->get("telephone");

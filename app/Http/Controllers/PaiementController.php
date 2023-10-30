@@ -55,7 +55,7 @@ class PaiementController extends Controller
                "paiements"=>function($query) use ($anneeEnCours,$apprenant){
               $query->whereHas("tarif",function ($query) use ($anneeEnCours,$apprenant){
                   $query->where('annee_scolaire_id', $anneeEnCours->id)->where('status',true);
-              })->with(["typePaiement","tarif"=>function($query,$anneeEnCours){
+              })->with(["typePaiement","tarif"=>function($query) use ($anneeEnCours){
                   $query->whereRelation('anneeScolaire','id',$anneeEnCours->id)->where('tarifs.status',true);
               }])->get();
 
