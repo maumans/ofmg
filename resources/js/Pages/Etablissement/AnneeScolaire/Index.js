@@ -167,7 +167,7 @@ function Index(props) {
             <div className={"p-5"}>
                 <div>
 
-                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
+                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded p-2"}>
                         Gestion des années scolaires
                     </div>
 

@@ -61,10 +61,10 @@ export default function Authenticated({auth, children}) {
                                             </Link>
                                         </div>
 
-                                        <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex ">
-                                            <NavLink href={route('welcome')} active={route().current('welcome')}>
+                                        <div className="hidden space-x-8 sm:-my-px sm:ml-20 sm:flex ">
+                                            {/*<NavLink href={route('welcome')} active={route().current('welcome')}>
                                                 Accueil
-                                            </NavLink>
+                                            </NavLink>*/}
                                             {
                                                 (auth?.tuteur || !auth?.user) &&
                                                 <NavLink href={auth?.tuteur?route('tuteur.paiement.index',[auth?.user.id]):route('paiement.create')} active={route().current('tuteur.paiement.index') || route().current('tuteur.paiement.search') || route().current('paiement.create') || route().current('paiement.search') || route().current('paiement.ok') || route().current('tuteur.paiement.ok')}>

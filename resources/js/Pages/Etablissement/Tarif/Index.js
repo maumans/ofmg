@@ -68,7 +68,7 @@ function Index(props) {
     return (
         <AdminPanel auth={props.auth} error={props.error} sousActive={"typeFraisListe"} active={"rapport"}>
             <div className={"p-5"}>
-                <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
+                <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded p-2"}>
                     Liste des frais scolaires
                 </div>
 

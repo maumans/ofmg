@@ -159,7 +159,7 @@ function ListePaiementRapport({auth,error,salaires,paiementOccasionnel,success,m
     return (
         <AdminPanel auth={auth} error={error} active={"rapport"} sousActive={"listePaiement"}>
             <div>
-                <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
+                <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded p-2"}>
                     Liste des paiements
                 </div>
 

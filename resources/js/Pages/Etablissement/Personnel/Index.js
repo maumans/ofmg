@@ -85,7 +85,7 @@ function Index({auth,error,personnels,success}) {
         <AdminPanel auth={auth} error={error} active={"gestionPersonnel"} /*sousActive={"listePersonnel"}*/>
            <div className={"p-5"}>
 
-               <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
+               <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded p-2"}>
                    Gestion du personnel
                </div>
                <div className={'flex justify-end my-5'}>

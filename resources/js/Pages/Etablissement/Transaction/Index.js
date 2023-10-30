@@ -88,7 +88,7 @@ function Index({auth,error,transactions}) {
     return (
         <AdminPanel auth={auth} error={error} sousActive={"transaction"} active={"rapport"}>
             <div>
-                <div className={"text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
+                <div className={"text-2xl text-white orangeOrangeBackground rounded p-2"}>
                     Liste des transactions
                 </div>
                 <div className="space-y-5">

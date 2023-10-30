@@ -109,7 +109,7 @@ function Index({auth,error,users,success,personnel}) {
             {
                 personnel ?
                     <div className={"p-5"}>
-                        <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
+                        <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded p-2"}>
                             Liste des contrats
                         </div>
                         <div className={"text-2xl p-3 rounded bg-black text-white mb-5"} style={{width:"fit-content"}}>
@@ -160,7 +160,7 @@ function Index({auth,error,users,success,personnel}) {
                     </div>
                     :
                     <div className={"p-5"}>
-                        <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
+                        <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded p-2"}>
                             Gestion des contrats
                         </div>
                         <div className={"text-lg font-bold mb-5"}>

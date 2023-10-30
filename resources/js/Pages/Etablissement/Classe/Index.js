@@ -199,7 +199,7 @@ function Index(props) {
         <AdminPanel auth={props.auth} error={props.error} active={"gestionCursus"} sousActive={"classe"}>
             <div className={"p-5"}>
                 <div>
-                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
+                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded p-2"}>
                         Gestion des classes
                     </div>
 

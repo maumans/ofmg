@@ -376,7 +376,7 @@ function Create(props) {
         <AdminPanel auth={props.auth} error={props.error} sousActive={"inscrire"} active={"gestionCursus"} >
             <div className={"p-5"}>
                 <div>
-                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
+                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded p-2"}>
                         Inscrire un {props.anneeEnCours?.etablissement.type_etablissement.libelle.toLowerCase() ==="école"?"élève":"etudiant"}
                     </div>
 

@@ -124,7 +124,7 @@ function Index({auth,error,paiements,success}) {
             <AdminPanel auth={auth} error={error} active={"rapport"} sousActive={"listePaiementScolarite"}>
                 <div className={"p-5"}>
 
-                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
+                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded p-2"}>
                         Liste des paiements de scolarité
                     </div>
 

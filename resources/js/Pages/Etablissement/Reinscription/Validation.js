@@ -101,7 +101,7 @@ function Validation({auth,error,apprenants,classe}) {
                     active={"gestionCursus"}>
             <div>
                 <div>
-                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
+                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded p-2"}>
                         Réinscription
                     </div>
 

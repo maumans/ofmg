@@ -219,7 +219,7 @@ function Create({auth,errors,fonctions,classes,matieres}) {
         <AdminPanel auth={auth} error={errors} active={"gestionPersonnel"} /*sousActive={"creerContrat"}*/>
             <div className={"p-5"}>
                 <div>
-                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
+                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded p-2"}>
                         Gestion des contrats
                     </div>
                      <div className={"p-5 border rounded"}>

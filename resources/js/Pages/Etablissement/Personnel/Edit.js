@@ -221,7 +221,7 @@ function Create({auth,errors,success,fonctions,classes,matieres,personnel,connex
         <AdminPanel auth={auth} error={errors} active={"gestionPersonnel"} /*sousActive={"listePersonnel"}*/>
             <div className={"p-5"}>
                 <div>
-                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded text-white p-2"}>
+                    <div className={"my-5 text-2xl text-white orangeOrangeBackground rounded p-2"}>
                         Modification du personnel
                     </div>
                      <div className={"p-5 border rounded"}>
