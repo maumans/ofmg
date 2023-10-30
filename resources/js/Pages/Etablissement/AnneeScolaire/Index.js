@@ -211,7 +211,7 @@ function Index(props) {
                                 <div>
                                     {
                                         !props.anneeEnCoursFinie ?
-                                        <Tooltip title="Veuilez cloturer l'année scolaire encours">
+                                        <Tooltip title="Veuillez cloturer l'année scolaire encours">
                                             <button style={{height: 56}} className={"p-3 text-white bg-gray-600 rounded"} type={"button"}>
                                                 Enregistrer
                                             </button>
